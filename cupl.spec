@@ -30,7 +30,7 @@ cp cupl.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 [ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
 
 %files
-%doc READ.ME COPYING corc.doc cupl.doc test
+%doc README COPYING corc.doc cupl.doc test
 %{_bindir}/cupl
 %{_mandir}/man1/cupl.1*
 
