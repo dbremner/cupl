@@ -1,12 +1,11 @@
 #
 # Makefile for the CUPL project
 #
-CDEBUG = -g
-
+CDEBUG = -O	# change to -g for debugging
 YFLAGS = -l	# add -vt for debugging
 CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DPARSEDEBUG	#  -DYYDEBUG=1
 
-SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c nodetype.h
+SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c
 
 MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
 cupl: $(MODULES)
@@ -35,6 +34,11 @@ toktab.h: tokens.h
 
 lextest: lexer.c tokens.h tokdump.o
 	$(CC) $(CFLAGS) -DMAIN lexer.c tokdump.o -o lextest 
+
+cupl.tar: 
+	tar -cvf cupl.tar `cat MANIFEST`
+cupl.tar.gz: cupl.tar
+	gzip cupl.tar
 
 clean:
 	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output
