@@ -94,7 +94,7 @@ static void prettyprint(node *tree, int indent)
 	prettyprint(tree->car,
 		    indent + INDENT);
 	prettyprint(tree->cdr,
-		    indent + INDENT * (tree->type != tree->cdr->type));
+		    indent + INDENT * (tree->cdr && (tree->type != tree->cdr->type)));
     }
 }
 #endif /* PARSEDEBUG */
@@ -188,6 +188,18 @@ static bool r_mark_labels(node *tp)
     return(TRUE);
 }
 
+static bool mung_corc_labels(node *tp)
+{
+    if (tp->type == GO && tp->car->syminf->blabeldef > 0)
+    {
+	tp->type = OG;
+	tp->car->syminf->slabelref--;
+	tp->car->syminf->blabelref++;
+    }
+
+    return(TRUE);
+}
+
 static bool check_errors(node *tree)
 /* look for inconsistencies in a program parse tree */
 {
@@ -205,6 +217,10 @@ static bool check_errors(node *tree)
 
     /* mark labels */
     recursive_apply(tree, r_mark_labels);
+
+    /* map CORC's GO TO <block> to CUPL's GO TO <block> END */
+    if (corc)
+	recursive_apply(tree, mung_corc_labels);
 
     /* describe all labels and variables */
     if (verbose >= DEBUG_CHECKDUMP)
@@ -290,16 +306,16 @@ static bool r_label_rewrite(node *tp)
 
 	if (left && left->type == IDENTIFIER && left->syminf->blabelref)
 	{
-#ifdef ODEBUG
+#ifdef PDEBUG
 	    (void) printf("patching block label left reference to %s\n", left->u.string);
-#endif /* ODEBUG */
+#endif /* PDEBUG */
 	    tp->car = left->syminf->target;
 	}
 	if (right && right->type == IDENTIFIER && right->syminf->blabelref)
 	{
-#ifdef ODEBUG
+#ifdef PDEBUG
 	    (void) printf("patching block label right reference to %s\n", right->u.string);
-#endif /* ODEBUG */
+#endif /* PDEBUG */
 	    tp->cdr = right->syminf->target;
 	}
     }
@@ -311,16 +327,16 @@ static bool r_label_rewrite(node *tp)
 
 	if (left && left->type == IDENTIFIER && left->syminf->slabelref)
 	{
-#ifdef ODEBUG
+#ifdef PDEBUG
 	    (void) printf("patching statement label left reference to %s\n", left->u.string);
-#endif /* ODEBUG */
+#endif /* PDEBUG */
 	    tp->car = left->syminf->target;
 	}
 	if (right && right->type == IDENTIFIER && right->syminf->slabelref)
 	{
-#ifdef ODEBUG
+#ifdef PDEBUG
 	    (void) printf("patching statement label right reference to %s\n", right->u.string);
-#endif /* ODEBUG */
+#endif /* PDEBUG */
 	    tp->cdr = right->syminf->target;
 	}
     }

@@ -7,7 +7,7 @@ SYNOPSIS
    cupl [-vn[y]] [-w nn] [-f nn] [file...]
 
 DESCRIPTION
-   The main sequence of the Cornell University Programming Language compiler.
+   Main sequence of the Cornell University Programming Language interpreter.
 All the real work is done by yyparse. May set globals verbose and yydebug.
 
 *****************************************************************************/

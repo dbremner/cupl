@@ -1,8 +1,9 @@
-				CUPL for UNIX
+			CUPL and CORC for UNIX
 		by Eric S. Raymond <esr@snark.thyrsus.com>
 
 This directory contains sources for cupl, a UNIX implementation of CUPL, the
-Cornell University Programming Language.
+Cornell University Programming Language.  It also interprets CORC, the 
+Cornell Computing Language, the immediate ancestor of CUPL.
 
 CUPL was an early (1966) teaching language implemented as a batch compiler on
 the IBM/360 at Cornell University.  It was descended from an earlier (1962)
@@ -12,6 +13,9 @@ from PL/1.
 CUPL has only one scalar type, a long floating-point real corresponding to C
 double.  It supports vector and matrix aggregates, and has operations
 specialized for matrix calculations.
+
+CORC is a near-subset of CUPL.  There are some minor differences in keywords.
+In CORC, the statement GO TO <block> is equivalent to CUPL's GO TO <block> END.
 
 The cupl implementation is a Retrocomputing Museum project.  The Retrocomputing
 Museum <http://www.ccil.org/retro/retromuseum.html> revives long-dead languages
@@ -25,6 +29,7 @@ Files:
 
 READ.ME			-- this file
 cupl.doc		-- transcription of the original CUPL documentation
+corc.doc		-- transcription of the original CORC documentation
 cupl.mm			-- description and discussion of the language
 tour.doc		-- a tour of the compiler internals
 
@@ -55,7 +60,16 @@ test/simplequad.cupl	-- simplest version of quadratic equation solver
 test/squares.cupl	-- print a table of squares
 test/sum.cupl		-- compute sum of presented data
 
-For each test file, there is a corresponding test file used for
+			CORC samples
+(These are all the complete program examples from the CORC manual)
+
+test/factorial.corc	-- compute the factorial function
+test/powercorc.corc	-- compute the sum of a power series
+test/quadcorc.corc	-- solve multiple quadratic equations
+test/sumsquares.corc	-- compute sums of first n integers and squares
+test/title.corc		-- illustate use of NOTE, TITLE, and WRITE
+
+For each .cupl or .corc file, there is a corresponding test file used for
 regression-testing of the interpreter.  The interpreter should pass
 all these tests.
 
@@ -78,6 +92,14 @@ REGRESS			-- perform regression test on the front end
 * GOTO blabel END always goes to the end of the current PERFORM block, even
   if the label is that of an enclosing block.
 
+* Because the cupl interpreter also interprets CORC, the CORC keywords
+  BEGIN, DEC, DECREASE, EQL, GEQ, GTR, INC, INCREASE, INT, LSS, NEQ, NOTE,
+  REPEAT, TITLE, UNTIL, and $ are also reserved words in CUPL.
+
 Send comments, bug reports, and fixes to esr@snark.thyrsus.com.  Also see
-my home page at //www.thyrsus.com/~esr/home.html for updates and other
+my home page at http://www.thyrsus.com/~esr/home.html for updates and other
 related resources.
+---------------------------------------------------------------------------
+Version 1.1:
+	* Added CORC support.
+	* Fixed a core-dump bug in the prettyprinter.

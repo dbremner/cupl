@@ -43,15 +43,16 @@ int yydebug;
 }
 
 /* keywords */
-%token ABS ALL ALLOCATE AND ATAN BLOCK BY COMMENT COS DET DOT ELSE END EXP
-%token FLOOR FOR GE GO GT IDN IF INV LE LET LN LOG LT MAX MIN NE OR PERFORM
-%token POSMAX POSMIN RAND READ SGM SIN SQRT STOP THEN TIMES TO TRC TRN
-%token WATCH WHILE WRITE DATA
+%token ABS ALL ALLOCATE AND ATAN BLOCK BY COMMENT COS DEC DET DOT ELSE END EXP
+%token FLOOR FOR GE GO GT IDN IF INC INV LE LET LN LOG LT MAX MIN NE OR PERFORM
+%token POSMAX POSMIN RAND READ SGM SIN SQRT STOP THEN TIMES TITLE TO TRC TRN
+%token UNTIL WATCH WHILE WRITE DATA
 
 %token <node> POWER
 %token <node> STRING
 %token <node> NUMBER
 %token <node> IDENTIFIER
+%token <node> TITLE
 
 %token LPAREN	')'
 %token RPAREN	'('
@@ -118,6 +119,7 @@ command	:    simple			{$$ = $1;}
 	|    BLOCK			{$$ = cons(BLOCK, NULLNODE, NULLNODE);}
 	|    END			{$$ = cons(END, NULLNODE, NULLNODE);}
 	|    DATA datal			{$$ = $2;}
+	|    TITLE			{$$ = cons(WRITE, $1, NULLNODE);;}
 	;
 
 cond	:    IF guard THEN simple
@@ -143,6 +145,7 @@ gosub	:   PERFORM IDENTIFIER		{$$ = cons(PERFORM, $2, NULLNODE);}
 perform	:    gosub			{$$ = $1;}
 	|    gosub expr TIMES		{$$ = cons(TIMES, $2, $1);}
 	|    gosub WHILE guard		{$$ = cons(WHILE, $3, $1);}
+	|    gosub UNTIL guard		{$$ = cons(UNTIL, $3, $1);}
 
 	|    gosub FOR IDENTIFIER '=' expl
 		{$$ = cons(FOR,   cons('=', $3, $5),                     $1);}
@@ -181,6 +184,8 @@ rel	:    expr '=' expr		{$$ = cons('=', $1, $3);}
 /* simple statement types */
 
 simple	:    LET IDENTIFIER '=' expr	{$$ = cons(LET, $2, $4);}
+	|    INC IDENTIFIER BY expr	{$$ = cons(LET, $2, cons(PLUS,  $2, $4));}    /* CORC */
+	|    DEC IDENTIFIER BY expr	{$$ = cons(LET, $2, cons(MINUS, $2, $4));}    /* CORC */
 	|    GO TO IDENTIFIER		{$$ = cons(GO, $3, NULLNODE);}
 	|    GO TO IDENTIFIER END	{$$ = cons(OG, $3, NULLNODE);}
 	|    READ readl			{$$ = $2;}

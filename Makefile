@@ -1,9 +1,9 @@
 #
-# Makefile for the CUPL project
+# Makefile for the CUPL/CORC project
 #
-CDEBUG = -O	# change to -g for debugging
-YFLAGS = -l	# add -vt for debugging
-CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DPARSEDEBUG	#  -DYYDEBUG=1
+CDEBUG = -g	# use -O for production, -g for debugging
+YFLAGS = -vt	# use -l for production, -vt for debugging
+CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DPARSEDEBUG	-DYYDEBUG=1
 
 SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c
 
@@ -12,12 +12,12 @@ cupl: $(MODULES)
 	$(CC) $(MODULES) -lm -o cupl
 
 # You can use either lex or flex
-#LEX = lex
-LEX = flex
+LEX = lex
+#LEX = flex
 
 # You can use either bison or yacc
-#YACC = yacc
-YACC = bison -y
+YACC = yacc
+#YACC = bison -y
 
 lexer.c: cupl.l
 	$(LEX) $(LFLAGS) cupl.l

@@ -99,6 +99,8 @@ typedef struct lvar_t
 lvar;
 extern lvar *idlist;
 
+bool corc;	/* are we parsing CUPL or CORC? */ 
+
 #define for_symbols(s)    for (s = idlist; s; s = s->next)
 
 /* subscripting operations */

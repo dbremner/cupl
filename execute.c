@@ -500,6 +500,16 @@ static value cupl_eval(node *tree)
 	result.rank = FAIL;
 	return(result);
 
+    case UNTIL:
+	do {
+	    cupl_eval(tree->cdr);
+
+	    cond = cupl_eval(tree->car);
+	} while
+	    (!cond.rank);
+	result.rank = FAIL;
+	return(result);
+
     case FOR:
 	iterator = tree->car;
 	if (iterator->type == '=')
