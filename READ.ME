@@ -1,0 +1,64 @@
+				CUPL for UNIX
+		by Eric S. Raymond <esr@snark.thyrsus.com>
+
+This directory contains sources for cupl, a UNIX implementation of CUPL, the
+Cornell University Programming Language.
+
+CUPL was an early (1966) teaching language implemented as a batch compiler on
+the IBM/360 at Cornell University.  It was descended from an earlier (1962)
+experimental language called CORC (CORnell Compiler), which was in turn derived
+from PL/1.
+
+CUPL has only one scalar type, a long floating-point real corresponding to C
+double.  It supports vector and matrix aggregates, and has operations
+specialized for matrix calculations.
+
+The cupl implementation is a Retrocomputing Museum project.  The Retrocomputing
+Museum <http://www.ccil.org/retro/retromuseum.html> revives long-dead languages
+for the benefit of students and historians of programming-language design.
+CUPL was chosen as a representative of a significant class of mid-1960s
+teaching languages.
+
+Files:
+
+			Documentation files
+
+READ.ME			-- this file
+cupl.doc		-- transcription of the original CUPL documentation
+cupl.mm			-- description and discussion of the language
+tour.mm			-- a tour of the compiler internals
+BUGS			-- known bugs and things still to be done
+
+			Source files
+
+Makefile		-- project makefile
+cupl.y			-- the YACC grammar
+cupl.l			-- the LEX lexical-analyzer description
+cupl.h			-- fundamental types and defines 
+tokdump.c		-- token-dumper code (used for debugging)
+interpret.c		-- parse tree interpretation
+main.c			-- cupl's main sequence
+
+			CUPL samples
+(These are all the non-pathological program examples from the CUPL manual)
+
+test/cubic.cupl		-- iterative solution to X**3 * 3*X + 1 = 0
+test/fancyquad.cupl	-- third, fanciest version of quadratic solver
+test/poly11.cupl	-- sum for k = 1 to 11 of k!x**k, plus 1
+test/power.cupl		-- compute the sum as k goes from 1 to n of k!/x**k
+test/prime.cupl		-- test a number for primality
+test/quadratic.cupl	-- solve multiple quadratic equations
+test/random.cupl	-- print 10 pseudo-random numbers
+test/rise.cupl		-- compare iterated +, doubling, squaring, and *
+test/simplequad.cupl	-- simplest version of quadratic equation solver
+test/squares.cupl	-- print a table of squares
+test/sum.cupl		-- compute sum of presented data
+
+For each test file, there is a corresponding parse tree file used for
+regression-testing of the compiler.
+
+			Other test files
+MAKEREGRESS		-- generate regression test loads for the front end
+REGRESS			-- perform regression test on the front end
+
+Send comments and bug reports to esr@snark.thyrsus.com.
