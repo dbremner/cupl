@@ -35,7 +35,6 @@ Makefile		-- project makefile
 cupl.y			-- the YACC grammar
 cupl.l			-- the LEX lexical-analyzer description
 cupl.h			-- fundamental types and defines 
-nodetype.h		-- macros encoding semantic knowledge about node types
 tokdump.c		-- token-dumper code (used for debugging)
 interpret.c		-- parse tree interpretation
 execute.c		-- actual execution
@@ -57,25 +56,27 @@ test/simplequad.cupl	-- simplest version of quadratic equation solver
 test/squares.cupl	-- print a table of squares
 test/sum.cupl		-- compute sum of presented data
 
-For each test file, there is a corresponding parse tree file used for
-regression-testing of the compiler.
+For each test file, there is a corresponding test file used for
+regression-testing of the interpreter.  The interpreter should pass
+all these tests.
 
 			Other test files
 MAKEREGRESS		-- generate regression test loads for the front end
 REGRESS			-- perform regression test on the front end
 
-		Known problems and bugs:
+			Known problems and bugs:
 
-* The code chrestomathy doesn't include any matrix algebra examples.
+* The code chrestomathy in the CUPL manual didn't include any matrix algebra
+  examples.  Because of this, the matrix algebra facilities are incomplete. 
+  ALLOCATE, INV and DET are not implemented.  Neither are subscript/slice
+  references or assignments.  Nor are matrix WRITEs or READs. Nor are the
+  implemented matrix facilities at all well-tested.
 
 * For true verismilitude, a program listing should be output before results.
+  This is trickier to do in C than it sounds; the lexer doesn't know about
+  line boundaries.
 
-* The matrix algebra facilities are incomplete.  INV and DET are not
-  implemented.  Nor are the implemented matrix facilities at all well-tested,
-  because the CUPL manual did not include any matrix programs.
-
-* Matrix WRITE is not yet implemented.
-
-* For other things to work on, grep for FIXME.
+* GOTO blabel END always goes to the end of the current PERFORM block, even
+  if the label is that of an enclosing block.
 
 Send comments, bug reports, and fixes to esr@snark.thyrsus.com.
