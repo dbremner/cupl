@@ -10,7 +10,7 @@ SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c nodetype.h
 
 MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
 cupl: $(MODULES)
-	$(CC) $(MODULES) -o cupl
+	$(CC) $(MODULES) -lm -o cupl
 
 lexer.c: cupl.l
 	lex $(LFLAGS) cupl.l

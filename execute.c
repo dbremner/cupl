@@ -19,6 +19,7 @@ handed off to execute().
 
 #define car	u.n.left
 #define cdr	u.n.right
+#define EVAL_WRAP
 
 static node *pc;	/* the statement node to evaluate next */
 static node *data;	/* pointer to *DATA item to be grabbed next */
@@ -114,19 +115,14 @@ static void cupl_write(node *tp)
     }
 }
 
-static void make_scalar(value *v, scalar i)
-/* initialize a scalar value element */
-{
-    v->width = v->depth = 1;
-    v->elements = (scalar *)malloc(sizeof(scalar));
-    v->elements[0] = i;
-}
-
 static value cupl_eval(node *tree)
 /* recursively evaluate a CUPL parse tree */
 {
     value	leftside, rightside, result;
     node	*np;
+
+    if (verbose >= DEBUG_ALLOCATE)
+	(void) printf("Evaluating %9x (%s)\n", tree, tokdump(tree->type));
 
     switch(tree->type)
     {
@@ -135,22 +131,70 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case IDENTIFIER:
-	return(tree->syminf->value);
+	result = EVAL_WRAP(tree->syminf->value);
+	return(result);
 
     case READ:
 	for_cdr(np, tree)
 	    cupl_read(np->car);
-	break;
+	return(result);		/* garbage value */
 
     case WRITE:
 	needspace(0);
 	for_cdr(np, tree)
 	    cupl_write(np->car);
 	needspace(-1);
-	break;
+	return(result);		/* garbage value */
+
+    case LET:
+	deallocate_value(&(tree->car->syminf->value));
+	tree->car->syminf->value = EVAL_WRAP(cupl_eval(tree->cdr));
+	return(result);		/* garbage value */
+
+    case PLUS:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_add(leftside, rightside);
+	return(result);
+
+    case MULTIPLY:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_multiply(leftside, rightside);
+	return(result);
+
+    case MINUS:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_subtract(leftside, rightside);
+	return(result);
+
+    case DIVIDE:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_add(leftside, rightside);
+	return(result);
+
+    case POWER:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_power(leftside, rightside);
+	return(result);
+
+    case UMINUS:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_uminus(rightside);
+	return(result);
+
+    case SQRT:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_sqrt(rightside);
+	return(result);
 
     default:
-	die("unknown node type %d (%s), cannot execute\n",tokdump(tree->type));
+	die("unknown node type %d (%s), cannot execute\n",
+	    tree->type,
+	    tokdump(tree->type));
 	break;
     }
 }

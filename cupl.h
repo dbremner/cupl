@@ -67,6 +67,7 @@ typedef struct
     int		rank;			/* 0, 1, or 2 */
     int		width, depth;		/* dimensions */
     scalar	*elements;		/* elements */
+    int		refcount;		/* how many copies are there? */
 }
 value;
 
@@ -106,6 +107,16 @@ extern void execute(node *tree);
 /* monitor.c */
 extern void die(char *msg, ...);
 extern void warn(char *msg, ...);
+extern void make_scalar(value *v, scalar n);
+extern value copy_value(value);
+extern void deallocate_value(value *);
+extern value cupl_add(value, value);
+extern value cupl_multiply(value, value);
+extern value cupl_subtract(value, value);
+extern value cupl_divide(value, value);
+extern value cupl_power(value, value);
+extern value cupl_uminus(value);
+extern value cupl_sqrt(value);
 
 #define DEBUG_PARSEDUMP	1
 #define DEBUG_CHECKDUMP	2
