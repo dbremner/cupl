@@ -41,6 +41,7 @@ execute.o: execute.c tokens.h cupl.h
 monitor.o: monitor.c tokens.h cupl.h
 
 toktab.h: tokens.h
+	# Hmmm...this is probably Bison-specific
 	awk <tokens.h >toktab.h '/^# define	/ {print $$3 ", \"" $$3 "\","}'
 
 lextest: lexer.c tokens.h tokdump.o
