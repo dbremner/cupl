@@ -635,6 +635,10 @@ void execute(node *tree)
 	/* now execute the program */
 	for (pc = tree; pc; pc = next)
 	{
+	    if (verbose >= DEBUG_EXECUTE)
+		(void) printf("statement:    %x (%-10s of %9x, %9x) %d\n",
+		      pc, tokdump(pc->type), pc->car, pc->cdr, pc->number);
+
 	    next = pc->cdr;
 	    if (setjmp(nextbuf) == 0)
 		(void) cupl_eval(pc->car);
