@@ -6,7 +6,7 @@ CDEBUG = -g
 YFLAGS = -vlt
 CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DYYDEBUG=1 -DPARSEDEBUG
 
-SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c
+SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c nodetype.h
 
 MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
 cupl: $(MODULES)
@@ -26,8 +26,8 @@ grammar.o: grammar.c cupl.h
 tokdump.o: tokdump.c toktab.h
 lexer.o: lexer.c tokens.h cupl.h
 interpret.o: interpret.c tokens.h cupl.h
-interpret.o: interpret.c tokens.h cupl.h
-execute.o: execute.c tokens.h cupl.h
+interpret.o: interpret.c tokens.h nodetype.h cupl.h
+execute.o: execute.c tokens.h nodetype.h cupl.h
 monitor.o: monitor.c tokens.h cupl.h
 
 toktab.h: tokens.h

@@ -72,7 +72,6 @@ static int statement_count;
 %token STATEMENT
 %token VARLIST
 %token FORLIST
-%token DATALIST
 %token LABEL
 %token IFELSE
 %token DIMENSION
@@ -113,7 +112,7 @@ command	:    simple			{$$ = $1;}
 	|    perform			{$$ = $1;}
 	|    BLOCK			{$$ = cons(BLOCK, NULLNODE, NULLNODE);}
 	|    END			{$$ = cons(END, NULLNODE, NULLNODE);}
-	|    DATA datal			{$$ = cons(DATA, NULLNODE, $2);}
+	|    DATA datal			{$$ = $2;}
 	;
 
 cond	:    IF guard THEN simple
@@ -128,9 +127,9 @@ ditem	:    NUMBER			{$$ = $1;}
 	|    IDENTIFIER '=' NUMBER	{$$ = cons(LET,$1, $3);}
 	;
 
-datal	:    ditem ',' datal		{$$ = cons(DATALIST, $1, $3);}
-	|    ditem     datal		{$$ = cons(DATALIST, $1, $2);}
-	|    ditem			{$$ = cons(DATALIST, $1, NULLNODE);}
+datal	:    ditem ',' datal		{$$ = cons(DATA, $1, $3);}
+	|    ditem     datal		{$$ = cons(DATA, $1, $2);}
+	|    ditem			{$$ = cons(DATA, $1, NULLNODE);}
 	;
 
 perform	:    PERFORM IDENTIFIER
