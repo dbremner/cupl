@@ -178,6 +178,7 @@ simple	:    LET IDENTIFIER '=' expr	{$$ = cons(LET, $2, $4);}
 	|    GO TO IDENTIFIER		{$$ = cons(GO, $3, NULLNODE);}
 	|    GO TO IDENTIFIER END	{$$ = cons(OG, $3, NULLNODE);}
 	|    READ readl			{$$ = $2;}
+	|    WRITE ALL			{$$ = cons(WRITE, NULLNODE, NULLNODE);}
 	|    WRITE writel		{$$ = $2;}
 	|    ALLOCATE allocl		{$$ = $2;}
 	|    WATCH varlist		{$$ = $2;}
