@@ -330,7 +330,7 @@ static void rewrite(node *tree)
 				  endnode->car->car->u.string) == 0)
 		{
 		    found = TRUE;
-		    np->syminf->endnode = endnode;
+		    sp->car->syminf->endnode = endnode;
 		    break;
 		}
 	    if (!found)
