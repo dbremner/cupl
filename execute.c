@@ -504,7 +504,7 @@ static value cupl_eval(node *tree)
 	iterator = tree->car;
 	if (iterator->type == '=')
 	{
-	    for_cdr(np, tree)
+	    for_cdr(np, iterator->cdr)
 	    {
 		result = EVAL_WRAP(cupl_eval(np->car));
 		cupl_assign(iterator->car, result);
