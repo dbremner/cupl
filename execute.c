@@ -7,8 +7,8 @@ SYNOPSIS
    void execute(node *tree)	-- execute a parse tree
 
 DESCRIPTION 
-   This code does execution of a CUPL parse tree.  Actual execution is
-handed off to execute().
+   This code does execution of a CUPL parse tree.  It uses the runtime
+support in monitor.c.
 
 *****************************************************************************/
 /*LINTLIBRARY*/
@@ -19,9 +19,8 @@ handed off to execute().
 #include "tokens.h"
 #include "nodetype.h"
 
-#define car	u.n.left
-#define cdr	u.n.right
-#define EVAL_WRAP
+/* debugging macros */
+#define EVAL_WRAP	/* empty */
 #define RETURN_WRAP(t, l, r, v)	display_return(t, l, r, v);
 
 static node *pc;	/* the statement node to evaluate next */
@@ -100,7 +99,7 @@ static void display_return(node *tree, node *left, node *right, value v)
 static value cupl_eval(node *tree)
 /* recursively evaluate a CUPL parse tree */
 {
-    value	leftside, rightside, result;
+    value	leftside, rightside, result, cond;
     node	*np;
 
     switch(tree->type)
@@ -137,6 +136,10 @@ static value cupl_eval(node *tree)
 	result.rank = FAIL;
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
+
+	/*
+	 * Arithmetic
+	 */
 
     case PLUS:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
@@ -191,6 +194,10 @@ static value cupl_eval(node *tree)
 	deallocate_value(&rightside);
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
+
+	/*
+	 * Special functions
+	 */
 
     case ATAN:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
@@ -257,12 +264,100 @@ static value cupl_eval(node *tree)
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
+	/*
+	 * Matrix functions
+	 */
+
     case SGM:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_sgm(rightside);
 	deallocate_value(&rightside);
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
+
+	/*
+	 * Relations.
+	 *
+	 * These compute their value into the result node's rank field.
+	 */
+
+    case '=':
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = cupl_eq(leftside, rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case NE:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = !cupl_eq(leftside, rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case LE:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = !cupl_gt(leftside, rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case GE:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = !cupl_lt(leftside, rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case LT:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = cupl_lt(leftside, rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case GT:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = cupl_gt(leftside, rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+	/*
+	 * Conjunctions.
+	 *
+	 * These assume that their left- and right-side nodes
+	 * are relations, so that the relation status is in the
+	 * rank field.
+	 */
+
+    case AND:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = leftside.rank && rightside.rank;
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case OR:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result.rank = leftside.rank || rightside.rank;
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+	/*
+	 * Control structures.
+	 */
+
+    case WHILE:
+	do {
+	    (void) cupl_eval(tree->car);
+
+	    cond = cupl_eval(tree->cdr);
+	} while
+	    (cond.rank);	/* conditional values use an odd convention */
+	result.rank = FAIL;
+	break;
 
     case STOP:
 	longjmp(jmpbuf, 1);

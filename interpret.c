@@ -322,8 +322,6 @@ static void rewrite(node *tree)
 	    if (!found)
 		die("no END matching %s BLOCK\n", sp->car->u.string);
 	}
-
-	/* rewrite code coes here */
     }
 
     /* now, hack label references to eliminate name references */

@@ -138,6 +138,12 @@ extern value cupl_rand(value);
 
 extern value cupl_sgm(value right);
 
+extern bool cupl_eq(value, value);
+extern bool cupl_lt(value, value);
+extern bool cupl_gt(value, value);
+extern bool cupl_le(value, value);
+extern bool cupl_ge(value, value);
+
 #define DEBUG_PARSEDUMP	1
 #define DEBUG_CHECKDUMP	2
 #define DEBUG_ALLOCATE	3

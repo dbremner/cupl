@@ -524,5 +524,5 @@ b. If either x or y is not zero:
 
    (ii)  x * 10**n and y * 10**n are truncated to 14 decimal places
 
-   (iii) The specified condition is interpreted or the resulting numbers.
+   (iii) The specified condition is interpreted on the resulting numbers.
 
