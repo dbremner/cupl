@@ -193,9 +193,9 @@ writel	:    witem ',' writel		{$$ = cons(WRITE, $1, $3);}
 	|    witem			{$$ = cons(WRITE, $1, NULLNODE);}
 	;
 
-witem	:    IDENTIFIER			{$$ = cons(WRITE,  $1, NULLNODE);}
+witem	:    IDENTIFIER			{$$ = $1;}
 	|    '/' IDENTIFIER		{$$ = cons(FWRITE, $2, NULLNODE);}
-	|    STRING			{$$ = cons(FWRITE, $1, NULLNODE);}
+	|    STRING			{$$ = $1;}
 	|    /* EMPTY */		{$$ = (node *)NULL;}
 	;
 

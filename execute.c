@@ -34,18 +34,35 @@ static void cupl_read(node *tp)
 	int	n;
 
 	for (n = 0; n < v->width * v->depth; n++)
-	    if (ATOMIC(data->car->type))
+	    if (data == (node *)NULL)
 	    {
-		v->elements[n] = data->car->u.numval;
+		warn("data list too short\n");
+		v->elements[n] = 1;	/* 5-2 */
+	    }
+	    else
+	    {
+		if (data->car->type == NUMBER)
+		    v->elements[n] = data->car->u.numval;
+		else
+		{
+		    if (strcmp(tp->u.string , data->car->car->u.string))
+			warn("data mismatch; expecting %s, saw %s\n",
+			     tp->u.string , data->car->car->u.string);
+		    v->elements[n] = data->car->cdr->u.numval;
+		}
+
 		data = data->cdr;
 	    }
-	/* code to handle conses expressing check variables goes here */
     }
 }
 
 static void cupl_write(node *tp)
 /* evaluate a WRITE item */
 {
+    if (tp->type == STRING)
+	(void) fputs(tp->u.string, stdout);
+    else
+	(void) printf("%f", tp->syminf->value.elements[0]);
 }
 
 static value cupl_eval(node *tree)
@@ -62,7 +79,7 @@ static value cupl_eval(node *tree)
 	break;
 
     case WRITE:
-	for_cdr(np, tree->car)
+	for_cdr(np, tree)
 	    cupl_write(np->car);
 	break;
 
@@ -75,7 +92,7 @@ static value cupl_eval(node *tree)
 void execute(node *tree)
 /* execute a CUPL program described by a parse tree */
 {
-    node	*np, *next;
+    node	*np, *next, *last;
     lvar	*lp;
 
     /* initially, all variables are scalars with zero values */
@@ -87,16 +104,24 @@ void execute(node *tree)
     }
 
     /* locate the data pointer */
-    data = (node *)NULL;
+    data = last = (node *)NULL;
     for_cdr(np, tree)
+    {
 	if (np->car->type == DATA)
 	{
 	    data = np->car;
 	    break;
 	}
+	last = np;
+    }
+
+    /* break the link to the data */
     if (!data)
 	warn("no data supplied\n");
+    else if (last)
+	last->cdr = (node *)NULL;
 
+    /* now execute the program */
     for (pc = tree; pc; pc = next)
     {
 	next = pc->cdr;
