@@ -49,7 +49,7 @@ lextest: lexer.c tokens.h tokdump.o
 cupl.1: cupl.xml
 	xmlto man cupl.xml
 
-DOCS = READ.ME COPYING corc.doc cupl.doc cupl.xml
+DOCS = READ.ME COPYING NEWS corc.doc cupl.doc cupl.xml
 SOURCES = Makefile cupl.[lyh] $(MODULES:.o=.c)
 TESTS = test/[abcdefghijklmnopqrstuvwxyz]* test/MAKEREGRESS test/REGRESS test/TESTALL
 
