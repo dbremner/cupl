@@ -309,6 +309,7 @@ value cupl_power(value left, value right)
 
 	make_scalar(&result, 0);
 	result.elements[0] = pow(left.elements[0], right.elements[0]);
+	return(result);
     }
     else
 	die("power operation on non-scalars is not yet supported\n");
