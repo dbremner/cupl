@@ -336,7 +336,6 @@ static void rewrite(node *tree)
 	if (np->car->type == LABEL)
 	    np->car->car->syminf->target = np;
 
-#ifdef _FOO_
     /* pull blocks out of the main line */
     for_cdr(np, tree)
     {
@@ -347,11 +346,9 @@ static void rewrite(node *tree)
 	    node	*endnode;
 	    bool	found = FALSE;
 
-printf("statement %d, label '%s'\n", np->number, sp->car->u.string);
-
 	    for (endnode = np->cdr; endnode; endnode = endnode->cdr)
 		if (endnode->car->type == LABEL
-			&& endnode->car->cdr->type == BLOCK
+			&& endnode->car->cdr->type == END
 			&& strcmp(sp->car->u.string,
 				  endnode->car->car->u.string) == 0)
 		{
@@ -359,12 +356,11 @@ printf("statement %d, label '%s'\n", np->number, sp->car->u.string);
 		    break;
 		}
 	    if (!found)
-		warn("no END matching block label %s\n", sp->car->u.string);
-	    else
-		(void) printf("found END for %s\n", sp->car->u.string);
+		die("no END matching block label %s\n", sp->car->u.string);
 	}
+
+	/* rewrite code coes here */
     }
-#endif /* _FOO_ */
 
     /* now, hack label references to eliminate name references */
     recursive_apply(tree, r_label_rewrite);
