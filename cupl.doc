@@ -118,8 +118,8 @@ ELEMENTS OF THE LANGUAGE
                    A(I,J)   refers to the element at the
                               intersection of the ith row
                               and the jth column
-                   A(*,J)   refers to the jth column
-                   A(I,*)   refers to the ith row
+                   A(*,J)   refers to the jth column [see 9-2]
+                   A(I,*)   refers to the ith row    [see 9-2]
 
                           A-2
 
@@ -325,7 +325,7 @@ form.
 
      Communication Statements
      ------------------------
-          READ v1, v2, ...   [See 5-2 for description]
+          READ v1, v2, ...   [See 5-2 and 9-2 for description]
 
           WRITE v1, v2, ... , 'title message', ... , /v3, /v4
 
@@ -378,7 +378,7 @@ form.
               later changed by another allocation the values of
               those elements common to the old and the new alloca-
               tions are unchanged; the values of new elements are
-              zero.
+              zero.  [See also 9-1]
 
      Tracing Changes in Value During Execution
      -----------------------------------------
@@ -504,6 +504,36 @@ column, to save space it will be printed as if it were a vector, that is, in
 the form
 
           M = m11      m21      m31     etc.
+
+From 9-1:
+
+Vectors as matrices
+-------------------
+     Consideration of relations involving matrices and vectors can be
+simplified by regarding a vector as a 1-column matrix.  This convention is
+adopted in CUPL, and so, for example
+
+          ALLOCATE X(7)
+
+and
+
+          ALLOCATE X(7, 1)
+
+have precisely the same meaning.  After either of these allocations the
+variables X(2) and X(2, 1) are meaningful and have the same value; X(M, N)
+is meaningful only if N has the value 1.
+
+From 9-2:
+
+     For any matrix M, N(*, J) denotes the 1-column matrix (a vector)
+which is the J-th column of M.  Similarly, M(I, *) denotes the 1-row matrix
+(not a vector) which is the I-th row of M.  If M is m x n, then M(*, J) and
+M(I, *) are m x 1 and 1 x m, and they can be used as matrices of these
+sizes in any statement except ALLOCATE.  For example:
+
+     READ M(*, 3)
+
+will read data into the third column of M, leaving the rest of M unchanged.
 
 From 9-8:
 
