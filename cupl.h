@@ -136,6 +136,8 @@ extern value cupl_max(value, value);
 extern value cupl_min(value, value);
 extern value cupl_rand(value);
 
+extern value cupl_sgm(value right);
+
 #define DEBUG_PARSEDUMP	1
 #define DEBUG_CHECKDUMP	2
 #define DEBUG_ALLOCATE	3

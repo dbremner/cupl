@@ -33,6 +33,8 @@ SYNOPSIS
     value cupl_min(value, value)
     value cupl_rand(value)
 
+    value cupl_sgm(value right)
+
 DESCRIPTION 
    Runtime support.  This is segregated from the execute() code in case anyone
 ever wants to write a back end that is a compiler.  For the same reason
@@ -273,19 +275,12 @@ value cupl_abs(value right)
 /* apply absolute-value function */
 {
     value	result;
+    int	n;
 
-    if (right.rank != 0)
-	die("ABS is only defined for scalar arguments\n");
-    else
-    {
-	value	result;
-	int	n;
-
-	result = copy_value(right);
-	for (n = 0; n < right.width * right.depth; n++)
-	    result.elements[n] = fabs(right.elements[n]);
-	return(result);
-    }
+    result = copy_value(right);
+    for (n = 0; n < right.width * right.depth; n++)
+	result.elements[n] = fabs(right.elements[n]);
+    return(result);
 }
 
 value cupl_atan(value right)
@@ -436,6 +431,20 @@ value cupl_rand(value right)
  *
  ****************************************************************************/
 
-/* FIXME: not yet implemented */
+/* FIXME: most not yet implemented */
+
+value cupl_sgm(value right)
+/* compute the sum of the elements of a matrix */
+{
+    value result;
+    int	n;
+
+    make_scalar(&result, 0);
+    for (n = 0; n < right.width * right.depth; n++)
+	result.elements[0] += fabs(right.elements[n]);
+    return(result);
+}
 
 /* monitor.c ends here */
+
+

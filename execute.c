@@ -257,6 +257,13 @@ static value cupl_eval(node *tree)
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
+    case SGM:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_sgm(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
     case STOP:
 	longjmp(jmpbuf, 1);
 	/* no fall through */
