@@ -163,7 +163,6 @@ static value cupl_eval(node *tree)
     value	leftside, rightside, result, cond;
     node	*np, *iterator;
     int		n;
-    jmp_buf	jmpperf;
 
     if (verbose >= DEBUG_EXECUTE)
 	(void) printf("eval begins:  %x (%-10s of %9x, %9x)\n",
