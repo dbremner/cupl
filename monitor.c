@@ -278,8 +278,12 @@ value cupl_abs(value right)
 	die("ABS is only defined for scalar arguments\n");
     else
     {
-	make_scalar(&result, 0);
-	result.elements[0] = abs(right.elements[0]);
+	value	result;
+	int	n;
+
+	result = copy_value(right);
+	for (n = 0; n < right.width * right.depth; n++)
+	    result.elements[n] = fabs(right.elements[n]);
 	return(result);
     }
 }
