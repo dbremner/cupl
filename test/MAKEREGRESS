@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Make regression-test loads for the CUPL compiler front end
+#
+TESTLOADS="cubic fancyquad poly11 power prime quadratic random rise simplequad squares sum"
+
+#trap "rm -f testcupl$$; exit 0"
+
+rm -f *.parse
+
+for x in $TESTLOADS
+do
+	echo "Making ${x}.parse from ${x}.cupl..."
+	../cupl -v1 ${x}.cupl >${x}.parse
+done
+
+chmod -w *.parse
+
+echo "Done"
+
+# regress ends here
+
