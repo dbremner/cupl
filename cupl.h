@@ -94,11 +94,18 @@ extern lvar *idlist;
 
 #define NOMEM	"out of memory\n"
 
+/* miscellaneous */
 extern char *tokdump(int value);
 extern void yyerror(const char *errmsg);
 extern void interpret(node *tree);
-extern void execute(node *tree);
 extern int verbose;
+
+/* execute.c */
+extern void execute(node *tree);
+
+/* monitor.c */
+extern void die(char *msg, ...);
+extern void warn(char *msg, ...);
 
 #define DEBUG_PARSEDUMP	1
 #define DEBUG_CHECKDUMP	2

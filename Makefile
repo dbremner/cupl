@@ -6,10 +6,11 @@ CDEBUG = -g
 YFLAGS = -vlt
 CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DYYDEBUG=1 -DPARSEDEBUG
 
-SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c
+SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c
 
-cupl: main.o grammar.o lexer.o interpret.o tokdump.o execute.o
-	$(CC) main.o grammar.o lexer.o interpret.o tokdump.o execute.o -o cupl
+MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
+cupl: $(MODULES)
+	$(CC) $(MODULES) -o cupl
 
 lexer.c: cupl.l
 	lex $(LFLAGS) cupl.l
@@ -27,6 +28,7 @@ lexer.o: lexer.c tokens.h cupl.h
 interpret.o: interpret.c tokens.h cupl.h
 interpret.o: interpret.c tokens.h cupl.h
 execute.o: execute.c tokens.h cupl.h
+monitor.o: monitor.c tokens.h cupl.h
 
 toktab.h: tokens.h
 	awk <tokens.h >toktab.h '/^#/ {print $$3 ", \"" $$3 "\","}'

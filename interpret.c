@@ -13,7 +13,6 @@ of a CUPL parse tree.  Actual execution is handed off to execute().
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>
-#include <stdarg.h>
 #include "cupl.h"
 #include "tokens.h"
 
@@ -90,28 +89,6 @@ static void prettyprint(node *tree, int indent)
     }
 }
 #endif /* PARSEDEBUG */
-
-static void warn(char *msg, ...)
-/* warn of an error and die */
-{
-    va_list	args;
-
-    va_start(args, msg);
-    vfprintf(stderr, msg, args);
-    va_end(args);
-}
-
-static void die(char *msg, ...)
-/* complain of a fatal error and die */
-{
-    va_list	args;
-
-    va_start(args, msg);
-    vfprintf(stderr, msg, args);
-    va_end(args);
-
-    exit(1);
-}
 
 static bool recursive_apply(node *tree, bool (*fun)(node *))
 /* apply fun recursively to tree, short-circuiting on FALSE return */
@@ -365,7 +342,6 @@ static void rewrite(node *tree)
 
     /* now, hack label references to eliminate name references */
     recursive_apply(tree, r_label_rewrite);
-
 }
 
 void interpret(node *tree)
