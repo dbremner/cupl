@@ -63,6 +63,8 @@ typedef struct edon
 }
 node;
 
+#define	NULLNODE	(node *)NULL
+
 #define for_cdr(x, t)    for (x = (t); x; x = x->u.n.right)
 
 /* this structure represents a CUPL value */
@@ -104,6 +106,7 @@ extern lvar *idlist;
 #define NOMEM	"out of memory\n"
 
 /* miscellaneous */
+extern node *cons(int, node *, node *);
 extern char *tokdump(int value);
 extern void yyerror(const char *errmsg);
 extern void interpret(node *tree);

@@ -24,8 +24,6 @@ author first.
 #include <string.h>
 #include <setjmp.h>
 
-#define	NULLNODE	(node *)NULL
-
 #ifdef PARSEDEBUG
 static int statement_count;
 #endif /* PARSEDEBUG */
