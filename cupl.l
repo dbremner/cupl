@@ -113,7 +113,7 @@ static node *intern_identifier(char *str)
 	new->u.string = strdup(str);
 
 	/* link it into the recognition list */
-	n = (lvar *)malloc(sizeof(lvar));
+	n = (lvar *)calloc(sizeof(lvar), 1);
 	n->next = idlist;
 	n->node = new;
 	idlist = n;

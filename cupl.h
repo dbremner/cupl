@@ -58,10 +58,13 @@ node;
 typedef struct lvar_t
 {
     struct lvar_t	*next;
-    int			refcount;
-    int			setcount;
-    bool		islabel;
     node		*node;
+
+    /* information used for consistency checks */
+    int		labeldef;
+    int		labelref;
+    int		assigned;
+    int		used;
 }
 lvar;
 extern lvar *idlist;

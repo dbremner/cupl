@@ -3,6 +3,8 @@
 #include "cupl.h"
 #include "tokens.h"
 
+#define ATOMIC(n)	((n) == IDENTIFIER || (n) == NUMBER || (n) == STRING)
+
 /* this structure represents a CUPL value */
 typedef struct
 {
@@ -76,39 +78,75 @@ static void die(char *msg, ...)
     exit(1);
 }
 
+static bool r_mark_labels(node *tree)
+/* record label references */
+{
+    /* mark label definitions */
+    if (tree->type == STATEMENT && tree->u.n.left->type == LABEL)
+	tree->u.n.left->u.n.left->syminf->labeldef++;
+
+    /* mark label references */
+    if (tree->type == GO || tree->type == OG || tree->type == PERFORM)
+	tree->u.n.left->syminf->labelref++;
+
+    return(TRUE);
+}
+
+bool recursive_apply(node *tree, bool (*fun)(node *))
+/* apply fun recursively to tree, short-circuiting on FALSE return */
+{
+    if (tree == (node *)NULL)
+	return(TRUE);
+
+    if (ATOMIC(tree->type))
+	return(fun(tree));
+    else if (recursive_apply(tree->u.n.left, fun) && recursive_apply(tree->u.n.right, fun))
+	return(fun(tree));
+    else
+	return(FALSE);
+
+}
+
 static bool check_errors(node *tree)
 /* look for inconsistencies in a program parse tree */
 {
     node	*n;
     lvar	*lp;
-    int		nlabels = 0;
 
-    /* make backpointers */
-    for (lp = idlist; lp; lp = lp->next)
-	lp->node->syminf = lp;
+#define for_symbols(s)    for (s = idlist; s; s = s->next)
 
-    /* mark labels */
+    /* simple sanity check */
     for (n = tree; n; n = n->u.n.right)
 	if (n->type != STATEMENT)
 	    die("internal error: non-STATEMENT at top level");
-	else if (n->u.n.left->type == LABEL)
-	{
-	    n->u.n.left->u.n.left->syminf->islabel = TRUE;
-	    nlabels++;
-	}
+
+    /* make backpointers */
+    for_symbols(lp)
+	lp->node->syminf = lp;
+
+    /* mark labels */
+    recursive_apply(tree, r_mark_labels);
 
     /* report on the number of labels */
     if (verbose >= DEBUG_CHECKDUMP)
+    {
+	int		nlabels = 0;
+
+	for (lp = idlist; lp; lp = lp->next)
+	    if (lp->labeldef)
+		nlabels++;
+
 	if (nlabels == 0)
 	    (void) printf("No labels.\n");
 	else
 	{
 	    (void) printf("Labels:");
 	    for (lp = idlist; lp; lp = lp->next)
-		if (lp->islabel)
+		if (lp->labeldef)
 		    (void) printf(" %s", lp->node->u.string);
 	    (void) printf("\n");
 	}
+    }
 }
 
 void interpret(node *tree)
