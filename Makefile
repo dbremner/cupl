@@ -1,23 +1,27 @@
 #
 # Makefile for the CUPL/CORC project
 #
+
+# Note: When the version changes, you also have to change
+#  * the name of the containing directory
+#  * the RPM spec file
+V=1.1
+
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
 CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DPARSEDEBUG	-DYYDEBUG=1
-
-SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c cupl.lsm
 
 MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
 cupl: $(MODULES)
 	$(CC) $(MODULES) -lm -o cupl
 
 # You can use either lex or flex
-LEX = lex
-#LEX = flex
+#LEX = lex
+LEX = flex
 
 # You can use either bison or yacc
-YACC = yacc
-#YACC = bison -y
+#YACC = yacc
+YACC = bison -y
 
 lexer.c: cupl.l
 	$(LEX) $(LFLAGS) cupl.l
@@ -44,9 +48,14 @@ lextest: lexer.c tokens.h tokdump.o
 	$(CC) $(CFLAGS) -DMAIN lexer.c tokdump.o -o lextest 
 
 cupl.tar: 
-	tar -cvf cupl.tar `cat MANIFEST`
+	(cd ..; tar -cvf cupl-$(V)/cupl.tar `cat cupl-$(V)/MANIFEST | sed "/\(^\| \)/s// cupl-$(V)\//g"`)
 cupl.tar.gz: cupl.tar
-	gzip cupl.tar
+	gzip -f cupl.tar
 
 clean:
-	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output
+	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output cupl.tar cupl.tar.gz
+
+rpm: cupl.tar.gz
+	cp cupl.tar.gz /usr/src/SOURCES/cupl-$(V).tar.gz
+	cp cupl.spec /usr/src/SPECS/cupl-$(V)-1.spec
+	rpm -ba cupl-$(V)-1.spec
