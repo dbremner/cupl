@@ -43,8 +43,13 @@ static void prettyprint(node *tree, int indent)
     else if (tree->type == STRING)
 	(void) printf("STRING: '%s'\n", tree->u.string);
     else if (tree->type == STATEMENT && indent > 0)
-	(void) printf("-> %s (STATEMENT %d)\n", 
-		      tree->car->car->u.string, tree->number);
+    {
+	if (tree->car->type == LABEL)
+	    (void) printf("-> %s (STATEMENT %d)\n", 
+			  tree->car->car->u.string, tree->number);
+	else
+	    (void) printf("-> STATEMENT %d\n", tree->number);
+    }
     else
     {
 	if (tree->type == STATEMENT)
