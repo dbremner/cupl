@@ -23,10 +23,7 @@ support in monitor.c.
 #define EVAL_WRAP	/* empty */
 #define RETURN_WRAP(t, l, r, v)	display_return(t, l, r, v);
 
-static node *pc;	/* pointer to statement being evaluated */
-static node *next;	/* the statement node to evaluate next */
 static node *data;	/* pointer to *DATA item to be grabbed next */
-static jmp_buf nextbuf;	/* end-of-statement handling */
 static jmp_buf endbuf;	/* termination handling */
 
 /****************************************************************************
@@ -159,6 +156,10 @@ static void cupl_assign(node *to, value from)
 static value cupl_eval(node *tree)
 /* recursively evaluate a CUPL parse tree */
 {
+    node *pc;	/* pointer to statement being evaluated */
+    static node *next;	/* the statement node to evaluate next */
+    static jmp_buf nextbuf;	/* end-of-statement handling */
+
     value	leftside, rightside, result, cond;
     node	*np, *iterator;
     int		n;
@@ -545,8 +546,17 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case PERFORM:
-	if (setjmp(jmpperf) == 0)
-	    cupl_eval(tree->car->car);
+	/* now execute the program */
+	for (pc = tree->car; pc; pc = next)
+	{
+	    if (verbose >= DEBUG_EXECUTE)
+		(void) printf("statement %2d: %x (%-10s of %9x, %9x)\n",
+		      pc->number, pc, tokdump(pc->type), pc->car, pc->cdr);
+
+	    next = pc->cdr;
+	    if (setjmp(nextbuf) == 0)
+		(void) cupl_eval(pc->car);
+	}
 	result.rank = FAIL;
 	return(result);
 
@@ -626,23 +636,13 @@ void execute(node *tree)
     if (!data)
 	warn("no data supplied\n");
     else if (last)
-	last->cdr = (node *)NULL;
+	last->cdr = cons(END, NULLNODE, NULLNODE);
 
     /* first, setjmp so we can use STOP to exit */
     if (setjmp(endbuf) != 0)
 	return;
     else
-	/* now execute the program */
-	for (pc = tree; pc; pc = next)
-	{
-	    if (verbose >= DEBUG_EXECUTE)
-		(void) printf("statement %2d: %x (%-10s of %9x, %9x)\n",
-		      pc->number, pc, tokdump(pc->type), pc->car, pc->cdr);
-
-	    next = pc->cdr;
-	    if (setjmp(nextbuf) == 0)
-		(void) cupl_eval(pc->car);
-	}
+	cupl_eval(cons(PERFORM, tree, NULLNODE));
 
     warn("program terminated without explicit STOP\n");
 }
