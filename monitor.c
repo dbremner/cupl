@@ -163,16 +163,17 @@ void cupl_eol_write(void)
 static void needspace(int w)
 /* emit a LF if there are not more than w spaces left on the line */
 {
-    if (used + w >= linewidth)
+    used += w;
+    if (used >= linewidth)
+    {
 	cupl_eol_write();
-    else
-	used += w;
+	used = w;
+    }
 }
 
 void cupl_scalar_write(char *name, scalar quant)
 /* write a numeric or skip a field in CUPL style */
 {
-    /* FIXME: cupl_scalar_write screws up line wraps */
     if (name)
     {
 	needspace(2 * fieldwidth);
@@ -181,7 +182,7 @@ void cupl_scalar_write(char *name, scalar quant)
     else
 	needspace(fieldwidth);
 
-    if (0.001 < fabs(quant) && abs(quant) < 100000)
+    if (0.001 < fabs(quant) && fabs(quant) < 100000)
 	(void) printf("%*f", fieldwidth, quant);
     else
 	(void) printf("%*E", fieldwidth, quant);
