@@ -27,6 +27,12 @@ author first.
 #ifdef PARSEDEBUG
 static int statement_count;
 #endif /* PARSEDEBUG */
+
+#include "cupl.h"
+
+#ifdef YYBISON
+int yydebug;
+#endif /* YYBISON */
 %}
 
 %start program
@@ -269,7 +275,6 @@ subscr	:    IDENTIFIER '(' expr ')'
 		{$$ = cons(ISLICE, $1, $5);}
 	;
 %%
-#include "cupl.h"
 
 node *cons(op, left, right)
 /* make a cons for a binary operation */

@@ -16,6 +16,10 @@ lvar *idlist;
 static node *intern_number(char *);
 static node *intern_identifier(char *);
 static node *intern_string(char *);
+
+#ifdef FLEX_SCANNER
+int yylineno;
+#endif /* FLEX_SCANNER */
 %}
 
 D	[0-9][0-9]*
@@ -83,7 +87,12 @@ WRITE		{return(WRITE);}
 "**"		{return(POWER);}
 [+*/().,=-]	{return(yytext[0]);}
 
-[ \t\n]		;
+[ \t]		;
+\n		{
+#ifdef FLEX_SCANNER
+			yylineno++;
+#endif /* FLEX_SCANNER */
+		}
 
 %%
 

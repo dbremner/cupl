@@ -11,8 +11,16 @@ MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
 cupl: $(MODULES)
 	$(CC) $(MODULES) -lm -o cupl
 
+# You can use either lex or flex
+#LEX = lex
+LEX = flex
+
+# You can use either bison or yacc
+#YACC = yacc
+YACC = bison -y
+
 lexer.c: cupl.l
-	lex $(LFLAGS) cupl.l
+	$(LEX) $(LFLAGS) cupl.l
 	mv lex.yy.c lexer.c
 
 grammar.c tokens.h y.output: cupl.y
