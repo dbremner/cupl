@@ -91,18 +91,22 @@ REGRESS			-- perform regression test on the front end
 * GOTO blabel END always goes to the end of the current PERFORM block, even
   if the label is that of an enclosing block.
 
-* Because the cupl interpreter also interprets CORC, the CORC keywords
+* Because the cupl interpreter also interprets CORC, the CUPL keywords
   BEGIN, DEC, DECREASE, EQL, GEQ, GTR, INC, INCREASE, INT, LSS, NEQ, NOTE,
-  REPEAT, TITLE, UNTIL, and $ are also reserved words in CUPL.
+  REPEAT, TITLE, UNTIL, and $ are also reserved words in CORC.
 
 Send comments, bug reports, and fixes to esr@snark.thyrsus.com.  Also see
-my home page at http://www.ccil.org/~esr/home.html for updates and other
+my home page at http://www.tuxedo.org/~esr/home.html for updates and other
 related resources.
 ---------------------------------------------------------------------------
-Version 1.2:
+Version 1.3: Thu Jul 27 23:15:53 EDT 2000 
+	* Cleanup release.  Use modern packaging and RPMs.
+
+Version 1.2: Fri Jun 28 13:12:04 EDT 1996
 	* Fixed off-by-one bug in TITLE processing.
 	* Merged tour.doc into cupl.mm.
 	* Added "Hello World" program.
-Version 1.1:
+
+Version 1.1: Fri Nov 08 00:00:04 EST 1994
 	* Added CORC support.
 	* Fixed a core-dump bug in the prettyprinter.

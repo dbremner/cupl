@@ -3,9 +3,8 @@
 #
 
 # Note: When the version changes, you also have to change
-#  * the name of the containing directory
-#  * the RPM spec file
-V=1.2
+# the RPM spec file and the lsm.
+VERS=1.3
 
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
@@ -47,15 +46,27 @@ toktab.h: tokens.h
 lextest: lexer.c tokens.h tokdump.o
 	$(CC) $(CFLAGS) -DMAIN lexer.c tokdump.o -o lextest 
 
-cupl.tar: 
-	(cd ..; tar -cvf cupl-$(V)/cupl.tar `cat cupl-$(V)/MANIFEST | sed "/\(^\| \)/s// cupl-$(V)\//g"`)
-cupl.tar.gz: cupl.tar
-	gzip -f cupl.tar
+cupl-$(VERS).tar.gz: $(SOURCES)
+	@ls $(SOURCES) | sed s:^:cupl-$(VERS)/: >MANIFEST
+	@(cd ..; ln -s cupl cupl-$(VERS))
+	(cd ..; tar -czvf cupl/cupl-$(VERS).tar.gz `cat cupl/MANIFEST`)
+	@(cd ..; rm cupl-$(VERS))
+
+cupl-$(VERS).shar:
+	shar $(SOURCES) >cupl-$(VERS).shar
+
+dist: cupl-$(VERS).tar.gz
+
+RPMROOT=/usr/src/redhat
+RPM = rpm
+RPMFLAGS = -ba
+rpm: dist
+	cp cupl-$(VERS).tar.gz $(RPMROOT)/SOURCES;
+	cp cupl.spec $(RPMROOT)/SPECS
+	cd $(RPMROOT)/SPECS; $(RPM) $(RPMFLAGS) cupl.spec	
+	cp $(RPMROOT)/RPMS/`arch|sed 's/i[4-9]86/i386/'`/cupl-$(VERS)*.rpm .
+	cp $(RPMROOT)/SRPMS/cupl-$(VERS)*.src.rpm .
 
 clean:
-	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output cupl.tar cupl.tar.gz
+	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output cupl.tar cupl.tar.gz *.rpm cupl-*.tar.gz
 
-rpm: cupl.tar.gz
-	cp cupl.tar.gz /usr/src/SOURCES/cupl-$(V).tar.gz
-	cp cupl.spec /usr/src/SPECS/cupl-$(V)-1.spec
-	rpm -ba cupl-$(V)-1.spec
