@@ -2,8 +2,7 @@
 # Makefile for the CUPL/CORC project
 #
 
-# Note: When the version changes, you also have to change
-# the RPM spec file and the lsm.
+# Note: When the version changes, you also have to change the RPM spec file.
 VERS=1.4
 
 CDEBUG = -g	# use -O for production, -g for debugging
@@ -50,7 +49,7 @@ lextest: lexer.c tokens.h tokdump.o
 cupl.1: cupl.xml
 	xmlto man cupl.xml
 
-DOCS = READ.ME COPYING corc.doc cupl.doc cupl.xml cupl.lsm
+DOCS = READ.ME COPYING corc.doc cupl.doc cupl.xml
 SOURCES = Makefile cupl.[lyh] $(MODULES:.o=.c)
 TESTS = test/[abcdefghijklmnopqrstuvwxyz]* test/MAKEREGRESS test/REGRESS test/TESTALL
 
