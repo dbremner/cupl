@@ -6,15 +6,15 @@ TESTLOADS="cubic fancyquad poly11 power prime quadratic random rise simplequad s
 
 trap "rm -f testcupl$$; exit 0"
 
-rm -f *.parse
+rm -f *.test
 
 for x in $TESTLOADS
 do
-	echo "Making ${x}.parse from ${x}.cupl..."
-	../cupl -v1 ${x}.cupl >${x}.parse 2>&1
+	echo "Making ${x}.test from ${x}.cupl..."
+	../cupl -v1 ${x}.cupl >${x}.test 2>&1
 done
 
-chmod -w *.parse
+chmod -w *.test
 
 echo "Done"
 

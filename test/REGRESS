@@ -10,7 +10,7 @@ for x in $TESTLOADS
 do
 	echo "Testing against ${x}.cupl..."
 	../cupl -v1 ${x}.cupl >testcupl$$
-	diff -c ${x}.parse testcupl$$
+	diff -c ${x}.test testcupl$$
 done
 echo "Done"
 

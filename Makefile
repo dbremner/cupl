@@ -3,8 +3,8 @@
 #
 CDEBUG = -g
 
-YFLAGS = -vlt
-CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DYYDEBUG=1 -DPARSEDEBUG
+YFLAGS = -l	# add -vt for debugging
+CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DPARSEDEBUG	#  -DYYDEBUG=1
 
 SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c nodetype.h
 
