@@ -118,7 +118,7 @@ static bool check_errors(node *tree)
     /* simple sanity check */
     for (n = tree; n; n = n->u.n.right)
 	if (n->type != STATEMENT)
-	    die("internal error: non-STATEMENT at top level");
+	    die("cupl: internal error: non-STATEMENT at top level");
 
     /* make backpointers */
     for_symbols(lp)
@@ -127,12 +127,17 @@ static bool check_errors(node *tree)
     /* mark labels */
     recursive_apply(tree, r_mark_labels);
 
+    /* check for label consistency */
+    for_symbols(lp)
+	if (lp->labelref && !lp->labeldef)
+	    die("cupl: label %s referenced but not defined\n", lp->node->u.string);
+
     /* report on the number of labels */
     if (verbose >= DEBUG_CHECKDUMP)
     {
 	int		nlabels = 0;
 
-	for (lp = idlist; lp; lp = lp->next)
+	for_symbols(lp)
 	    if (lp->labeldef)
 		nlabels++;
 
@@ -140,11 +145,12 @@ static bool check_errors(node *tree)
 	    (void) printf("No labels.\n");
 	else
 	{
-	    (void) printf("Labels:");
-	    for (lp = idlist; lp; lp = lp->next)
+	    (void) printf("Labels:\n");
+	    for_symbols(lp)
 		if (lp->labeldef)
-		    (void) printf(" %s", lp->node->u.string);
-	    (void) printf("\n");
+		    (void) printf("    %s (%d references)\n",
+				  lp->node->u.string,
+				  lp->labelref);
 	}
     }
 }
