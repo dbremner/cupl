@@ -234,6 +234,13 @@ static value cupl_eval(node *tree)
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
+    case LN:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_ln(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
     case SQRT:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_sqrt(rightside);
@@ -268,9 +275,58 @@ static value cupl_eval(node *tree)
 	 * Matrix functions
 	 */
 
+    case DET:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_det(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case DOT:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_dot(leftside, rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case INV:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_inv(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case POSMAX:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_posmax(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case POSMIN:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_posmin(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
     case SGM:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_sgm(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case TRC:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_trc(rightside);
+	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
+
+    case TRN:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_trn(rightside);
 	deallocate_value(&rightside);
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
@@ -346,6 +402,14 @@ static value cupl_eval(node *tree)
 	return(result);
 
 	/*
+	 * Allocation.
+	 */
+
+    case ALLOCATE:
+	/* FIXME: implement ALLOCATE */
+	die("ALLOCATE is not implemented\n");
+
+	/*
 	 * Control structures.
 	 */
 
@@ -358,6 +422,26 @@ static value cupl_eval(node *tree)
 	    (cond.rank);	/* conditional values use an odd convention */
 	result.rank = FAIL;
 	break;
+
+    case FOR:
+	/* FIXME: implement FOR */
+	die("FOR is not implemented\n");
+
+    case TIMES:
+	/* FIXME: implement TIMES */
+	die("TIMES is not implemented\n");
+
+    case BLOCK:
+	/* FIXME: implement BLOCK */
+	die("BLOCK skip is not implemented\n");
+
+    case GO:
+	/* FIXME: implement GO TO */
+	die("GO TO is not implemented\n");
+
+    case IF:
+	/* FIXME: implement IF */
+	die("GO TO is not implemented\n");
 
     case STOP:
 	longjmp(jmpbuf, 1);

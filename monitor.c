@@ -9,6 +9,7 @@ SYNOPSIS
 
     void make_scalar(value *v, scalar i)
     void copy_value(value v);
+    value allocate_value(int rank, int i, int j)
     void deallocate_value(value *v)
 
     void cupl_reset_write()
@@ -27,13 +28,27 @@ SYNOPSIS
     value cupl_cos(value)
     value cupl_exp(value)
     value cupl_floor(value)
+    value cupl_ln(value)
     value cupl_log(value)
     value cupl_sqrt(value)
     value cupl_max(value, value)
     value cupl_min(value, value)
     value cupl_rand(value)
 
+    bool cupl_eq(value, value)
+    bool cupl_lt(value, value)
+    bool cupl_gt(value, value)
+    bool cupl_le(value, value)
+    bool cupl_ge(value, value)
+
+    value cupl_det(value);
+    value cupl_dot(value, vlue);
+    value cupl_inv(value);
+    value cupl_posmax(value);
+    value cupl_posmin(value);
     value cupl_sgm(value right)
+    value cupl_trc(value right)
+    value cupl_trn(value right)
 
 DESCRIPTION 
    Runtime support.  This is segregated from the execute() code in case anyone
@@ -107,11 +122,24 @@ value copy_value(value v)
     return(newvalue);
 }
 
+value allocate_value(int rank, int i, int j)
+/* allocate a value of given shape */
+{
+    value v;
+
+    v.rank = rank;
+    v.width = j; v.depth = i;
+    v.elements = (scalar *)calloc(sizeof(scalar), i * j);
+
+    return(v);
+}
+
 void deallocate_value(value *v)
 /* destroy a value copy, only if its reference count is 1 */
 {
     (void) free(v->elements);
 }
+
 
 /****************************************************************************
  *
@@ -144,6 +172,7 @@ static void needspace(int w)
 void cupl_scalar_write(char *name, scalar quant)
 /* write a numeric or skip a field in CUPL style */
 {
+    /* FIXME: cupl_scalar_write screws up line wraps */
     if (name)
     {
 	needspace(2 * fieldwidth);
@@ -179,7 +208,7 @@ value cupl_add(value left, value right)
 /* add two CUPL values */
 {
     if (!CONGRUENT(left, right))
-	die("addition failed, operands of different sizes\n");
+	die("addition failed, operands of different sizes or ranks\n");
     else
     {
 	value	result;
@@ -196,7 +225,7 @@ value cupl_subtract(value left, value right)
 /* subtract two CUPL values */
 {
     if (!CONGRUENT(left, right))
-	die("subtract failed, operands of different sizes\n");
+	die("subtract failed, operands of different sizes or ranks\n");
     else
     {
 	value	result;
@@ -212,6 +241,7 @@ value cupl_subtract(value left, value right)
 value cupl_multiply(value left, value right)
 /* multiply two CUPL values */
 {
+    /* FIXME: implement cupl_multiply for non-scalar operands */
     if (left.rank == 0 && right.rank == 0)
     {
 	value	result;
@@ -227,6 +257,7 @@ value cupl_multiply(value left, value right)
 value cupl_divide(value left, value right)
 /* divide two CUPL values */
 {
+    /* FIXME: implement cupl_divide for non-scalar operands */
     if (left.rank == 0 && right.rank == 0)
     {
 	value	result;
@@ -343,7 +374,7 @@ value cupl_floor(value right)
     }
 }
 
-value cupl_log(value right)
+value cupl_ln(value right)
 /* apply ln function */
 {
     value	result;
@@ -354,6 +385,21 @@ value cupl_log(value right)
     {
 	make_scalar(&result, 0);
 	result.elements[0] = log(right.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_log(value right)
+/* apply log10 function */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("LOG is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = log10(right.elements[0]);
 	return(result);
     }
 }
@@ -383,30 +429,28 @@ value cupl_max(value left, value right)
 /* apply max function */
 {
     value	result;
+    int	n;
 
-    if (right.rank != 0 || left.rank != 0)
-	die("MAX is not yet supported for vectors and matrices\n");
-    else
-    {
-	make_scalar(&result, 0);
-	result.elements[0] = max(right.elements[0], left.elements[0]);
-	return(result);
-    }
+    make_scalar(&result, right.elements[0]);
+    for (n = 0; n < right.width * right.depth; n++)
+	if (result.elements[0] < right.elements[n])
+	    result.elements[0] = right.elements[n];
+
+    return(result);
 }
 
 value cupl_min(value left, value right)
 /* apply min functionnot yet supported for vectors and matrices */
 {
     value	result;
+    int	n;
 
-    if (right.rank != 0 || left.rank != 0)
-	die("MIN is \n");
-    else
-    {
-	make_scalar(&result, 0);
-	result.elements[0] = min(right.elements[0], left.elements[0]);
-	return(result);
-    }
+    make_scalar(&result, right.elements[0]);
+    for (n = 0; n < right.width * right.depth; n++)
+	if (result.elements[0] > right.elements[n])
+	    result.elements[0] = right.elements[n];
+
+    return(result);
 }
 
 value cupl_rand(value right)
@@ -427,11 +471,198 @@ value cupl_rand(value right)
 
 /****************************************************************************
  *
+ * Relations
+ *
+ ****************************************************************************/
+
+static bool normalize(scalar *ep1, scalar *ep2)
+/* normalize a pair of scalars for conversion purposes */
+{
+    int	mult;
+
+    if (*ep1 == 0 && *ep2 == 0)
+	return;
+
+    /*
+     * Note: this is not precisely the roundoff method used by original
+     * CUPL, though it should (famous last words) be equivalent.
+     */
+    if (fabs(*ep1) > fabs(*ep2))
+	mult = pow(10, log10(*ep2) + 14);
+    else
+	mult = pow(10, log10(*ep1) + 14);
+
+    *ep1 *= mult;
+    *ep2 *= mult;
+
+    *ep1 = floor(*ep1);
+    *ep2 = floor(*ep2);
+}
+
+bool cupl_eq(value v1, value v2)
+/* test any two CUPL values for pairwise equality */
+{
+    if (!CONGRUENT(v1, v2))
+	die("comparison failed, operands of different sizes or ranks\n");
+    else
+    {
+	int	n;
+
+	for (n = 0; n < v2.width * v2.depth; n++)
+	{
+	    scalar e1 = v1.elements[n], e2 = v1.elements[n];
+
+	    normalize(&e1, &e2);
+
+	    if (e1 != e2)
+		return(FALSE);
+	}
+
+	return(TRUE);
+    }
+}
+
+bool cupl_le(value v1, value v2)
+/* are all elements of v1 less than or equal to their correspondents in v2? */
+{
+    if (!CONGRUENT(v1, v2))
+	die("LE failed, operands of different sizes or ranks\n");
+    else
+    {
+	bool equal = TRUE;
+	int	n;
+
+
+	for (n = 0; n < v2.width * v2.depth; n++)
+	{
+	    scalar e1 = v1.elements[n], e2 = v1.elements[n];
+
+	    normalize(&e1, &e2);
+
+	    if (e1 > e2)
+		return(FALSE);
+	}
+
+	return(TRUE);
+    }
+}
+
+bool cupl_ge(value v1, value v2)
+/* are all els of v1 greater than or equal to their correspondents in v2? */
+{
+    if (!CONGRUENT(v1, v2))
+	die("GE failed, operands of different sizes or ranks\n");
+    else
+    {
+	int	n;
+
+	for (n = 0; n < v2.width * v2.depth; n++)
+	{
+	    scalar e1 = v1.elements[n], e2 = v1.elements[n];
+
+	    normalize(&e1, &e2);
+
+	    if (e1 < e2)
+		return(FALSE);
+	}
+
+	return(TRUE);
+    }
+}
+
+bool cupl_lt(value v1, value v2)
+/* strange CUPL definition #1, see appendix A */
+{
+    return(cupl_le(v1, v2) && !cupl_eq(v1, v2));
+}
+
+bool cupl_gt(value v1, value v2)
+/* strange CUPL definition #2, see appendix A */
+{
+    return(cupl_ge(v1, v2) && !cupl_eq(v1, v2));
+}
+
+/****************************************************************************
+ *
  * Matrix functions
  *
  ****************************************************************************/
 
-/* FIXME: most not yet implemented */
+value cupl_det(value right)
+{
+    /* FIXME: implement DET */
+    die("the determinant function is not yet implemented");
+}
+
+value cupl_dot(value left, value right)
+/* compute inner or dot product of two vectors */
+{
+    if (!CONGRUENT(left, right) || right.rank != 1)
+	die("DOT failed, operands of different sizes or ranks\n");
+    else
+    {
+	value	result;
+	int	n;
+
+	make_scalar(&result, 0);
+	for (n = 0; n < left.width * left.depth; n++)
+	    result.elements[0] += left.elements[n] * right.elements[n];
+	return(result);
+    }
+}
+
+value cupl_inv(value right)
+/* compute the inverse of a matrix */
+{
+    /* FIXME: implement INV */
+    die("the inverse function is not yet implemented\n");
+}
+
+value cupl_posmax(value right)
+/* row position of maximum element of argument */
+{
+    if (right.rank == 0)
+	die("POSMAX argument is a scalar");
+    else
+    {
+	value	result;
+	int	n;
+	scalar	maxel = right.elements[0];;
+
+	make_scalar(&result, 0);
+	for (n = 0; n < right.width * right.depth; n++)
+	    if (maxel < right.elements[n])
+	    {
+		result.elements[0] = SUBI(right, n);
+		maxel = right.elements[0];
+	    }
+
+	return(result);
+    }
+}
+
+value cupl_posmin(value right)
+/* row position of minimum element of argument */
+{
+    if (right.rank == 0)
+	die("POSMIN argument is a scalar");
+    else
+    {
+	value	result;
+	int	n;
+	scalar	minel = right.elements[0];;
+
+	make_scalar(&result, 0);
+	for (n = 0; n < right.width * right.depth; n++)
+	    if (minel > right.elements[n])
+	    {
+		result.elements[0] = SUBI(right, n);
+		minel = right.elements[n];
+	    }
+
+	return(result);
+    }
+}
 
 value cupl_sgm(value right)
 /* compute the sum of the elements of a matrix */
@@ -445,6 +676,34 @@ value cupl_sgm(value right)
     return(result);
 }
 
+value cupl_trc(value right)
+/* compute sum of elements on main diagonals */
+{
+    if (right.rank != 2 || right.width != right.depth)
+	die("TRACE failed, operands is not a square matrix\n");
+    else
+    {
+	value	result;
+	int	n;
+
+	make_scalar(&result, 0);
+	for (n = 0; n < right.width; n++)
+	    result.elements[0] += SUB(right, n, n)[0];
+	return(result);
+    }
+}
+
+value cupl_trn(value right)
+/* compute the transpose of a matrix */
+{
+    value result = allocate_value(right.rank, right.depth, right.width);
+    int	i, j;
+
+    for (i = 0; i < right.depth; i++)
+	for (j = 0; j < right.width; j++)
+	    SUB(result, j, i)[0] = SUB(right, i, j)[0];
+
+    return(result);
+}
+
 /* monitor.c ends here */
-
-

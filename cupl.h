@@ -94,6 +94,11 @@ extern lvar *idlist;
 
 #define for_symbols(s)    for (s = idlist; s; s = s->next)
 
+/* subscripting operations */
+#define SUB(v, i, j)	(v.elements + i * v.width + j)
+#define SUBI(v, n)	(n / v.width)
+#define SUBJ(v, n)	(n % v.width)
+
 #define NOMEM	"out of memory\n"
 
 /* miscellaneous */
@@ -111,6 +116,7 @@ extern void warn(char *msg, ...);
 
 extern void make_scalar(value *v, scalar n);
 extern value copy_value(value);
+extern value allocate_value(int rank, int i, int j);
 extern void deallocate_value(value *);
 
 void cupl_reset_write();
@@ -130,13 +136,21 @@ extern value cupl_atan(value);
 extern value cupl_cos(value);
 extern value cupl_exp(value);
 extern value cupl_floor(value);
+extern value cupl_ln(value);
 extern value cupl_log(value);
 extern value cupl_sqrt(value);
 extern value cupl_max(value, value);
 extern value cupl_min(value, value);
 extern value cupl_rand(value);
 
-extern value cupl_sgm(value right);
+extern value cupl_det(value);
+extern value cupl_dot(value, value);
+extern value cupl_inv(value);
+extern value cupl_posmax(value);
+extern value cupl_posmin(value);
+extern value cupl_sgm(value);
+extern value cupl_trc(value);
+extern value cupl_trn(value);
 
 extern bool cupl_eq(value, value);
 extern bool cupl_lt(value, value);

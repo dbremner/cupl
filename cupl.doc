@@ -8,6 +8,12 @@ references (by section-page number in the original manual) to notes which
 follow the appendix transcription.  These notes are also excerpts from the
 manual.
 
+There is one correction in the text.  The original manual listed both LN
+and LOG as built-in functions and wrote "LOG(a)" is "natural log of a".  We
+believe this is incorrect; we have changed the "LOG(a)" in the original to
+LN(a) and inserted a new "LOG(a)" entry.  This implementation's LOG function
+is, accordingly, log_10() and not log_e().
+
 There are a few typographical changes to fit it into the ASCII character set.
 The differences:
 
@@ -160,7 +166,9 @@ ELEMENTS OF THE LANGUAGE
                                                    expression
           FLOOR(a)      greatest integer not     numerical valued
                           exceeding a              expression
-          LOG(a)        natural og of a          numerical valued
+          LN(a)         natural log of a         numerical valued
+                                                   expression
+          LOG(a)        log to base 10 of a      numerical valued
                                                    expression
           SQRT(a)       positive square root     numerical valued
                           of a                     expression
