@@ -303,7 +303,7 @@ static void rewrite(node *tree)
 		break;
 
 	    case BLOCK:
-		np->car->car->syminf->target = np;
+		np->car->car->syminf->target = np->cdr;
 		break;
 
 	    default:
