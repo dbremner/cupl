@@ -192,9 +192,65 @@ static value cupl_eval(node *tree)
 	deallocate_value(&rightside);
 	return(result);
 
+    case ABS:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_abs(rightside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case ATAN:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_atan(rightside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case COS:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_cos(rightside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case EXP:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_exp(rightside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case FLOOR:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_floor(rightside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case LOG:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_log(rightside);
+	deallocate_value(&rightside);
+	return(result);
+
     case SQRT:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_sqrt(rightside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case MAX:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_max(leftside, rightside);
+	deallocate_value(&leftside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case MIN:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_min(leftside, rightside);
+	deallocate_value(&leftside);
+	deallocate_value(&rightside);
+	return(result);
+
+    case RAND:
+	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
+	result = cupl_rand(rightside);
 	deallocate_value(&rightside);
 	return(result);
 

@@ -106,16 +106,28 @@ extern void execute(node *tree);
 /* monitor.c */
 extern void die(char *msg, ...);
 extern void warn(char *msg, ...);
+
 extern void make_scalar(value *v, scalar n);
 extern value copy_value(value);
 extern void deallocate_value(value *);
+
 extern value cupl_add(value, value);
 extern value cupl_multiply(value, value);
 extern value cupl_subtract(value, value);
 extern value cupl_divide(value, value);
 extern value cupl_power(value, value);
 extern value cupl_uminus(value);
+
+extern value cupl_abs(value);
+extern value cupl_atan(value);
+extern value cupl_cos(value);
+extern value cupl_exp(value);
+extern value cupl_floor(value);
+extern value cupl_log(value);
 extern value cupl_sqrt(value);
+extern value cupl_max(value, value);
+extern value cupl_min(value, value);
+extern value cupl_rand(value);
 
 #define DEBUG_PARSEDUMP	1
 #define DEBUG_CHECKDUMP	2

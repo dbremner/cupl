@@ -5,11 +5,9 @@ NAME
 
 SYNOPSIS
     void die(char *msg, ...)
-
     void warn(char *msg, ...)
 
     void make_scalar(value *v, scalar i)
-
     void copy_value(value v);
     void deallocate_value(value *v)
 
@@ -18,18 +16,41 @@ SYNOPSIS
     value cupl_subtract(value, value)
     value cupl_divide(value, value)
     value cupl_uminus(value, value)
-    value cupl_sqrt(value, value)
+
+    value cupl_abs(value)
+    value cupl_atan(value)
+    value cupl_cos(value)
+    value cupl_exp(value)
+    value cupl_floor(value)
+    value cupl_log(value)
+    value cupl_sqrt(value)
+    value cupl_max(value, value)
+    value cupl_min(value, value)
+    value cupl_rand(value)
 
 DESCRIPTION 
    Runtime support.  This is segregated from the execute() code in case anyone
-ever wants to write a back end that is a compiler.
+ever wants to write a back end that is a compiler.  For the same reason
+we do an allocate each time an intrinsic returns a value.  This is
+relatively inefficient but means these functions could be used as a runtime
+library.
 
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
 #include "cupl.h"
+
+#define max(x, y)	((x) > (y) ? (x) : (y))
+#define min(x, y)	((x) < (y) ? (x) : (y))
+
+/****************************************************************************
+ *
+ * Error reporting
+ *
+ ****************************************************************************/
 
 void warn(char *msg, ...)
 /* warn of an error and die */
@@ -52,6 +73,12 @@ void die(char *msg, ...)
 
     exit(1);
 }
+
+/****************************************************************************
+ *
+ * Value allocation
+ *
+ ****************************************************************************/
 
 void make_scalar(value *v, scalar i)
 /* initialize a scalar value element */
@@ -77,6 +104,12 @@ void deallocate_value(value *v)
 {
     (void) free(v->elements);
 }
+
+/****************************************************************************
+ *
+ * Functions for arithmetic intrinsics
+ *
+ ****************************************************************************/
 
 #define CONGRUENT(l, r)	((l.rank == r.rank) \
 				&& (l.width == r.width) \
@@ -172,13 +205,109 @@ value cupl_uminus(value right)
     return(result);
 }
 
+/****************************************************************************
+ *
+ * Scalar functions
+ *
+ ****************************************************************************/
+
+value cupl_abs(value right)
+/* apply absolute-value function */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("ABS is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = abs(right.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_atan(value right)
+/* apply arctangent */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("ATAN is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = atan(right.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_cos(value right)
+/* apply cosine */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("COS is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = cos(right.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_exp(value right)
+/* apply exponent function */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("EXP is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = exp(right.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_floor(value right)
+/* apply floor function */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("FLOOR is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = floor(right.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_log(value right)
+/* apply ln function */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("LOG is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = log(right.elements[0]);
+	return(result);
+    }
+}
+
 value cupl_sqrt(value right)
 /* apply square root */
 {
     value	result;
 
     if (right.rank != 0)
-	die("SQRT is only defined for scalars\n");
+	die("SQRT is only defined for scalar arguments\n");
     else
     {
 	make_scalar(&result, 0);
@@ -186,5 +315,65 @@ value cupl_sqrt(value right)
 	return(result);
     }
 }
+
+/****************************************************************************
+ *
+ * Special functions
+ *
+ ****************************************************************************/
+
+value cupl_max(value left, value right)
+/* apply max function */
+{
+    value	result;
+
+    if (right.rank != 0 || left.rank != 0)
+	die("MAX is not yet supported for vectors and matrices\n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = max(right.elements[0], left.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_min(value left, value right)
+/* apply min functionnot yet supported for vectors and matrices */
+{
+    value	result;
+
+    if (right.rank != 0 || left.rank != 0)
+	die("MIN is \n");
+    else
+    {
+	make_scalar(&result, 0);
+	result.elements[0] = min(right.elements[0], left.elements[0]);
+	return(result);
+    }
+}
+
+value cupl_rand(value right)
+/* get a random number from a seed */
+{
+    value	result;
+
+    if (right.rank != 0)
+	die("RAND is only defined for scalar arguments\n");
+    else
+    {
+	make_scalar(&result, 0);
+	srand(right.elements[0]);
+	result.elements[0] = rand();
+	return(result);
+    }
+}
+
+/****************************************************************************
+ *
+ * Matrix functions
+ *
+ ****************************************************************************/
+
+/* FIXME: not yet implemented */
 
 /* monitor.c ends here */
