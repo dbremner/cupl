@@ -229,6 +229,8 @@ static bool check_errors(node *tree)
 		(void) printf("    %8s: %d assignments, %d reference(s)\n",
 			      lp->node->u.string, lp->assigned, lp->used);
     }
+
+    return(FALSE);
 }
 
 static bool r_label_rewrite(node *tp)
@@ -238,14 +240,19 @@ static bool r_label_rewrite(node *tp)
      * KISS -- this code may do extra work, but it needs no special
      * knowledge about node types.
      */
-    node *left = tp->u.n.left;
-    node *right = tp->u.n.right;
+    if (!ATOMIC(tp->type))
+    {
+	node *left = tp->u.n.left;
+	node *right = tp->u.n.right;
 
-    if (left && left->type == IDENTIFIER && left->syminf->labelref)
-	left = left->syminf->target;
+	if (left && left->type == IDENTIFIER && left->syminf->labelref)
+	    left = left->syminf->target;
 
-    if (right && right->type == IDENTIFIER && right->syminf->labelref)
-	right = right->syminf->target;
+	if (right && right->type == IDENTIFIER && right->syminf->labelref)
+	    right = right->syminf->target;
+    }
+
+    return(TRUE);
 }
 
 static void rewrite(node *tree)
@@ -256,10 +263,34 @@ static void rewrite(node *tree)
     /* first, make a pointer from each label to its destination statement */
     for_cdr(np, tree)
 	if (np->u.n.left->type == LABEL)
-	    np->u.n.left->syminf->target = np;
+	    np->u.n.left->u.n.left->syminf->target = np;
 
+#ifdef _FOO_
     /* now, hack label references to eliminate name references */
     recursive_apply(tree, r_label_rewrite);
+
+    /* pull blocks out of the main line */
+    for_cdr(np, tree)
+	if (np->u.n.left->type==LABEL && np->u.n.left->u.n.right->type==BLOCK)
+	{
+	    node	*endnode;
+	    bool	found = FALSE;
+
+	    for (endnode = np; endnode; endnode++)
+		if (np->u.n.left->type == LABEL
+			&& np->u.n.left->u.n.right->type == BLOCK
+			&& strcmp(np->u.n.left->u.string,
+				  endnode->u.n.left->u.n.left->u.string) == 0)
+		{
+		    found = TRUE;
+		    break;
+		}
+	    if (!found)
+		die("no END matching block label %s\n",np->u.n.left->u.string);
+
+	    (void) printf("found END for %s\n", np->u.n.left->u.string);
+	}
+#endif /* _FOO_ */
 }
 
 void interpret(node *tree)
@@ -278,4 +309,3 @@ void interpret(node *tree)
 }
 
 /* interpret.c ends here */
-
