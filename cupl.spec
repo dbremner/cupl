@@ -15,8 +15,7 @@ make
 %install
 rm -f /usr/bin/cupl
 cp cupl /usr/bin
-cp cupl.1 /usr/man/man1/cupl.1
 
 %files
-%doc /usr/man/man1/cupl.1
+%doc cupl.mm
 /usr/bin/cupl
