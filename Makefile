@@ -22,7 +22,8 @@ grammar.c tokens.h y.output: cupl.y
 	mv y.tab.h tokens.h
 
 tokdump.o: tokdump.c toktab.h
-lexer.o: lexer.c cupl.h
+lexer.o: lexer.c tokens.h cupl.h
+interpret.o: interpret.c tokens.h cupl.h
 
 toktab.h: tokens.h
 	awk <tokens.h >toktab.h '/^#/ {print $$3 ", \"" $$3 "\","}'
