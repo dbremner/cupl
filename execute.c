@@ -553,25 +553,32 @@ static value cupl_eval(node *tree)
 		(void) printf("statement %2d: %x (%-10s of %9x, %9x)\n",
 		      pc->number, pc, tokdump(pc->type), pc->car, pc->cdr);
 
-	    next = pc->cdr;
-	    if (setjmp(nextbuf) == 0)
-		(void) cupl_eval(pc->car);
+	    switch (pc->car->type)
+	    {
+	    case BLOCK:
+		next = pc->endnode->cdr;
+		break;
+
+	    case OG:
+		/* FIXME: GOTO END ignores labels */
+	    case END:
+		next = NULLNODE;
+		break;
+
+	    default:
+		next = pc->cdr;
+		if (setjmp(nextbuf) == 0)
+		    (void) cupl_eval(pc->car);
+		break;
+	    }
 	}
 	result.rank = FAIL;
 	return(result);
 
-    case BLOCK:
-	next = pc->endnode->cdr;
-	longjmp(nextbuf, 1);
-
     case GO:
 	next = tree->car;
 	longjmp(nextbuf, 1);
-
-    case OG:
-    case END:
-	longjmp(jmpperf, 1);
-
+  
     case IF:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	if (leftside.rank)
