@@ -114,14 +114,29 @@ static void cupl_write(node *tp)
     }
 }
 
+static void make_scalar(value *v, scalar i)
+/* initialize a scalar value element */
+{
+    v->width = v->depth = 1;
+    v->elements = (scalar *)malloc(sizeof(scalar));
+    v->elements[0] = i;
+}
+
 static value cupl_eval(node *tree)
 /* recursively evaluate a CUPL parse tree */
 {
-    value	leftside, rightside;
+    value	leftside, rightside, result;
     node	*np;
 
     switch(tree->type)
     {
+    case NUMBER:
+	make_scalar(&result, tree->u.numval);
+	return(result);
+
+    case IDENTIFIER:
+	return(tree->syminf->value);
+
     case READ:
 	for_cdr(np, tree)
 	    cupl_read(np->car);
@@ -148,11 +163,7 @@ void execute(node *tree)
 
     /* initially, all variables are scalars with zero values */
     for_symbols(lp)
-    {
-	lp->value.width = lp->value.depth = 1;
-	lp->value.elements = (scalar *)malloc(sizeof(scalar));
-	lp->value.elements[0] = 0;
-    }
+	make_scalar(&lp->value, 0);
 
     /* locate the data pointer */
     data = last = (node *)NULL;

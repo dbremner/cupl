@@ -98,7 +98,7 @@ extern lvar *idlist;
 extern char *tokdump(int value);
 extern void yyerror(const char *errmsg);
 extern void interpret(node *tree);
-extern int verbose;
+extern int verbose, linewidth, fieldwidth;
 
 /* execute.c */
 extern void execute(node *tree);

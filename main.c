@@ -4,7 +4,7 @@ NAME
    main.c -- main sequence of the CUPL compiler
 
 SYNOPSIS
-   cupl [-v] [file...]
+   cupl [-vn[y]] [-w nn] [-f nn] [file...]
 
 DESCRIPTION
    The main sequence of the Cornell University Programming Language compiler.
@@ -22,9 +22,11 @@ extern int yylineno;		/* the current source line count */
 extern int yydebug;		/* enable YACC instrumentation? */
 
 #define CANTOPN	"can't open file %s\n"
-#define USAGE	"usage: cupl [-v nnn]\n"
+#define USAGE	"usage: cupl [-vn[y]] [-w nn] [file...]\n"
 
-int verbose;	/* verbosity level of the interpreter */
+int verbose;		/* verbosity level of the interpreter */
+int linewidth = 80;	/* line width used for field wrapping */
+int fieldwidth = 20;	/* field width */
 
 static int execfile(const char *file)
 /* translate a CUPL file in the current directory */
@@ -57,13 +59,21 @@ char	*argv[];
     extern char	    *getenv();
     int	c;
 
-    while ((c = getopt(argc, argv, "v:")) != EOF)
+    while ((c = getopt(argc, argv, "f:v:w:")) != EOF)
 	switch (c)
 	{
+	case 'f':
+	    fieldwidth = atoi(optarg);
+	    break;
+
 	case 'v':
 	    verbose = atoi(optarg);
 	    if (strchr(optarg, 'y'))
 		yydebug = 1;
+	    break;
+
+	case 'w':
+	    linewidth = atoi(optarg);
 	    break;
 
 	default:

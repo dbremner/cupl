@@ -86,4 +86,13 @@ There are many limits in original CUPL that we do not enforce.  There is
 no limit on the length of variable names short of the lexer's very long
 token buffer length.  There is no hard limit on the number of statements in a
 program.  There is no hard limit on the size of arrays.
-
+.P
+While the format of number output does not exactly conform to original CUPL
+rules, it is sufficiently ugly to please any but the pickiest.  We
+implement all of 5.2 except the fixing of the decimal point at
+position 7 in each field.  Instead we simply use printf(3)'s %f and %e
+at field-width precision.
+.P
+Also, by default, we wrap after three 20-char fields rather than 6, so
+as to fit on an 80-column line.  Command-line options to change the
+line and field widths are available.
