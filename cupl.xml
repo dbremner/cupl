@@ -1251,5 +1251,9 @@ CORC-specific keywords (NOTE, BEGIN, DEC, DECREASE, EQL, GEQ, GTR,
 INC, INCREASE, INT, LEQ, LSS, NEQ, REPEAT, TITLE, UNTIL, $) during
 lexing, and execute() modifies its behavior appropriately.</para>
 </refsect1>
+<refsect1 id='author'><title>AUTHOR</title>
+
+<para>Eric S. Raymond <email>esr@snark.thyrsus.com</email>.</para>
+</refsect1>
 </refentry>
 

@@ -1,9 +1,7 @@
 #
 # Makefile for the CUPL/CORC project
 #
-
-# Note: When the version changes, you also have to change the RPM spec file.
-VERS=1.4
+VERS=1.5
 
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
@@ -49,7 +47,7 @@ lextest: lexer.c tokens.h tokdump.o
 cupl.1: cupl.xml
 	xmlto man cupl.xml
 
-DOCS = READ.ME COPYING NEWS corc.doc cupl.doc cupl.xml
+DOCS = READ.ME COPYING corc.doc cupl.doc cupl.xml cupl.spec
 SOURCES = Makefile cupl.[lyh] $(MODULES:.o=.c)
 TESTS = test/[abcdefghijklmnopqrstuvwxyz]* test/MAKEREGRESS test/REGRESS test/TESTALL
 
@@ -62,13 +60,9 @@ cupl-$(VERS).tar.gz: $(SOURCES) $(DOCS) cupl.1
 dist: cupl-$(VERS).tar.gz
 
 RPMROOT=/usr/src/redhat
-RPM = rpm
-RPMFLAGS = -ba
 rpm: dist
-	cp cupl-$(VERS).tar.gz $(RPMROOT)/SOURCES;
-	cp cupl.spec $(RPMROOT)/SPECS
-	cd $(RPMROOT)/SPECS; $(RPM) $(RPMFLAGS) cupl.spec	
-	cp $(RPMROOT)/RPMS/`arch|sed 's/i[4-9]86/i386/'`/cupl-$(VERS)*.rpm .
+	rpmbuild --define 'myversion $(VERS)' -ta cupl-$(VERS).tar.gz
+	cp $(RPMROOT)/RPMS/*/cupl-$(VERS)*.rpm .
 	cp $(RPMROOT)/SRPMS/cupl-$(VERS)*.src.rpm .
 
 clean:
