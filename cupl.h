@@ -7,11 +7,6 @@
 #define PATH_MAX	1024
 #endif
 
-#define MAXPERFORM	64	/* depth of perform stack */
-#define MAXVARS		1024	/* maximum variables */
-#define MAXNAME		10	/* maximum length of variable names */
-#define MAXSTR		256	/* maximum string size */
-
 #ifndef CUPLDIR
 #define CUPLDIR	"/usr/lib/cupl/"
 #endif /* CUPLDIR */
@@ -37,7 +32,10 @@ typedef double scalar;
  */
 typedef struct edon
 {
-    int		type;	/* type of NODE if *left || *right */
+    /* type of the node -- a YACC token type */
+    int		type;
+
+    /* value elements of the node */
     union
     {
 	struct			/* for parse-tree nodes */
@@ -48,14 +46,11 @@ typedef struct edon
 
 	scalar	numval;		/* for numbers */
 
-	char	*string;	/* for string literals */
-
-	struct			/* for label values */
-	{
-	    struct edon *dest;
-	    char	*string;
-	} l;
+	char	*string;	/* for strings and identifiers */
     } u;
+
+    /* back-pointer to the symbol list, set if the node is an identifier */
+    struct lvar_t	*syminf;    
 }
 node;
 
@@ -69,7 +64,7 @@ typedef struct lvar_t
     node		*node;
 }
 lvar;
-static lvar *idlist;
+extern lvar *idlist;
 
 #define NOMEM	"out of memory\n"
 
@@ -77,5 +72,9 @@ extern char *tokdump(int value);
 extern void yyerror(const char *errmsg);
 extern void interpret(node *tree);
 extern int verbose;
+
+#define DEBUG_PARSEDUMP	1
+#define DEBUG_CHECKDUMP	2
+#define DEBUG_ALLOCATE	3
 
 /* cupl.h ends here */

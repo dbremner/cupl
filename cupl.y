@@ -272,7 +272,7 @@ node	*left, *right;	/* child nodes */
     new->u.n.right = right;
 
 #ifdef PARSEDEBUG
-    if (verbose >= 2)
+    if (verbose >= DEBUG_ALLOCATE)
 	(void) printf("cons:   %9x -> %9x %9x (%s)\n",
 		      new, left, right, tokdump(op));
 #endif /* PARSEDEBUG */

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 #include "cupl.h"
 #include "tokens.h"
 
@@ -20,14 +21,6 @@ typedef struct
     } u;
 }
 value;
-
-/* this structure represents a CUPL variable */
-typedef struct rav
-{
-    char	name[MAXNAME + 1];	/* name of variable */
-    value	value;
-}
-variable;
 
 #ifdef PARSEDEBUG
 /*
@@ -57,7 +50,7 @@ static void prettyprint(node *tree, int indent)
     else
     {
 	(void) printf("%-20s", tokdump(tree->type));
-	if (verbose >= 2)
+	if (verbose >= DEBUG_ALLOCATE)
 	    (void) printf("                          (%x -> %x, %x)",
 			  tree,
 			  tree->u.n.left,
@@ -71,13 +64,65 @@ static void prettyprint(node *tree, int indent)
 }
 #endif /* PARSEDEBUG */
 
+static void die(char *msg, ...)
+/* complain of a fatal error and die */
+{
+    va_list	args;
+
+    va_start(args, msg);
+    vfprintf(stderr, msg, args);
+    va_end(args);
+
+    exit(1);
+}
+
+static bool check_errors(node *tree)
+/* look for inconsistencies in a program parse tree */
+{
+    node	*n;
+    lvar	*lp;
+    int		nlabels = 0;
+
+    /* make backpointers */
+    for (lp = idlist; lp; lp = lp->next)
+	lp->node->syminf = lp;
+
+    /* mark labels */
+    for (n = tree; n; n = n->u.n.right)
+	if (n->type != STATEMENT)
+	    die("internal error: non-STATEMENT at top level");
+	else if (n->u.n.left->type == LABEL)
+	{
+	    n->u.n.left->u.n.left->syminf->islabel = TRUE;
+	    nlabels++;
+	}
+
+    /* report on the number of labels */
+    if (verbose >= DEBUG_CHECKDUMP)
+	if (nlabels == 0)
+	    (void) printf("No labels.\n");
+	else
+	{
+	    (void) printf("Labels:");
+	    for (lp = idlist; lp; lp = lp->next)
+		if (lp->islabel)
+		    (void) printf(" %s", lp->node->u.string);
+	    (void) printf("\n");
+	}
+}
+
 void interpret(node *tree)
 /* interpret a program parse tree */
 {
 #ifdef PARSEDEBUG
-    if (verbose > 0)
+    if (verbose > DEBUG_PARSEDUMP)
 	prettyprint(tree, 0);
 #endif /* PARSEDEBUG */
+
+    if (check_errors(tree))
+	return;
+
+    /* actual interpretation or compilation goes here */
 }
 
 /* interpret.c ends here */

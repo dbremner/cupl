@@ -77,6 +77,7 @@ char	*argv[];
 	for (; optind < argc; optind++)
 	    if (execfile(argv[optind]))
 		break;
+    return(0);
 }
 
 /* main.c ends here */

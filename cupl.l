@@ -11,6 +11,8 @@
 
 extern char *strdup(const char *s);
 
+lvar *idlist;
+
 static node *intern_number(char *);
 static node *intern_identifier(char *);
 static node *intern_string(char *);
@@ -118,7 +120,7 @@ static node *intern_identifier(char *str)
     }
 
 #ifdef PARSEDEBUG
-	if (verbose >= 2)
+	if (verbose >= DEBUG_ALLOCATE)
 	    (void) printf("intern: %9x                        (IDENTIFIER: %s)\n",
 		  new, str);
 #endif /* PARSEDEBUG */
@@ -142,7 +144,7 @@ static node *intern_number(char *str)
     new->u.numval = numval;
 
 #ifdef PARSEDEBUG
-    if (verbose >= 2)
+    if (verbose >= DEBUG_ALLOCATE)
 	(void) printf("intern: %9x                        (NUMBER: %f)\n", new, numval);
 #endif /* PARSEDEBUG */
     return(new);
@@ -165,7 +167,7 @@ static node *intern_string(char *str)
     new->u.string = strdup(str + 1);
 
 #ifdef PARSEDEBUG
-    if (verbose >= 2)
+    if (verbose >= DEBUG_ALLOCATE)
 	(void) printf("intern: %9x                        (STRING: '%s')\n",
 		      new, new->u.string);
 #endif /* PARSEDEBUG */
