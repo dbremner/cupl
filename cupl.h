@@ -54,7 +54,7 @@ typedef struct edon
 }
 node;
 
-#define for_cdr(np, tree)    for (np = tree; np; np = tree->u.n.right)
+#define for_cdr(x, t)    for (x = (t); x; x = x->u.n.right)
 
 /* this structure represents a CUPL value */
 typedef struct

@@ -177,7 +177,7 @@ static bool check_errors(node *tree)
     lvar	*lp;
 
     /* simple sanity check */
-    for (n = tree; n; n = n->u.n.right)
+    for_cdr(n, tree)
 	if (n->type != STATEMENT)
 	    die("internal error: non-STATEMENT at top level");
 
