@@ -502,7 +502,7 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case FOR:
-	/* FIXME: this code is not tested yet */
+	/* FIXME: the FOR code is not tested yet */
 	iterator = tree->car;
 	if (iterator->type == '=')
 	{
