@@ -40,7 +40,7 @@ static node *popstack(void)
 {
     if (sp <= stack)
 	die("too many END statements\n");
-    return(*sp--);
+    return(*--sp);
 }
 
 static void pushstack(node *st)
@@ -157,7 +157,7 @@ static value cupl_eval(node *tree)
 /* recursively evaluate a CUPL parse tree */
 {
     node *pc;	/* pointer to statement being evaluated */
-    static node *next;	/* the statement node to evaluate next */
+    node *next;	/* the statement node to evaluate next */
     static jmp_buf nextbuf;	/* end-of-statement handling */
 
     value	leftside, rightside, result, cond;
@@ -569,6 +569,8 @@ static value cupl_eval(node *tree)
 		next = pc->cdr;
 		if (setjmp(nextbuf) == 0)
 		    (void) cupl_eval(pc->car);
+		else
+		    next = popstack();
 		break;
 	    }
 	}
@@ -576,7 +578,7 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case GO:
-	next = tree->car;
+	pushstack(tree->car);
 	longjmp(nextbuf, 1);
   
     case IF:
