@@ -79,8 +79,10 @@ typedef struct lvar_t
     node		*target;	/* target node, if label */
 
     /* information used for consistency checks */
-    int		labeldef;
-    int		labelref;
+    int		blabeldef;
+    int		blabelref;
+    int		slabeldef;
+    int		slabelref;
     int		assigned;
     int		used;
 }

@@ -27,17 +27,18 @@ of a CUPL parse tree.  Actual execution is handed off to execute().
  */
 /* does the node represent an atom? */
 #define ATOMIC(n)	((n) == IDENTIFIER || (n) == NUMBER || (n) == STRING)
-/* does the node reference a label? */
-#define LABELREF(n)	((n) == GO || (n) == OG || (n) == PERFORM \
-			 || (n) == TIMES || (n) == WHILE || (n) == FOR)
+/* does the node reference a statement label? */
+#define SLABELREF(n)	((n) == GO || (n) == OG)
+/* does the node reference a block label? */
+#define BLABELREF(n)	((n) == PERFORM || (n) == TIMES || \
+				 (n) == WHILE || (n) == FOR)
 /* does the node set a variable? */
 #define VARSET(n)	((n) == LET || (n) == READ || (n) == ITERATE)
 /* does the (non-VARSET) node refer to its left operand? */ 
 #define LEFTREF(n)	((n) != FOR && (n) != GO && (n) != OG && (n) != LABEL \
 				&& (n) != ALLOCATE && (n) != WATCH \
 				&& (n) != ITERATE && (n) != FROM \
-				&& (n) != LABEL && (n) != TIMES \
-				&& (n) != WHILE)
+				&& (n) != TIMES && (n) != WHILE)
 /* does the (non-VARSET) node refer to its right operand? */
 #define RIGHTREF(n)	((n) != PERFORM)
 
@@ -131,14 +132,24 @@ static bool r_mark_labels(node *tp)
 {
     /* count label definitions */
     if (tp->type == LABEL)
-	tp->car->syminf->labeldef++;
+	if (tp->cdr->type == BLOCK)
+	    tp->car->syminf->blabeldef++;
+	else if (tp->cdr->type != END)
+	    tp->car->syminf->slabeldef++;
 
-    /* count label references */
-    if (LABELREF(tp->type))
+    /* count block label references */
+    if (BLABELREF(tp->type))
 	if (tp->car && tp->car->type == IDENTIFIER)
-	    tp->car->syminf->labelref++;
+	    tp->car->syminf->blabelref++;
 	else if (tp->cdr && tp->cdr->type == IDENTIFIER)
-	    tp->cdr->syminf->labelref++;
+	    tp->cdr->syminf->blabelref++;
+
+    /* count statement label references */
+    if (SLABELREF(tp->type))
+	if (tp->car && tp->car->type == IDENTIFIER)
+	    tp->car->syminf->slabelref++;
+	else if (tp->cdr && tp->cdr->type == IDENTIFIER)
+	    tp->cdr->syminf->slabelref++;
 
     /* count identifier assignments */
     if (VARSET(tp->type))
@@ -197,12 +208,16 @@ static bool check_errors(node *tree)
 
     /* check for label/variable consistency */
     for_symbols(lp)
-	if (lp->labelref && !lp->labeldef)
-	    die("label %s used but not defined\n", lp->node->u.string);
-	else if ((lp->labelref || lp->labeldef) && (lp->assigned || lp->used))
-	    die("%s used as both variable and label\n");
-	else if (!lp->labelref && lp->labeldef)
-	    warn("label %s defined but never used\n", lp->node->u.string);
+	if ((lp->blabelref || lp->blabeldef) + (lp->slabelref || lp->slabeldef) + (lp->assigned || lp->used) > 1)
+	    die("%s has conflicting uses\n");
+	else if (lp->blabelref && !lp->blabeldef)
+	    die("block label %s used but not defined\n", lp->node->u.string);
+	else if (!lp->blabelref && lp->blabeldef)
+	    warn("block label %s defined but never used\n",lp->node->u.string);
+	else if (lp->slabelref && !lp->slabeldef)
+	    die("statement label %s used but not defined\n",lp->node->u.string);
+	else if (!lp->slabelref && lp->slabeldef)
+	    warn("statement label %s defined but never used\n", lp->node->u.string);
         else if (lp->used && !lp->assigned)
 	    warn("variable %s used but not set\n", lp->node->u.string);
         else if (!lp->used && lp->assigned)
@@ -211,28 +226,46 @@ static bool check_errors(node *tree)
     /* describe all labels and variables */
     if (verbose >= DEBUG_CHECKDUMP)
     {
-	int		nlabels = 0;
+	int		nlabels;
 
+	nlabels = 0;
 	for_symbols(lp)
-	    if (lp->labeldef)
+	    if (lp->blabeldef)
 		nlabels++;
 
 	if (nlabels == 0)
-	    (void) printf("No labels.\n");
+	    (void) printf("No block labels.\n");
 	else
 	{
-	    (void) printf("Labels:\n");
+	    (void) printf("Block labels:\n");
 	    for_symbols(lp)
-		if (lp->labeldef)
+		if (lp->blabeldef)
 		    (void) printf("    %8s: %d reference(s)\n",
 				  lp->node->u.string, 
-				  lp->labelref);
+				  lp->blabelref);
+	}
+
+	nlabels = 0;
+	for_symbols(lp)
+	    if (lp->blabeldef)
+		nlabels++;
+
+	if (nlabels == 0)
+	    (void) printf("No statement labels.\n");
+	else
+	{
+	    (void) printf("Statement labels:\n");
+	    for_symbols(lp)
+		if (lp->slabeldef)
+		    (void) printf("    %8s: %d reference(s)\n",
+				  lp->node->u.string, 
+				  lp->slabelref);
 	}
 
 	/* static counts for variables */
 	(void) printf("Variables:\n");
 	for_symbols(lp)
-	    if (!lp->labeldef)
+	    if (lp->assigned || lp->used)
 		(void) printf("    %8s: %d assignments, %d reference(s)\n",
 			      lp->node->u.string, lp->assigned, lp->used);
     }
@@ -247,22 +280,43 @@ static bool r_label_rewrite(node *tp)
      * KISS -- this code may do extra work, but it needs no special
      * knowledge about node types.
      */
-    if (LABELREF(tp->type))
+    if (BLABELREF(tp->type))
     {
 	node *left = tp->car;
 	node *right = tp->cdr;
 
-	if (left && left->type == IDENTIFIER && left->syminf->labelref)
+	if (left && left->type == IDENTIFIER && left->syminf->blabelref)
 	{
 #ifdef ODEBUG
-	    (void) printf("patching label left reference to %s\n", left->u.string);
+	    (void) printf("patching block label left reference to %s\n", left->u.string);
 #endif /* ODEBUG */
 	    tp->car = left->syminf->target;
 	}
-	if (right && right->type == IDENTIFIER && right->syminf->labelref)
+	if (right && right->type == IDENTIFIER && right->syminf->blabelref)
 	{
 #ifdef ODEBUG
-	    (void) printf("patching label right reference to %s\n", right->u.string);
+	    (void) printf("patching block label right reference to %s\n", right->u.string);
+#endif /* ODEBUG */
+	    tp->cdr = right->syminf->target;
+	}
+    }
+
+    if (SLABELREF(tp->type))
+    {
+	node *left = tp->car;
+	node *right = tp->cdr;
+
+	if (left && left->type == IDENTIFIER && left->syminf->slabelref)
+	{
+#ifdef ODEBUG
+	    (void) printf("patching statement label left reference to %s\n", left->u.string);
+#endif /* ODEBUG */
+	    tp->car = left->syminf->target;
+	}
+	if (right && right->type == IDENTIFIER && right->syminf->slabelref)
+	{
+#ifdef ODEBUG
+	    (void) printf("patching statement label right reference to %s\n", right->u.string);
 #endif /* ODEBUG */
 	    tp->cdr = right->syminf->target;
 	}
