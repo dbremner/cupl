@@ -641,9 +641,7 @@ void execute(node *tree)
     }
 
     /* break the link to the data */
-    if (!data)
-	warn("no data supplied\n");
-    else if (last)
+    if (data && last)
 	last->cdr = cons(END, NULLNODE, NULLNODE);
 
     /* first, setjmp so we can use STOP to exit */

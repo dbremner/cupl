@@ -26,8 +26,8 @@ grammar.o: grammar.c cupl.h
 tokdump.o: tokdump.c toktab.h
 lexer.o: lexer.c tokens.h cupl.h
 interpret.o: interpret.c tokens.h cupl.h
-interpret.o: interpret.c tokens.h nodetype.h cupl.h
-execute.o: execute.c tokens.h nodetype.h cupl.h
+interpret.o: interpret.c tokens.h cupl.h
+execute.o: execute.c tokens.h cupl.h
 monitor.o: monitor.c tokens.h cupl.h
 
 toktab.h: tokens.h

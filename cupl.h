@@ -65,6 +65,9 @@ node;
 
 #define	NULLNODE	(node *)NULL
 
+#define car	u.n.left
+#define cdr	u.n.right
+
 #define for_cdr(x, t)    for (x = (t); x; x = x->u.n.right)
 
 /* this structure represents a CUPL value */
