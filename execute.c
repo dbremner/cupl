@@ -56,13 +56,62 @@ static void cupl_read(node *tp)
     }
 }
 
+static void needspace(int w)
+/* emit a LF if there are not more than w spaces left on the line */
+{
+    static int used;
+
+    if (w == 0)
+	used = 0;
+    else if (w == -1)
+    {
+	if (used != linewidth)
+	    (void) putchar('\n');
+    }
+    else if (used + w >= linewidth)
+    {
+	(void) putchar('\n');
+	used = 0;
+    }
+    else
+	used += w;
+}
+
 static void cupl_write(node *tp)
 /* evaluate a WRITE item */
 {
-    if (tp->type == STRING)
-	(void) fputs(tp->u.string, stdout);
+    if (tp == (node *)NULL)
+    {
+	needspace(fieldwidth);
+	(void) printf("%-*s", fieldwidth, " ");
+    }
+    else if (tp->type == STRING)
+    {
+	needspace(fieldwidth);
+	(void) printf("%-*s", fieldwidth, tp->u.string, stdout);
+    }
     else
-	(void) printf("%f", tp->syminf->value.elements[0]);
+    {
+	scalar	q;
+
+	if (tp->type == FWRITE)
+	{
+	    needspace(fieldwidth);
+	    q = tp->car->syminf->value.elements[0];
+	}
+	else
+	{
+	    q = tp->syminf->value.elements[0];
+
+	    needspace(2 *fieldwidth);
+	    (void) printf("%*s = ", fieldwidth -3, tp->u.string);
+	}
+
+	if (0.001 < abs(q) && abs(q) < 100000)
+	    (void) printf("%*f", fieldwidth, q);
+	else
+	    (void) printf("%*E", fieldwidth, q);
+    }
 }
 
 static value cupl_eval(node *tree)
@@ -79,8 +128,10 @@ static value cupl_eval(node *tree)
 	break;
 
     case WRITE:
+	needspace(0);
 	for_cdr(np, tree)
 	    cupl_write(np->car);
+	needspace(-1);
 	break;
 
     default:
