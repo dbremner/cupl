@@ -138,6 +138,7 @@ void deallocate_value(value *v)
 /* destroy a value copy, only if its reference count is 1 */
 {
     (void) free(v->elements);
+    v->elements = (scalar *)NULL;
 }
 
 
