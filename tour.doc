@@ -1,6 +1,6 @@
-			CUPL Implementation Notes
+			CUPL/CORC Implementation Notes
 
-The CUPL implementation is built around YACC and LEX.  The rest is
+The CUPL/CORC implementation is built around YACC and LEX.  The rest is
 ANSI and POSIX-conformant C.
 
 The YACC grammar just builds a parse tree, which is passed to
@@ -33,7 +33,15 @@ field.
 
 There are some comments in the code which discuss the possibility of
 a back end that would emit C.   This would be easy to do if there were
-any serious corpus of CUPL code demanding to be translated.  The
+any serious corpus of CUPL/CORC code demanding to be translated.  The
 compiler back end would emit code shaped like the parse tree, which
 would then link monitor.c as runtime support.
+
+The only nontrivial difference between CUPL and CORC is the interpretation
+of GO TO <label> when <label> is associated with a block.  In CUPL, this
+is a go to beginning of block; in CORC, it's go to end of block (which in
+CUPL is GO TO <block> END.  The interpreter sets a flag when it sees any
+of the appropriate CORC-specific keywords (NOTE, BEGIN, DEC, DECREASE, EQL,
+GEQ, GTR, INC, INCREASE, INT, LEQ, LSS, NEQ, REPEAT, TITLE, UNTIL, $) during
+lexing, and execute() modifies its behavior appropriately.
 

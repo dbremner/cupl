@@ -51,6 +51,13 @@ better-known WATFOR and WATFIV compilers, incorporating elaborate
 error-correction and trace output features using a runtime monitor.
 CORC does not appear to have supported these features.
 .P
+The only nontrivial difference between the CUPL and CORC languages
+proper was the interpretation of GO TO <label> when <label> is
+associated with a block.  In CUPL, this is a go to beginning of block;
+in CORC, it's go to end of block (which in CUPL is GO TO <block> END.
+The interpreter switches on CORC interpretation whenever it detects a
+CORC-specific word (such as NOTE) during lexing.
+.P
 .H 1 "Differences from the original CUPL"
 .P
 The most obvious differences are also the most trivial.  CUPL was
@@ -76,13 +83,13 @@ visual appearance of CUPL listings by insisting on all caps and tab-indenting
 statements.  We also preserve the *DATA mechanism for supplying
 initializations.
 .P
-More significant differences arise from differences between the word size and
-floating-point format in CUPL's original host and those of typical modern C
-implementation.  The 360 had a 36-bit word; original CUPL scalars ranged from
-1e76 to 1e-78 with nine decimal digits of precision.  The Burroughs
-1604 was documented as having a much wider range, 1e308 to 1e-308 with
-11 digits of precision; the Burroughs 220 supported 1e-49 to 1e50 with
-8 digits of precision.
+More significant differences arise from differences between the word
+size and floating-point format in CUPL's original host and those of
+typical modern C implementation.  The 360 had a 36-bit word; original
+CUPL scalars ranged from 1e76 to 1e-78 with nine decimal digits of
+precision.  As for CORC: the Burroughs 1604 was documented as having a
+much wider range, 1e308 to 1e-308 with 11 digits of precision; the
+Burroughs 220 supported 1e-49 to 1e50 with 8 digits of precision.
 .PP
 On today's typical 32-bit microprocessor such as an Intel 486, C
 floats are 32 bits and have roughly 1e+38 to 1e-38 range and 9 digits
