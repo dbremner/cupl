@@ -21,6 +21,7 @@ grammar.c tokens.h y.output: cupl.y
 	mv y.tab.c grammar.c
 	mv y.tab.h tokens.h
 
+grammar.o: grammar.c cupl.h
 tokdump.o: tokdump.c toktab.h
 lexer.o: lexer.c tokens.h cupl.h
 interpret.o: interpret.c tokens.h cupl.h

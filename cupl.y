@@ -73,6 +73,8 @@ author first.
 %token IFELSE
 %token DIMENSION
 %token ISLICE JSLICE
+%token ITERATE
+%token FROM
 
 %type <node> prog command cond simple guard perform iter expr rel alloc subscr
 %type <node> datal ditem expl readl writel witem allocl varlist minl maxl
@@ -116,15 +118,15 @@ datal	:    ditem ',' datal		{$$ = cons(DATALIST, $1, $3);}
 	;
 
 perform	:    PERFORM IDENTIFIER
-		{$$ = cons(PERFORM, NULLNODE,  $2);}
+		{$$ = cons(PERFORM, $2, NULLNODE);}
 	|    PERFORM IDENTIFIER expr TIMES
-		{$$ = cons(TIMES,   $3, $2);}
+		{$$ = cons(TIMES,   $2, $3);}
 	|    PERFORM IDENTIFIER WHILE guard
-		{$$ = cons(WHILE,   $4, $2);}
+		{$$ = cons(WHILE,   $2, $4);}
 	|    PERFORM IDENTIFIER FOR IDENTIFIER '=' expl
-		{$$ = cons(FOR, $2, cons('=', $4, $6));}
+		{$$ = cons(FOR,     $2, cons('=', $4, $6));}
 	|    PERFORM IDENTIFIER FOR IDENTIFIER '=' expr iter
-		{$$ = cons(FOR, $2, cons(FOR, $4, cons(FOR, $6, $7)));}
+		{$$ = cons(FOR,     $2, cons(ITERATE, $4, cons(FROM, $6, $7)));}
 	;
 
 iter	:    TO expr BY expr		{$$ = cons(TO, $2, $4);}

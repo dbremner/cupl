@@ -3,7 +3,26 @@
 #include "cupl.h"
 #include "tokens.h"
 
+/*
+ * Define token classes for consistency checks here.  The theory is
+ * that by separating this from the tree-traversal machinery below, we
+ * may be able to parametrize for different source languages someday.
+ */
+/* does the node represent an atom? */
 #define ATOMIC(n)	((n) == IDENTIFIER || (n) == NUMBER || (n) == STRING)
+/* does the node reference a label? */
+#define LABELREF(n)	((n) == GO || (n) == OG || (n) == PERFORM \
+			 || (n) == TIMES || (n) == WHILE || (n) == FOR)
+/* does the node set a variable? */
+#define VARSET(n)	((n) == LET || (n) == READ || (n) == ITERATE)
+/* does the (non-VARSET) node refer to its left operand? */ 
+#define LEFTREF(n)	((n) != FOR && (n) != GO && (n) != OG && (n) != LABEL \
+				&& (n) != ALLOCATE && (n) != WATCH \
+				&& (n) != ITERATE && (n) != FROM \
+				&& (n) != LABEL && (n) != TIMES \
+				&& (n) != WHILE)
+/* does the (non-VARSET) node refer to its right operand? */
+#define RIGHTREF(n)	((n) != PERFORM)
 
 /* this structure represents a CUPL value */
 typedef struct
@@ -66,6 +85,18 @@ static void prettyprint(node *tree, int indent)
 }
 #endif /* PARSEDEBUG */
 
+static void warn(char *msg, ...)
+/* warn of an error and die */
+{
+    va_list	args;
+
+    va_start(args, msg);
+    vfprintf(stderr, msg, args);
+    va_end(args);
+
+    exit(1);
+}
+
 static void die(char *msg, ...)
 /* complain of a fatal error and die */
 {
@@ -78,16 +109,53 @@ static void die(char *msg, ...)
     exit(1);
 }
 
-static bool r_mark_labels(node *tree)
+static bool r_mark_labels(node *tp)
 /* record label references */
 {
-    /* mark label definitions */
-    if (tree->type == STATEMENT && tree->u.n.left->type == LABEL)
-	tree->u.n.left->u.n.left->syminf->labeldef++;
+    /* count label definitions */
+    if (tp->type == LABEL)
+	tp->u.n.left->syminf->labeldef++;
 
-    /* mark label references */
-    if (tree->type == GO || tree->type == OG || tree->type == PERFORM)
-	tree->u.n.left->syminf->labelref++;
+    /* count label references */
+    if (LABELREF(tp->type))
+	if (tp->u.n.left && tp->u.n.left->type == IDENTIFIER)
+	    tp->u.n.left->syminf->labelref++;
+	else if (tp->u.n.right && tp->u.n.right->type == IDENTIFIER)
+	    tp->u.n.right->syminf->labelref++;
+
+    /* count identifier assignments */
+    if (VARSET(tp->type))
+    {
+	if (tp->u.n.left->type == IDENTIFIER)
+	{
+#ifdef ODEBUG
+	    (void) printf("left  operand %8s of %8s assigned\n",
+			  tp->u.n.left->u.string, tokdump(tp->type));
+#endif /* ODEBUG */
+	    tp->u.n.left->syminf->assigned++;
+	}
+    }
+    else if (!ATOMIC(tp->type))
+    {
+	if (tp->u.n.left && tp->u.n.left->type == IDENTIFIER && LEFTREF(tp->type))
+	{
+#ifdef ODEBUG
+	    (void) printf("left  operand %8s of %8s used\n",
+			  tp->u.n.left->u.string, tokdump(tp->type));
+#endif /* ODEBUG */
+	    tp->u.n.left->syminf->used++;
+	}
+	
+
+	if (tp->u.n.right && tp->u.n.right->type == IDENTIFIER && RIGHTREF(tp->type))
+	{
+#ifdef ODEBUG
+	    (void) printf("right operand %8s of %8s used\n",
+			  tp->u.n.right->u.string, tokdump(tp->type));
+#endif /* ODEBUG */
+	    tp->u.n.right->syminf->used++;
+	}
+    }
 
     return(TRUE);
 }
@@ -118,7 +186,7 @@ static bool check_errors(node *tree)
     /* simple sanity check */
     for (n = tree; n; n = n->u.n.right)
 	if (n->type != STATEMENT)
-	    die("cupl: internal error: non-STATEMENT at top level");
+	    die("internal error: non-STATEMENT at top level");
 
     /* make backpointers */
     for_symbols(lp)
@@ -127,12 +195,20 @@ static bool check_errors(node *tree)
     /* mark labels */
     recursive_apply(tree, r_mark_labels);
 
-    /* check for label consistency */
+    /* check for label/variable consistency */
     for_symbols(lp)
 	if (lp->labelref && !lp->labeldef)
-	    die("cupl: label %s referenced but not defined\n", lp->node->u.string);
+	    die("label %s used but not defined\n", lp->node->u.string);
+	else if ((lp->labelref || lp->labeldef) && (lp->assigned || lp->used))
+	    die("%s used as both variable and label\n");
+	else if (!lp->labelref && lp->labeldef)
+	    warn("label %s defined but never used\n", lp->node->u.string);
+        else if (lp->used && !lp->assigned)
+	    warn("variable %s used but not set\n", lp->node->u.string);
+        else if (!lp->used && lp->assigned)
+	    warn("variable %s set but not used\n", lp->node->u.string);
 
-    /* report on the number of labels */
+    /* describe all labels and variables */
     if (verbose >= DEBUG_CHECKDUMP)
     {
 	int		nlabels = 0;
@@ -148,10 +224,17 @@ static bool check_errors(node *tree)
 	    (void) printf("Labels:\n");
 	    for_symbols(lp)
 		if (lp->labeldef)
-		    (void) printf("    %s (%d references)\n",
-				  lp->node->u.string,
+		    (void) printf("    %8s: %d reference(s)\n",
+				  lp->node->u.string, 
 				  lp->labelref);
 	}
+
+	/* static counts for variables */
+	(void) printf("Variables:\n");
+	for_symbols(lp)
+	    if (!lp->labeldef)
+		(void) printf("    %8s: %d assignments, %d reference(s)\n",
+			      lp->node->u.string, lp->assigned, lp->used);
     }
 }
 
@@ -159,7 +242,7 @@ void interpret(node *tree)
 /* interpret a program parse tree */
 {
 #ifdef PARSEDEBUG
-    if (verbose > DEBUG_PARSEDUMP)
+    if (verbose >= DEBUG_PARSEDUMP)
 	prettyprint(tree, 0);
 #endif /* PARSEDEBUG */
 
