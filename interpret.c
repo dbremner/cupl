@@ -299,24 +299,31 @@ static void rewrite(node *tree)
 	if (np->car->type == LABEL)
 	    np->car->car->syminf->target = np;
 
-    /* pull blocks out of the main line */
+    /* figure end addresses */
     for_cdr(np, tree)
     {
 	node *sp = np->car;
 
 	if (sp && sp->type == LABEL && sp->cdr->type == BLOCK)
 	{
-	    node	*endnode;
+	    node	*ep;
 	    bool	found = FALSE;
 
-	    for (endnode = np->cdr; endnode; endnode = endnode->cdr)
-		if (endnode->car->type == LABEL
-			&& endnode->car->cdr->type == END
+	    for (ep = np->cdr; ep; ep = ep->cdr)
+		if (ep->car->type == LABEL
+			&& ep->car->cdr->type == END
 			&& strcmp(sp->car->u.string,
-				  endnode->car->car->u.string) == 0)
+				  ep->car->car->u.string) == 0)
 		{
+		    /*
+		     * Associate the end node not with the BLOCK node
+		     * itself but with the enclosing statement node.
+		     * that way, we can find the first statement after
+		     * the END by pc->endnode->cdr, where pc is the
+		     * current statement.
+		     */
+		    np->endnode = ep;
 		    found = TRUE;
-		    sp->car->syminf->endnode = endnode;
 		    break;
 		}
 	    if (!found)

@@ -23,9 +23,42 @@ support in monitor.c.
 #define EVAL_WRAP	/* empty */
 #define RETURN_WRAP(t, l, r, v)	display_return(t, l, r, v);
 
-static node *pc;	/* the statement node to evaluate next */
+static node *pc;	/* pointer to statement being evaluated */
+static node *next;	/* the statement node to evaluate next */
 static node *data;	/* pointer to *DATA item to be grabbed next */
-static jmp_buf jmpbuf;	/* termination handling */
+static jmp_buf nextbuf;	/* end-of-statement handling */
+static jmp_buf endbuf;	/* termination handling */
+
+/****************************************************************************
+ *
+ * Stack handling
+ *
+ ****************************************************************************/
+
+#define STACKSIZE	64
+static node *stack[STACKSIZE], **sp = stack;
+
+static node *popstack(void)
+/* pop the perform stack */
+{
+    if (sp <= stack)
+	die("too many END statements\n");
+    return(*sp--);
+}
+
+static void pushstack(node *st)
+/* push a return location onto the perform stack */
+{
+    if (sp >= stack + STACKSIZE)
+	die("too many PERFORM calls\n");
+    *sp++ = st;
+}
+
+/****************************************************************************
+ *
+ * I/O support
+ *
+ ****************************************************************************/
 
 static void cupl_read(node *tp)
 /* evaluate a READ item */
@@ -80,6 +113,12 @@ static void eval_write(node *tp)
     else
 	cupl_scalar_write(tp->u.string, tp->syminf->value.elements[0]);
 }
+
+/****************************************************************************
+ *
+ * Interpretation
+ *
+ ****************************************************************************/
 
 static void display_return(node *tree, node *left, node *right, value v)
 /* display the returned value of a node (for tracing purposes) */
@@ -275,6 +314,14 @@ static value cupl_eval(node *tree)
 	 * Matrix functions
 	 */
 
+    case IDN:
+	/* FIXME: IDN special properties are not implemented */
+	die("special properties of IDN are not omplemented\n");
+
+    case SUBSCRIPT:
+	/* FIXME: SUBSCRIPT special properties are not implemented */
+	die("special properties of subscript are not omplemented\n");
+
     case DET:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_det(rightside);
@@ -413,39 +460,74 @@ static value cupl_eval(node *tree)
 	 * Control structures.
 	 */
 
-    case WHILE:
-	do {
-	    (void) cupl_eval(tree->car);
-
-	    cond = cupl_eval(tree->cdr);
-	} while
-	    (cond.rank);	/* conditional values use an odd convention */
+    case LABEL:
+	(void) cupl_eval(tree->cdr);
 	result.rank = FAIL;
-	break;
+	return(result);
+
+    case WHILE:
+	/* FIXME: implement WHILE */
+	die("WHILE is not implemented\n");
+	result.rank = FAIL;
+	return(result);
 
     case FOR:
 	/* FIXME: implement FOR */
 	die("FOR is not implemented\n");
+	result.rank = FAIL;
+	return(result);
 
     case TIMES:
 	/* FIXME: implement TIMES */
 	die("TIMES is not implemented\n");
+	result.rank = FAIL;
+	return(result);
+
+    case PERFORM:
+	next = tree->car;
+	pushstack(pc->cdr);
+	longjmp(nextbuf, 1);
 
     case BLOCK:
-	/* FIXME: implement BLOCK */
-	die("BLOCK skip is not implemented\n");
+	next = pc->endnode->cdr;
+	longjmp(nextbuf, 1);
 
     case GO:
-	/* FIXME: implement GO TO */
-	die("GO TO is not implemented\n");
+	next = tree->car;
+	longjmp(nextbuf, 1);
+
+    case END:
+    case OG:
+	next = popstack();
+	longjmp(nextbuf, 1);
 
     case IF:
-	/* FIXME: implement IF */
-	die("GO TO is not implemented\n");
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	if (leftside.rank)
+	    cupl_eval(tree->cdr);
+	result.rank == FAIL;
+	return(result);
+
+    case IFELSE:
+	leftside = EVAL_WRAP(cupl_eval(tree->car));
+	if (leftside.rank)
+	    cupl_eval(tree->cdr->car);
+	else
+	    cupl_eval(tree->cdr->cdr);
+	result.rank == FAIL;
+	return(result);
 
     case STOP:
-	longjmp(jmpbuf, 1);
+	longjmp(endbuf, 1);
 	/* no fall through */
+
+	/*
+	 * Tracing.
+	 */
+
+    case WATCH:
+	/* FIXME: implement WATCH */
+	die("WATCH is not implemented\n");
 
     default:
 	die("unknown node type %d (%s), cannot execute\n",
@@ -458,7 +540,7 @@ static value cupl_eval(node *tree)
 void execute(node *tree)
 /* execute a CUPL program described by a parse tree */
 {
-    node	*np, *next, *last;
+    node	*np, *last;
     lvar	*lp;
 
     /* initially, all variables are scalars with zero values */
@@ -484,14 +566,15 @@ void execute(node *tree)
 	last->cdr = (node *)NULL;
 
     /* first, setjmp so we can use STOP to exit */
-    if (setjmp(jmpbuf) != 0)
+    if (setjmp(endbuf) != 0)
 	return;
     else
 	/* now execute the program */
 	for (pc = tree; pc; pc = next)
 	{
 	    next = pc->cdr;
-	    (void) cupl_eval(pc->car);
+	    if (setjmp(nextbuf) == 0)
+		(void) cupl_eval(pc->car);
 	}
 
     warn("program terminated without explicit STOP\n");

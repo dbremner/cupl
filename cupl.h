@@ -55,6 +55,8 @@ typedef struct edon
     /* back-pointer to the symbol list, set if the node is an identifier */
     struct lvar_t	*syminf;    
 
+    /* statement node only */
+    struct edon		*endnode;	/* end node address, if block label */
 #ifdef PARSEDEBUG
     int number;		/* statement number, if this is a STATEMENT node */
 #endif /* PARSEDEBUG */
@@ -79,7 +81,6 @@ typedef struct lvar_t
     node		*node;		/* variable's symbol info */
     value		value;		/* variable's value */
     node		*target;	/* target node, if label */
-    node		*endnode;	/* end node address, if block label */
 
     /* information used for consistency checks */
     int		blabeldef;

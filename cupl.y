@@ -79,8 +79,9 @@ static int statement_count;
 %token ITERATE
 %token FROM
 
-%type <node> prog command cond simple guard perform iter expr rel alloc subscr
-%type <node> datal ditem expl readl writel witem allocl varlist minl maxl
+%type <node> prog command cond simple guard perform gosub iter expr rel alloc
+%type <node> subscr datal ditem expl readl writel witem allocl varlist
+%type <node> minl maxl
 
 %%	/* beginning of rules section */
 
@@ -132,16 +133,17 @@ datal	:    ditem ',' datal		{$$ = cons(DATA, $1, $3);}
 	|    ditem			{$$ = cons(DATA, $1, NULLNODE);}
 	;
 
-perform	:    PERFORM IDENTIFIER
-		{$$ = cons(PERFORM, $2, NULLNODE);}
-	|    PERFORM IDENTIFIER expr TIMES
-		{$$ = cons(TIMES,   $2, $3);}
-	|    PERFORM IDENTIFIER WHILE guard
-		{$$ = cons(WHILE,   $2, $4);}
-	|    PERFORM IDENTIFIER FOR IDENTIFIER '=' expl
-		{$$ = cons(FOR,     $2, cons('=', $4, $6));}
-	|    PERFORM IDENTIFIER FOR IDENTIFIER '=' expr iter
-		{$$ = cons(FOR,     $2, cons(ITERATE, $4, cons(FROM, $6, $7)));}
+gosub	:   PERFORM IDENTIFIER		{$$ = cons(PERFORM, $2, NULLNODE);}
+	;
+
+perform	:    gosub			{$$ = $1;}
+	|    gosub expr TIMES		{$$ = cons(TIMES, $2, $1);}
+	|    gosub WHILE guard		{$$ = cons(WHILE, $3, $1);}
+
+	|    gosub FOR IDENTIFIER '=' expl
+		{$$ = cons(FOR,   cons('=', $3, $5),                     $1);}
+	|    gosub FOR IDENTIFIER '=' expr iter
+		{$$ = cons(FOR,   cons(ITERATE, $3, cons(FROM, $5, $6)), $1);}
 	;
 
 iter	:    TO expr BY expr		{$$ = cons(TO, $2, $4);}
@@ -161,7 +163,7 @@ expl	:    expr ',' expl		{$$ = cons(FORLIST, $1, $3);}
  */
 guard	:    rel			{$$ = $1;}
 	|    rel AND rel		{$$ = cons(AND, $1, $3);}
-	|    rel OR rel			{$$ = cons(OR, $1, $3);}
+	|    rel OR rel			{$$ = cons(OR,  $1, $3);}
 	;
 
 rel	:    expr '=' expr		{$$ = cons('=', $1, $3);}
