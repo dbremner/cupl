@@ -54,6 +54,8 @@ typedef struct edon
 }
 node;
 
+#define for_cdr(np, tree)    for (np = tree; np; np = tree->u.n.right)
+
 /* this structure represents a CUPL value */
 typedef struct
 {
@@ -70,6 +72,7 @@ typedef struct lvar_t
     struct lvar_t	*next;		/* link to next variable */
     node		*node;		/* variable's symbol info */
     value		value;		/* variable's value */
+    node		*target;	/* target node, if label */
 
     /* information used for consistency checks */
     int		labeldef;

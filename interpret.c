@@ -104,6 +104,21 @@ static void die(char *msg, ...)
     exit(1);
 }
 
+static bool recursive_apply(node *tree, bool (*fun)(node *))
+/* apply fun recursively to tree, short-circuiting on FALSE return */
+{
+    if (tree == (node *)NULL)
+	return(TRUE);
+
+    if (ATOMIC(tree->type))
+	return(fun(tree));
+    else if (recursive_apply(tree->u.n.left, fun) && recursive_apply(tree->u.n.right, fun))
+	return(fun(tree));
+    else
+	return(FALSE);
+
+}
+
 static bool r_mark_labels(node *tp)
 /* record label references */
 {
@@ -153,21 +168,6 @@ static bool r_mark_labels(node *tp)
     }
 
     return(TRUE);
-}
-
-static bool recursive_apply(node *tree, bool (*fun)(node *))
-/* apply fun recursively to tree, short-circuiting on FALSE return */
-{
-    if (tree == (node *)NULL)
-	return(TRUE);
-
-    if (ATOMIC(tree->type))
-	return(fun(tree));
-    else if (recursive_apply(tree->u.n.left, fun) && recursive_apply(tree->u.n.right, fun))
-	return(fun(tree));
-    else
-	return(FALSE);
-
 }
 
 static bool check_errors(node *tree)
@@ -231,6 +231,37 @@ static bool check_errors(node *tree)
     }
 }
 
+static bool r_label_rewrite(node *tp)
+/* resolve label references */
+{
+    /*
+     * KISS -- this code may do extra work, but it needs no special
+     * knowledge about node types.
+     */
+    node *left = tp->u.n.left;
+    node *right = tp->u.n.right;
+
+    if (left && left->type == IDENTIFIER && left->syminf->labelref)
+	left = left->syminf->target;
+
+    if (right && right->type == IDENTIFIER && right->syminf->labelref)
+	right = right->syminf->target;
+}
+
+static void rewrite(node *tree)
+/* resolve labels */
+{
+    node	*np;
+
+    /* first, make a pointer from each label to its destination statement */
+    for_cdr(np, tree)
+	if (np->u.n.left->type == LABEL)
+	    np->u.n.left->syminf->target = np;
+
+    /* now, hack label references to eliminate name references */
+    recursive_apply(tree, r_label_rewrite);
+}
+
 void interpret(node *tree)
 /* interpret a program parse tree */
 {
@@ -241,6 +272,7 @@ void interpret(node *tree)
 
     if (check_errors(tree))
 	return;
+    rewrite(tree);
 
     execute(tree);
 }
