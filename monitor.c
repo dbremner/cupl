@@ -11,6 +11,11 @@ SYNOPSIS
     void copy_value(value v);
     void deallocate_value(value *v)
 
+    void cupl_reset_write()
+    void cupl_eol_write()
+    void cupl_scalar_write(char *name, scalar quant)
+    void cupl_string_write(char *s)
+
     value cupl_add(value, value)
     value cupl_multiply(value, value)
     value cupl_subtract(value, value)
@@ -104,6 +109,61 @@ void deallocate_value(value *v)
 /* destroy a value copy, only if its reference count is 1 */
 {
     (void) free(v->elements);
+}
+
+/****************************************************************************
+ *
+ * Output support
+ *
+ ****************************************************************************/
+
+static int used;
+
+void cupl_reset_write()
+{
+    used = 0;
+}
+
+void cupl_eol_write(void)
+{
+    if (used != linewidth)
+	(void) putchar('\n');
+}
+
+static void needspace(int w)
+/* emit a LF if there are not more than w spaces left on the line */
+{
+    if (used + w >= linewidth)
+    {
+	(void) putchar('\n');
+	used = 0;
+    }
+    else
+	used += w;
+}
+
+void cupl_scalar_write(char *name, scalar quant)
+/* write a numeric or skip a field in CUPL style */
+{
+    if (name)
+    {
+	needspace(2 * fieldwidth);
+	(void) printf("%*s = ", fieldwidth - 3, name);
+    }
+    else
+	needspace(fieldwidth);
+
+    if (0.001 < fabs(quant) && abs(quant) < 100000)
+	(void) printf("%*f", fieldwidth, quant);
+    else
+	(void) printf("%*E", fieldwidth, quant);
+}
+
+void cupl_string_write(char *s)
+/* write a string, or just skip the field */
+{
+    needspace(fieldwidth);
+    (void) printf("%-*s", fieldwidth, s);
 }
 
 /****************************************************************************
