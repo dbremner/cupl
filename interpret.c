@@ -34,7 +34,7 @@ differently if we get a compiler back end.
 /* does the node reference a block label? */
 #define BLABELREF(n)	((n) == PERFORM || (n) == END || (n) == OG)
 /* does the node set a variable? */
-#define VARSET(n)	((n) == LET || (n) == READ || (n) == ITERATE)
+#define VARSET(n)	((n) == LET || (n) == READ || (n) == ITERATE || (n) == '=')
 /* does the (non-VARSET) node refer to its left operand as a variable? */ 
 #define LEFTREF(n)	((n) != FOR && (n) != GO && (n) != OG && (n) != LABEL \
 				&& (n) != ALLOCATE && (n) != WATCH \

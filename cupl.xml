@@ -46,17 +46,19 @@ CUPL rather resembles early BASICs, minus BASIC's string facility.  It is
 oriented towards scientific calculation and linear algebra, and would be nearly
 impossible (or, at any rate, extremely painful) to use for anything else.
 .P
-The programming-support features of CUPL resembled those of the
+The programming-support features of CUPL and CORC resembled those of the
 better-known WATFOR and WATFIV compilers, incorporating elaborate
 error-correction and trace output features using a runtime monitor.
-CORC does not appear to have supported these features.
 .P
-The only nontrivial difference between the CUPL and CORC languages
-proper was the interpretation of GO TO <label> when <label> is
+The only incompatibility between the CUPL and CORC languages
+documented was the interpretation of GO TO <label> when <label> is
 associated with a block.  In CUPL, this is a go to beginning of block;
 in CORC, it's go to end of block (which in CUPL is GO TO <block> END.
 The interpreter switches on CORC interpretation whenever it detects a
 CORC-specific word (such as NOTE) during lexing.
+.P
+The CORC statement TITLE and the triple iteration construct have no
+counterparts in CUPL.
 .P
 .H 1 "Differences from the original CUPL"
 .P

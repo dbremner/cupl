@@ -10,7 +10,7 @@ The differences:
 
    * The square root radical sign surrounding b is rendered as b^-2
 
-   * metavariable subscripts are simply appended to their metavariables.
+   * |a| is used to render the absolute-value operation.
 
    * `x' between digits is used to render the multiplication sign.
 
@@ -27,8 +27,21 @@ Error corrections:
      compound-AND example was incorrectly lowercased.  In item 1 of the BEGIN
      explanation, the word `statement' was incorrectly uppercased.
 
+Notes:
+
+   * Tags [See *1], [See *2], etc, are not part of the original; they reference
+     footnotes following the transcript.
+
+   * Tags such as [See 5-8] are not part of the original, they reference other
+     quotes from the text given below by page number.
+
 Otherwise, the appendix F transcription is exact, even down to hyphen breaks
-and spacing.
+and spacing (allowing for the fact that the original typewriter spacing was
+somewhat irregular...).
+
+The combination of Appendix F and the notes includes essentially all the
+manual's documentation of the CORC language itself.  Most of the text is
+tutorials and exercises.
 
 This implementation preserves the CORC-62 distinction between LOG and LN, 
 contrary to the transcript below which describes CORC-63 (which identifies
@@ -40,14 +53,17 @@ The following .corc files, included with this distribution, are also
 transcribed from the manual.  We include every complete program
 example.  The following list maps programs to original page numbers:
 
+simplecorc.corc         -- 4-6
+gasbill.corc            -- 4-9
+hearts.corc             -- 4-10
 sumsquares.corc		-- 5-4
-power.corc		-- 5-6
+powercorc.corc		-- 5-6
 factorial.corc		-- 5-6
-quadratic.corc		-- 5-9
-title.corc		-- 7-3
+quadcorc.corc		-- 5-9
+title.corc		-- 7-3	(note: this one uses continuations)
 
-We have supplied leading comments for these programs; they are otherwise
-unaltered.
+We have supplied leading comments and test data for these programs;
+they are otherwise unaltered.
  
 ---------------------------------- CUT HERE ----------------------------------
 
@@ -90,13 +106,13 @@ unaltered.
                     once in label field.
                     Block label used for only one set of BEGIN-END statements.
           e. Variables must be listed in Dictionary. If no initial value
-             is given zero is assumed.
+             is given zero is assumed.  [See *1]
           f. One or two subscripts, enclosed in parentheses.  May be
              any expression (including subscripted variables) whose
              value at execution is a positive integer not greater than
-             the maximum declared for this variable in Dictionary.
+             the maximum declared for this variable in Dictionary. [See D-2]
              In Dictionary and Input Data subscripts given as integers in
-                    subscript field; parentheses are not used.
+                    subscript field; parentheses are not used.  [See *1]
 
      Arithmetic Operators
      --------------------
@@ -150,11 +166,11 @@ unaltered.
           Initially right digit should be zero on all cards to leave
                room for later additions.
 
-     Program Arrangement
+     Program Arrangement [See *1]
      -------------------
           Arrange and number programming forms in the following order:
                     1. Preliminary Description
-                    2. Dictionary
+                    2. Dictionary [See 2-10]
                          List all variables to be used
                          Specify initial values if not zero
                          Specify maximum value for each subscript.
@@ -241,7 +257,7 @@ unaltered.
                                with value of expression assigned to
                                variable v.  Three expressions on list
                                enclosed in parentheses mean from h to k
-                               in steps of k.
+                               in steps of k. [See 5-8]
 
      Communication Statements
      ------------------------
@@ -262,3 +278,114 @@ unaltered.
                                notes only.
 
 ---------------------------------- CUT HERE ----------------------------------
+
+[*1] This implementation of CORC does not support or allow a
+Dictionary section.  Instead, variable initializations must be done via
+CUPL-style DATA and ALLOCATE statements.
+
+[*2] Ignore this section.  Program statements are free-format, with
+continuations not supported (though the example program
+test/title.corc shows the syntax, it will break cupl).  Data for read
+statements is accepted in CUPL format following the keyword *DATA.
+
+For completeness, however, the Dictionary feature is documented here.
+
+From 2-10:
+
+Dictionary of Variables
+-----------------------
+     In addition to a set of statements CORC requires a pro-
+gram to contain another part known as the Dictionary.  The Diction-
+ary of a program is merely a list of all the variables used in
+the program. along with, if desired, the initial assigned values of
+the variables.  If no initial value is specified the computer
+assigns the initial value zero.
+
+From 2-11:
+
+     In the above example the Dictionary might look like this:
+
+     A     1
+     B    -1
+     C    -6
+     ROOT
+     X1
+     X2
+
+[The `above example' is the simplecorc.corc program.  The CORC Dictionary
+is equivalent to a CUPL DATA section, but also allowed the programmer to
+dimension array variables.  The example form on 2-12 makes it clear that
+the Dictionary was distinguished from the program proper by being in a
+different lower range of card line numbers.] 
+
+From 5-8:
+
+Three expressions on a list, enclosed in parentheses, are in-
+terpreted in the following way:
+     1. The first expression gives the initial value for the vari-
+        able.
+     2. The second expression gives the difference between con-
+        secutive values.
+     3. The third expression indicates where to stop -- the final
+        value for the variable is less than or equal to the value
+        of the third expression.
+
+[... examples omitted ...]
+
+    More than one such "triple" may be used on a list, and
+"triples" may be intermixed with separate expressions;
+
+From 6-5:
+
+   A particular variable either has no subscripts, one sub-
+script, or two subscripts and this use must be consistent through-
+out a program.  A variable cannot appear as X(I) in one statement
+and X(I, J) or just X in another statement of the same program.
+The nature of a variable (whether it is to be subscripted or not)
+must be indicated when the variable is listed in the CORC Diction-
+ary.  This is done by giving the maximum value of any subscripts
+that will be used in columns 21-25 of the Dictionary form.  If no
+subscripts will be used these columns will be left blank in the
+line for that variable.  If one subscript is to be used, the maxi-
+mum value that that subscript will take on anywhere in the pro-
+gram must be given in columns 21-23; columns 24-25 are left blank.
+(Note that this is the maximum value of the subscript, and not
+the maximum value of the variable.)  If two subscripts are to be
+used the maximum value of the first is given in columns 21-23
+and the maximum value of the second in columns 24-25.  For ex-
+ample, if the Dicitonary [sic] looks like the following:
+
+          SCALAR
+          VECTOR    45
+          MATRIX   100     2
+          ARRAY      3    32
+
+then SCALAR is a simple variable that will not have any sub-
+scripts anywhere in the program.  VECTOR will have one subscript
+everwhere it appears in the program [...] MATRIX [...] will 
+appear each time with two subscripts [...] ARRAY will also
+always have two subscripts; [...]
+
+From D-2:
+
+Automatic Integer Round-off
+---------------------------
+a. The value of a subscript is rounded off to the nearest
+   integer.
+b. If the round-off involves a change of greater than
+   10^-9 (approximately;   the number is subject to some
+   variation) an error message is given.
+
+From D-3:
+
+Automatic Relative Round-off for x r y
+--------------------------------------
+a. If both x and y are zero the condition is applied as it stands.
+b. If either x or y is not zero:
+   (i) Both x and y are multiplied by MAX(|x|, |y|);
+   (ii) The results are rounded off to the nearest 
+        integer if this involves a change of less
+        than 10^-9 (10^-7 for the Burroughs 220), but
+        not otherwise;
+   (iii) The specified condition is interpreted for
+        the resulting numbers.

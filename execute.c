@@ -515,11 +515,27 @@ static value cupl_eval(node *tree)
 	if (iterator->type == '=')
 	{
 	    for_cdr(np, iterator->cdr)
-	    {
-		result = EVAL_WRAP(cupl_eval(np->car));
-		cupl_assign(iterator->car, result);
-		cupl_eval(tree->cdr);
-	    }
+		if (np->car->type == TRIPLE)
+		{
+		    scalar ds, initial, final, increment;
+		    node	*triple = np->car;
+
+		    initial = EVAL_WRAP(cupl_eval(triple->car)).elements[0];
+		    increment = EVAL_WRAP(cupl_eval(triple->cdr->car)).elements[0];
+		    final = EVAL_WRAP(cupl_eval(triple->cdr->cdr)).elements[0];
+
+		    for (ds = initial; ds <= final; ds += increment)
+		    {
+			tree->car->car->syminf->value.elements[0] = ds;
+			cupl_eval(tree->cdr);
+		    }
+		}
+		else
+		{
+		    result = EVAL_WRAP(cupl_eval(np->car));
+		    cupl_assign(iterator->car, result);
+		    cupl_eval(tree->cdr);
+	    	}
 	}
 	else if (iterator->type == ITERATE)
 	{

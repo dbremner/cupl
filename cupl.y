@@ -83,9 +83,10 @@ int yydebug;
 %token ISLICE JSLICE
 %token ITERATE
 %token FROM
+%token TRIPLE
 
 %type <node> prog command cond simple guard perform gosub iter expr rel alloc
-%type <node> subscr datal ditem expl readl writel witem allocl varlist
+%type <node> subscr datal ditem triple expl readl writel witem allocl varlist
 %type <node> minl maxl
 
 %%	/* beginning of rules section */
@@ -158,8 +159,13 @@ iter	:    TO expr BY expr		{$$ = cons(TO, $2, $4);}
 	|    TO expr			{$$ = cons(TO, $2, (node *)NULL);}
 	;
 
+triple  :    '(' expr ',' expr ',' expr ')'
+		{$$ = cons(TRIPLE, $2, cons(ITERATE, $4, $6));}
+
 expl	:    expr ',' expl		{$$ = cons(FORLIST, $1, $3);}
+	|    triple ','	expl		{$$ = cons(FORLIST, $1, $3);}
 	|    expr			{$$ = cons(FORLIST, $1, NULLNODE);}
+	|    triple			{$$ = cons(FORLIST, $1, NULLNODE);}
 	;
 
 /* guard syntax */
