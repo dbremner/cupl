@@ -139,6 +139,16 @@ static bool r_mark_labels(node *tp)
 	}
     }
 
+    /* WRITE ALLs reference everything */
+    if (tp->type == WRITE && tp->car && tp->car->type == ALL)
+    {
+	lvar	*lp;
+
+	for_symbols(lp)
+	    if (lp->assigned)
+		lp->used++;
+    }
+
     return(TRUE);
 }
 
