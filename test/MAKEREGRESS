@@ -11,7 +11,7 @@ rm -f *.parse
 for x in $TESTLOADS
 do
 	echo "Making ${x}.parse from ${x}.cupl..."
-	../cupl -v1 ${x}.cupl >${x}.parse
+	../cupl -v1 ${x}.cupl >${x}.parse 2>&1
 done
 
 chmod -w *.parse
