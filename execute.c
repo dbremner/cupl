@@ -122,16 +122,21 @@ static void eval_write(node *tp)
  *
  ****************************************************************************/
 
+#define RELATION(n)	((n)==AND || (n)==OR || (n)==EQUAL || (n)==NE \
+			 || (n)==LT || (n)==GT || (n)==LE || (n)==GE)
+
 static void display_return(node *tree, node *left, node *right, value v)
 /* display the returned value of a node (for tracing purposes) */
 {
     if (verbose >= DEBUG_ALLOCATE)
     {
-	(void) printf("eval: %x (%-10s of %9x, %9x) ",
+	(void) printf("eval returns: %x (%-10s of %9x, %9x) ",
 		      tree, tokdump(tree->type), left, right);
 
-	if (v.rank == FAIL)
-	    (void) printf("does not return a value\n");
+	if (RELATION(tree->type))
+	    (void) printf("%s returned\n", v.rank ? "TRUE" : "FALSE");
+	else if (v.rank == FAIL)
+	    (void) printf("no value returned\n");
 	else
 	    (void) printf("returned %f\n", v.elements[0]);
     }
@@ -144,6 +149,10 @@ static value cupl_eval(node *tree)
     node	*np;
     int		n;
     jmp_buf	jmpperf;
+
+    if (verbose >= DEBUG_ALLOCATE)
+	(void) printf("eval begins:  %x (%-10s of %9x, %9x)\n",
+		      tree, tokdump(tree->type), tree->car, tree->cdr);
 
     switch(tree->type)
     {
@@ -499,7 +508,7 @@ static value cupl_eval(node *tree)
 
     case PERFORM:
 	if (setjmp(jmpperf) == 0)
-	    cupl_eval(tree->car);
+	    cupl_eval(tree->car->car);
 	result.rank = FAIL;
 	return(result);
 
