@@ -63,9 +63,15 @@ static void prettyprint(node *tree, int indent)
 	(void) printf("IDENTIFIER: %s\n", tree->u.string);
     else if (tree->type == STRING)
 	(void) printf("STRING: '%s'\n", tree->u.string);
+    else if (tree->type == STATEMENT && indent > 0)
+	(void) printf("-> STATEMENT %d\n", tree->number);
     else
     {
-	(void) printf("%-20s", tokdump(tree->type));
+	if (tree->type == STATEMENT)
+	    (void) printf("STATEMENT %2d       ", tree->number);
+	else
+	    (void) printf("%-20s", tokdump(tree->type));
+
 	if (verbose >= DEBUG_ALLOCATE)
 	    (void) printf("                          (%x -> %x, %x)",
 			  tree,
@@ -248,16 +254,16 @@ static bool r_label_rewrite(node *tp)
 	if (left && left->type == IDENTIFIER && left->syminf->labelref)
 	{
 #ifdef ODEBUG
-	    (void) printf("patching label reference to %s\n", left->u.string);
+	    (void) printf("patching label left reference to %s\n", left->u.string);
 #endif /* ODEBUG */
-	    left = left->syminf->target;
+	    tp->u.n.left = left->syminf->target;
 	}
 	if (right && right->type == IDENTIFIER && right->syminf->labelref)
 	{
 #ifdef ODEBUG
-	    (void) printf("patching label reference to %s\n", right->u.string);
+	    (void) printf("patching label right reference to %s\n", right->u.string);
 #endif /* ODEBUG */
-	    right = right->syminf->target;
+	    tp->u.n.right = right->syminf->target;
 	}
     }
 
@@ -305,14 +311,30 @@ static void rewrite(node *tree)
 void interpret(node *tree)
 /* interpret a program parse tree */
 {
-#ifdef PARSEDEBUG
-    if (verbose >= DEBUG_PARSEDUMP)
-	prettyprint(tree, 0);
-#endif /* PARSEDEBUG */
-
     if (check_errors(tree))
 	return;
     rewrite(tree);
+
+#ifdef PARSEDEBUG
+    /* statement conses are made in reverse order; deal with this */
+    {
+	node	*np;
+	int statement_count = 0;
+
+	for_cdr(np, tree)
+	{
+	    if (np->type == STATEMENT)
+		++statement_count;
+	}
+
+	for_cdr(np, tree)
+	    if (np->type == STATEMENT)
+		np->number = statement_count - np->number + 1;
+    }
+
+    if (verbose >= DEBUG_PARSEDUMP)
+	prettyprint(tree, 0);
+#endif /* PARSEDEBUG */
 
     execute(tree);
 }

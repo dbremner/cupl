@@ -25,6 +25,10 @@ author first.
 #include <setjmp.h>
 
 #define	NULLNODE	(node *)NULL
+
+#ifdef PARSEDEBUG
+static int statement_count;
+#endif /* PARSEDEBUG */
 %}
 
 %start program
@@ -84,10 +88,22 @@ author first.
 /* a program description consists of a sequence of statements */
 program :    prog			{interpret($1);}
 
-prog	:    command prog		{$$ = cons(STATEMENT, $1, $2);}
-	|    IDENTIFIER command prog	{$$ = cons(STATEMENT, 
-						cons(LABEL, $1, $2), $3);}
-	|    /* EMPTY */		{$$ = (node *)NULL;}
+prog	:    command prog
+		{
+		    $$ = cons(STATEMENT, $1, $2);
+#ifdef PARSEDEBUG
+		    $$->number = ++statement_count;
+#endif /* PARSEDEBUG */
+		}
+	|    IDENTIFIER command prog
+		{
+		    $$ = cons(STATEMENT, cons(LABEL, $1, $2), $3);
+#ifdef PARSEDEBUG
+		    $$->number = ++statement_count;
+#endif /* PARSEDEBUG */
+		}
+	|    /* EMPTY */
+		{$$ = (node *)NULL;}
 	;
 
 /* statement syntax */
