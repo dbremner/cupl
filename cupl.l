@@ -143,7 +143,7 @@ static node *intern_number(char *str)
 
 #ifdef PARSEDEBUG
     if (verbose >= 2)
-	(void) printf("intern: %x                             (NUMBER: %d)\n", new, numval);
+	(void) printf("intern: %9x                      (NUMBER: %f)\n", new, numval);
 #endif /* PARSEDEBUG */
     return(new);
 }
