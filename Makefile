@@ -5,7 +5,7 @@ CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
 CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DPARSEDEBUG	-DYYDEBUG=1
 
-SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c
+SOURCES = cupl.[ylh] tokdump.c main.c interpret.c execute.c monitor.c cupl.lsm
 
 MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
 cupl: $(MODULES)
