@@ -1,0 +1,528 @@
+			THE ORIGINAL CUPL DOCUMENTATION
+
+We reproduce here, for reference, a nearly exact transcription of Appendix A
+of the Walker manual, "CUPL: The Cornell University Programming Language".
+
+Tags of the form [See m-n: ...] not part of the original document; they are
+references (by section-page number in the original manual) to notes which
+follow the appendix transcription.  These notes are also excerpts from the
+manual.
+
+There are a few typographical changes to fit it into the ASCII character set.
+The differences:
+
+   * ^[-+]nnn is used to render exponent superscripts.
+
+   * subscripts are simply appended to their metavariables.
+
+   * `x' between digits is used to render the multiplication sign.
+
+   * lines of dashes below headings indicate underscores.
+
+   * page breaks in the original are represented by form feeds here.
+
+Otherwise, the appendix A transcription is exact, even down to hyphen breaks
+and spacing.  In the following notes, hyphen breaks and exact spacing are not
+preserved, but the original text is, with the following additional
+typographical changes:
+
+   * |a| is used to render the absolute-value operation.
+
+   * <= and < are used to render non-ASCII symbols.
+
+   * In the original, a couple of instances of |x * 10**n| and |y * 10**n|
+     were actually set as |10^nx| and |10^ny|, where ^n represents a
+     superscript.  This is excessively hard to read in ASCII.
+
+The combination of Appendix A and the notes includes essentially all the
+manual's documentation of the CUPL language itself.  We have not transcribed
+appendix D, "Error Considerations and Actions", nor appendix B, "Functions",
+because the former depends on the parsing machinery of the original compiler
+and the latter documents range restrictions and precision constraints for the
+special functions (which are not duplicated in our implementation).
+
+The following .cupl files, included with this distribution, are also
+transcribed from the manual.  We include every non-pathological program
+example.  The following list maps programs to original page numbers:
+
+cubic.cupl		-- 7-7  (boxed)
+fancyquad.cupl		-- 2-8  (coding form example)
+poly11.cupl		-- 7-9  (boxed)
+power.cupl		-- 3-4  (exercise 5b) 
+prime.cupl		-- 12-5 (boxed)
+quadratic.cupl		-- 2-2  (boxed)
+random.cupl		-- 10-2 (boxed)
+rise.cupl		-- 3-15 (exercise 7)
+simplequad.cupl		-- 2-1  (boxed)
+squares.cupl		-- 5-7  (output example)
+sum.cupl		-- 3-4  (exercise 5a)
+
+We have supplied leading comments for most of these; they are otherwise
+unaltered.
+ 
+---------------------------------- CUT HERE ----------------------------------
+                          Appendix A
+
+                        Summary of CUPL
+
+
+ELEMENTS OF THE LANGUAGE
+
+     Characters
+     ----------
+          Letters: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+          Digits:  0 1 2 3 4 5 6 7 8 9
+          Special Characters:  + - * / ( ) . , ' =
+
+     Numbers
+     -------
+          Normal decimal usage:  e.g. 3, 1.725, -.06 .
+          "Scientific" notation:  -1.2E-3  for -1.2 x 10^3 .
+          Truncated to 9 significant figures by the system.
+          Range:  Absolute values from 10^-78 to 10^76, and 0 .
+
+     Variables and Labels
+     --------------------
+          a.  Consist of 1 to 8 letters or digits, beginning with
+              a letter; no blanks or special characters.
+
+          b.  Must not be one of the following "reserved words":
+
+                 ABS        DOT     IF    OR        THEN
+                 ALL        ELSE    INV   PERFORM   TIMES
+                 ALLOCATE   END     LE    POSMAX    TO
+                 AND        EXP     LET   POSMIN    TRC
+                 ATAN       FLOOR   LN    RAND      TRN
+                 BLOCK      FOR     LOG   READ      WATCH
+                 BY         GE      LT    SGM       WHILE
+                 COMMENT    GO      MAX   SIN       WRITE
+                 COS        GT      MIN   SQRT
+                 DET        IDN     NE    STOP
+
+          c.  Must be unique--same name cannot be used for both a
+              label and a variable.
+
+          d.  Variables have automatic initial value of zero.
+
+          e.  Variables can be scalar, vector, or matrix.  [See 8-3 and 9-8]
+
+                If A   is a matrix variable:
+
+                   A        refers to the entire matrix.
+                   A(I,J)   refers to the element at the
+                              intersection of the ith row
+                              and the jth column
+                   A(*,J)   refers to the jth column
+                   A(I,*)   refers to the ith row
+
+                          A-2
+
+                If V is a vector variable:
+
+                   V refers to the entire vector
+                   V(I) refers to the ith component.
+
+              [See 11-3 for subscript round-off rules]
+
+          f.  A vector is a 1-column matrix
+
+          g. IDN is the identity matrix of any appropriate size.
+
+     Arithmetic Operators
+     --------------------
+          a.  +, -, /, * for multiplication, ** for exponentiation
+
+          b.  Normal precedence:  **, * and /, + and -
+                                  Parentheses from inner to outer.
+                                  Sequence of + and - from left to
+                                  right.
+
+          c. Types of operand:    +, -, /, *, ** for scalars
+                                  +, -, *, and numerator of / for
+                                     vectors and matrices.
+
+     Spacing
+     -------
+          No spaces, or splitting at end of line, in any number,
+          variable, label, reserved word, or **.  Spaes allowable
+          anywhere else.
+
+     Functions
+     ---------
+          Form                Action              Type of Argument
+          ----                ------              ----------------
+          ABS(a)        absolute value of a      any expression
+          ATAN(a)       arctangent of a, in      numerical valued
+                          radians                  expression
+          COS(a)        cosine of a, a in        numerical valued
+                          radians                  expression
+          EXP(e)        e raised to a power      numerical valued
+                                                   expression
+          FLOOR(a)      greatest integer not     numerical valued
+                          exceeding a              expression
+          LOG(a)        natural og of a          numerical valued
+                                                   expression
+          SQRT(a)       positive square root     numerical valued
+                          of a                     expression
+          SIN(a)        sine of a, a in          numerical valued
+                          radians                  expression
+          MAX(a,b,...)  maximum value of all     any expressions
+                          elements of all
+                          arguments
+
+                               A-3
+
+          MIN(a,b,...)  minimum value of all     any expressions
+                          elements of all
+                          arguments
+          RAND(a)       next pseudo-random       any expression
+                          number, or array
+                          of numbers, in a
+                          sequence in which
+                          a was the last
+          DET(a)        determinant of a         square array valued
+                                                   expression
+          DOT(a,b)      dot product of a         vector-valued expres-
+                             and b                 sions of equal
+                                                   dimensions
+          INV(a)        inverse of a             square array valued
+                                                   expression
+          POSMAX(a)     row position of maxi-    array valued expression
+                          mum element of a
+          POSMIN(a)     row position of mini-    array valued expression
+                          mum element of a
+          SGM(a)        sigma of a (sum of       array valued expression
+                          all elements)
+          TRC(a)        trace of a (sum of       array valued expression
+                          elements on prin-
+                          cipal diagonal)
+          TRN(a)        transpose of a           array valued expression
+
+     Relations
+     ---------
+          Symbol   With scalar expressions   With array expressions
+          ------   -----------------------   ----------------------
+            =      equals                    all corresponding ele-
+                                               ments equal
+            NE     not equal to              at least one pair of
+                                               corr. ele. not equal
+            LE     less than or equal to     all corr. ele. less than
+                                               or equal
+            GE     greater than or equal     all corr. ele. greater
+                     to                        than or equal
+            LT     less than                 all corr. ele. less than
+                                               or equal; at least one
+                                               less than
+            GT     greater than              all corr. ele. greater
+                                               than or equal; at least
+                                               one greater than
+
+     [See 11-4 for round-off rules applying to relations]
+
+STATEMENTS
+
+     The following symbols are used in the statement descriptions:
+
+          v1, v2, ...            variables (scalar, vector, or
+                                 matrix except as noted)
+
+                               A-4
+
+          r1, r2, ...            relations
+
+          slabel1, slabel2, ...  statement labels
+
+          blabel1, blabel2, ...  block labels
+
+          e1, e2, ...            arithmetic expressions (a meaningful
+                                 and conformable combination of
+                                 numbers, variables, functions, and
+                                 arithmetic operators)
+
+Statements should begin in column 10 of the programming form.  If
+continued onto more than one line, the second and aubsequent lines
+should begin in column 15.  Columns 73 to 80 must not be used.
+
+Any statement may be given a label--beginning in column 1 of the
+form. 
+
+     Assignment Statement
+     --------------------
+          LET v1 = e1
+
+     Sequence Control Statements
+     ---------------------------
+          GO TO slabel1
+
+          GO TO blabel1        Used only inside block 'blabel';
+                               causes skip to end of block.
+
+          IF e1 r1 e2 THEN s1 ELSE s2    where s1 and s2 are any type
+                                         of statement except IF or
+                                         PERFORM.
+
+                      Either the THEN phrase or the ELSE phrase may
+                      be omitted, but one or both must be given.
+
+               Compound conditions may be used:
+
+                      IF e1 r1 e2 AND e3 r2 e4 AND ... THEN s1 ELSE s2
+
+                      IF e1 r1 e2 OR e3 r2 e4 OR ... THEN s1 ELSE s2
+
+               but AND and OR phrases may not be mixed in the same
+               statement.                 ---
+
+          STOP
+
+     Iteration Control Statements
+     ----------------------------
+          A 'block' consists of a sequence of statements preceded by
+
+              blabel1 BLOCK   and followed by   blabel1 END
+
+                          A-5
+
+     A block may be located anywhere in the program; it is executed
+         only by a PERFORM statement calling it by name.  Blocks
+         may be nested but not overlapped.  A block may contain
+         any kind of statent, including PERFORM, except for a
+         PERFORM referring to the block itself.
+
+     PERFORM blabel1
+
+     PERFORM blabel1 e1 TIMES    where e1 has integer value.
+
+     PERFORM blabel1 WHILE e1 r1 e2
+
+         Compound conditions may be used:
+
+              WHILE e1 r1 e2 AND e3 r2 e4 AND ...
+
+              WHILE e1 r1 e2 OR e3 r2 e4 OR ...
+
+         but AND and OR phrases may not be mixed in the same
+         statement.
+
+     PERFORM blabel1 FOR v1 = e1, e2, ...
+
+                     FOR sv1 = e1 TO e2 BY e3    where sv1 is
+                                                  a scalar vari-
+                                                  able
+
+                          The order of the TO and BY phrases can
+                          be reversed; the BY phrase can be
+                          omitted if e3 = 1.   [See 8-3 for more]
+
+
+     Communication Statements
+     ------------------------
+          READ v1, v2, ...   [See 5-2 for description]
+
+          WRITE v1, v2, ... , 'title message', ... , /v3, /v4
+
+                    Three types of elements may appear in the list
+                    after WRITE:
+
+                       1.  Variable.  Prints:
+
+                              name of scalar and current value;
+
+                              name of vector and current values of
+                              components;
+
+                              name of each row vector of matrix and
+                              current value of components.
+
+                       2.  Variable preceded by a / . Current values
+                              only are printed.
+
+                               A-6
+
+                       3.  A message enclosed in single quotes.  The
+                              exact image will appear as a title on
+                              the output.  Any characters except the
+                              quote may be used in such a message.  A
+                              message cannot continue onto a second
+                              line on the programming form--a separate
+                              item in the same or another WRITE state-
+                              ment must be used.
+
+                       [See 5-3 and 8-10] for more formatting details]
+
+          [WRITE ALL  See 4-12 and 8-3 for a description]
+
+          COMMENT   A comment line can be inserted at any time by
+                    writing COMMENT in the label field (columns 1-7) of
+                    the programming form.  Such a line will appear in
+                    the program listing, but has no effect on execution.
+
+
+     Dimensioning of Vectors and Matrices
+     ------------------------------------
+          ALLOCATE mv1(e1, e2), vv2(e3), ...  where mv1  is a matrix
+                                   variable and vv2 is a vector
+                                   variable, and e1, e2 and e3 have
+                                   integer values.
+
+              When space is initially allocated to an array, the
+              values of all the elements are zero.  If space is
+              later changed by another allocation the values of
+              those elements common to the old and the new alloca-
+              tions are unchanged; the values of new elements are
+              zero.
+
+     Tracing Changes in Value During Execution
+     -----------------------------------------
+
+          WATCH v1, v2, ...   where v1  and v2 are scalar variables.
+
+              This will cause the system to monitor the values of
+              each of the variables listed and print the new value
+              each time one of the listed variables is assigned a
+              value by a LET or READ statement.  This operation is
+              temporary and is automatically discontinued for a
+              particular variable after 10 such assignments.  [See 8-3]
+
+
+DATA
+
+     Data to be read by the execution of the READ statements is
+     provided on the same form, after the last statement of the
+     program.  The first data line is indicated by writing *DATA
+     in columns 1 to 5.  Data items may be entered on this line
+     beginning in column 7 and in columns 1 tto 72 of any following
+     lines
+
+
+                               A-7
+
+     Data items are separated by commas.  An item may be either a
+     number,  n1,  or an expression of the form  v1 = n1 .  The
+     latter form is for checking purposes--it must correspond to the
+     variable v1 in the associated READ statement.
+
+     Data items are read in sequence as the program is executed.
+     To an array with q elements appearing in a READ statement,
+     there must correspond q successive items in the data list.
+     If the array is a matrix, the items must be ordered by rows.
+
+---------------------------------- CUT HERE ----------------------------------
+
+Other quotes:
+
+From 4-12:
+
+     Another statement that can be used for checking purposes is
+
+           WRITE ALL
+
+This will cause the values of all of the variables in the program to be
+printed.  There is no WATCH ALL statement.
+                   --
+
+From 5-2: 
+
+     If READ v occurs in the program and the corresponding entry on the
+datalist is w=n, where w is not the same as v, an error message is given.
+The value n is assigned to v, no change is made in w, and the program
+continues.  Thus the inclusion of items of the type v=n in the data list
+provides checks against the accidental omission of data or inclusion of
+extra numbers.
+
+     If the total data list is too short, the machine will give an error
+message and will give the value 1 for each of the missing numbers.  If the
+list is too long the extra entries will be ignored but no error message will
+be given.
+
+From 5-3:
+
+     Numbers are given to 9 significant figures. A number n /= 0 in the range
+.0001 <= |n| < 100000 is printed in the usual decimal form, e.g. -327.512736,
+0.0243472150 .  Zero is printed simply as 0.  All other numbers appear in the
+form mEp with 1 <= |m| < 10, e.g. -2.31562007E+04, 5.00000000E-17 .
+
+     A line of output is divided into six "fields", each 20 characters long.
+Each variable name or value occupies one field.  The decimal point of a
+number always comes at the seventh position in a field.  Each WRITE statement
+starts a new line, but within a given WRITE statement fields are used 
+consecutively, new lines being started as necessary.  The one exception occurs
+when the name of a variable would come at the end of a line and its value
+on the next line; in this case, the last field is left blank and the name
+starts the next line.
+
+     A field may be purposely skipped by simply omitting a variable name;
+for example,
+
+          WRITE ,A,,,/B
+
+will put A and its value in fields 2 and 3, and the value of B in 6,
+leaving fields 1, 4 and 5 vacant.  The statement 
+
+          WRITE
+
+will cause a whole line to be skipped.
+
+From 8-3:
+
+     The only restrictions on the use of a subscripted variable are in
+
+          PERFORM k FOR v = ---
+
+and
+
+          WATCH v,...
+
+Here v must be a non-subscripted variable.  Also, WRITE ALL will print only
+the values of the non-subscripted variables.
+
+From 8-10:
+
+     1. A new line is started for each vector and each row of a matrix.
+
+     2. Te values of the elements of a vector or a row of a matrix are
+put successively in fields 2 through 6, repeating as necessary.
+
+     3. In field 1 of the first line used for a vector or for a row of
+a matrix is put the name of the vector or a symbol for the row of the matrix,
+unless these are suppressed by a slash before the array in the WRITE list.
+The slash does not change the spacing described in 2 above.
+
+     4. A variable, subscripted or not, appearing in the WRITE list immediately
+after an array, starts a new line.
+
+     There is one exception to these rules.  If M is a matrix with only one
+column, to save space it will be printed as if it were a vector, that is, in
+the form
+
+          M = m11      m21      m31     etc.
+
+From 9-8:
+
+     So much space is needed to compute INV(A) or DET(A) that the size of
+A is limited to 40x40 in these expressions.
+
+From 11-3:
+
+Automatic Integer Round-off
+---------------------------
+a. The value of a subscript is rounded to the nearest integer.
+
+b. If the round-off involves a change of greater than 10^-9 (approximately)
+   an error message is given.
+
+From 11-4:
+
+Automatic Relative Round-off for x r y
+--------------------------------------
+a. If both x and y are zero the condition is applied as it stands.
+
+b. If either x or y is not zero:
+
+   (i)   Both x and y are multiplied by 10**n, where n is chosen so that
+         the larger of |x * 10**n|, |y * 10**n| lies between .1 and 1.
+
+   (ii)  x * 10**n and y * 10**n are truncated to 14 decimal places
+
+   (iii) The specified condition is interpreted or the resulting numbers.
+
