@@ -185,7 +185,7 @@ static bool check_errors(node *tree)
     /* check for label/variable consistency */
     for_symbols(lp)
 	if ((lp->blabelref || lp->blabeldef) + (lp->slabelref || lp->slabeldef) + (lp->assigned || lp->used) > 1)
-	    die("%s has conflicting uses\n");
+	    die("%s has conflicting uses\n", lp->node->u.string);
 	else if (lp->blabelref && !lp->blabeldef)
 	    die("block label %s used but not defined\n", lp->node->u.string);
 	else if (!lp->blabelref && lp->blabeldef)
