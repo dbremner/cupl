@@ -52,13 +52,13 @@ typedef struct edon
 	char	*string;	/* for strings and identifiers */
     } u;
 
-    /* back-pointer to the symbol list, set if the node is an identifier */
+    /* identifier nodes only, back-pointer to the symbol list */
     struct lvar_t	*syminf;    
 
-    /* statement node only */
+    /* statement nodes only */
     struct edon		*endnode;	/* end node address, if block label */
 #ifdef PARSEDEBUG
-    int number;		/* statement number, if this is a STATEMENT node */
+    int 		number;		/* statement number */
 #endif /* PARSEDEBUG */
 }
 node;
@@ -89,6 +89,7 @@ typedef struct lvar_t
     int		slabelref;
     int		assigned;
     int		used;
+    int		watchcount;
 }
 lvar;
 extern lvar *idlist;

@@ -241,7 +241,6 @@ value cupl_subtract(value left, value right)
 value cupl_multiply(value left, value right)
 /* multiply two CUPL values */
 {
-    /* FIXME: implement cupl_multiply for non-scalar operands */
     if (left.rank == 0 && right.rank == 0)
     {
 	value	result;
@@ -250,14 +249,32 @@ value cupl_multiply(value left, value right)
 	result.elements[0] = left.elements[0] * right.elements[0];
 	return(result);
     }
+    else if (left.width == right.depth)
+    {
+	value	result;
+	int	i, j;
+
+	result = allocate_value(2, left.depth, right.width);
+	for (i = 0; i < left.depth; i++)
+	    for (j = 0; j < right.width; j++)
+	    {
+		int k;
+		scalar p = 0;
+
+		for (k = 0; k < left.width; k++)
+		    p += SUB(left, i, k)[0] * SUB(right, k, j)[0];
+
+		SUB(result, i, j)[0] = p;
+	    }
+	return(result);
+    }
     else
-	die("multiplication of non-scalars is not yet supported\n");
+	die("multiplication attempt on non-conformable matrices\n");
 }
 
 value cupl_divide(value left, value right)
 /* divide two CUPL values */
 {
-    /* FIXME: implement cupl_divide for non-scalar operands */
     if (left.rank == 0 && right.rank == 0)
     {
 	value	result;
@@ -266,8 +283,19 @@ value cupl_divide(value left, value right)
 	result.elements[0] = left.elements[0] / right.elements[0];
 	return(result);
     }
+    else if (right.rank == 0)
+    {
+	value	result;
+	int	n;
+
+	result = copy_value(left);
+	for (n = 0; n < left.width * left.depth; n++)
+	    result.elements[n] = left.elements[n] / right.elements[0];
+	return(result);
+    }
     else
-	die("division of non-scalars is not yet supported\n");
+	die("division of rank %d by rank %d value is undefined\n",
+	    left.rank, right.rank);
 }
 
 value cupl_power(value left, value right)

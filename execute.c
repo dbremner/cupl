@@ -96,6 +96,7 @@ static void cupl_read(node *tp)
 static void eval_write(node *tp)
 /* evaluate a WRITE item */
 {
+    /* FIXME: implement matrix writes */
     if (tp == (node *)NULL)
 	cupl_string_write("");
     else if (tp->type == ALL)
@@ -172,6 +173,11 @@ static value cupl_eval(node *tree)
     case LET:
 	deallocate_value(&(tree->car->syminf->value));
 	tree->car->syminf->value = EVAL_WRAP(cupl_eval(tree->cdr));
+	if (tree->car->syminf->watchcount && tree->car->syminf->watchcount--)
+	{
+	    eval_write(tree->car);
+	    cupl_eol_write();
+	}
 	result.rank = FAIL;
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
@@ -526,8 +532,10 @@ static value cupl_eval(node *tree)
 	 */
 
     case WATCH:
-	/* FIXME: implement WATCH */
-	die("WATCH is not implemented\n");
+	for_cdr(np, tree)
+	    np->car->syminf->watchcount = 10;
+	result.rank == FAIL;
+	return(result);
 
     default:
 	die("unknown node type %d (%s), cannot execute\n",
