@@ -513,22 +513,18 @@ static value cupl_eval(node *tree)
 	}
 	else if (iterator->type == ITERATE)
 	{
-	    value	v;
 	    scalar ds, initial, final, increment;
 
 	    initial = EVAL_WRAP(cupl_eval(iterator->cdr->car)).elements[0];
 	    iterator = iterator->cdr->cdr;
 	    final = EVAL_WRAP(cupl_eval(iterator->car)).elements[0];
 	    increment = iterator->cdr ? EVAL_WRAP(cupl_eval(iterator->car)).elements[0] : 1;
-	    make_scalar(&v, ds);
 
 	    for (ds = initial; ds <= final; ds += increment)
 	    {
-		v.elements[0] = ds;
-		cupl_assign(tree->car->car, v);
+		tree->car->car->syminf->value.elements[0] = ds;
 		cupl_eval(tree->cdr);
 	    }
-	    deallocate_value(&v);
 	}
 	else
 	    die("unknown iterator in FOR statement\n");
