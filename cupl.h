@@ -113,6 +113,11 @@ extern void make_scalar(value *v, scalar n);
 extern value copy_value(value);
 extern void deallocate_value(value *);
 
+void cupl_reset_write();
+void cupl_eol_write();
+void cupl_scalar_write(char *name, scalar quant);
+void cupl_string_write(char *s);
+
 extern value cupl_add(value, value);
 extern value cupl_multiply(value, value);
 extern value cupl_subtract(value, value);

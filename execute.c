@@ -61,65 +61,29 @@ static void cupl_read(node *tp)
     }
 }
 
-static void needspace(int w)
-/* emit a LF if there are not more than w spaces left on the line */
-{
-    static int used;
-
-    if (w == 0)
-	used = 0;
-    else if (w == -1)
-    {
-	if (used != linewidth)
-	    (void) putchar('\n');
-    }
-    else if (used + w >= linewidth)
-    {
-	(void) putchar('\n');
-	used = 0;
-    }
-    else
-	used += w;
-}
-
-static void cupl_write(node *tp)
+static void eval_write(node *tp)
 /* evaluate a WRITE item */
 {
     if (tp == (node *)NULL)
+	cupl_string_write("");
+    else if (tp->type == ALL)
     {
-	needspace(fieldwidth);
-	(void) printf("%-*s", fieldwidth, " ");
+	lvar	*lp;
+
+	for_symbols(lp)
+	    if (lp->used || lp->assigned)
+		eval_write(lp->node);
     }
     else if (tp->type == STRING)
-    {
-	needspace(fieldwidth);
-	(void) printf("%-*s", fieldwidth, tp->u.string, stdout);
-    }
+	cupl_string_write(tp->u.string);
+    else if (tp->type == FWRITE)
+	cupl_scalar_write((char *)NULL, tp->car->syminf->value.elements[0]);
     else
-    {
-	scalar	q;
-
-	if (tp->type == FWRITE)
-	{
-	    needspace(fieldwidth);
-	    q = tp->car->syminf->value.elements[0];
-	}
-	else
-	{
-	    q = tp->syminf->value.elements[0];
-
-	    needspace(2 *fieldwidth);
-	    (void) printf("%*s = ", fieldwidth -3, tp->u.string);
-	}
-
-	if (0.001 < fabs(q) && abs(q) < 100000)
-	    (void) printf("%*f", fieldwidth, q);
-	else
-	    (void) printf("%*E", fieldwidth, q);
-    }
+	cupl_scalar_write(tp->u.string, tp->syminf->value.elements[0]);
 }
 
 static void display_return(node *tree, node *left, node *right, value v)
+/* display the returned value of a node (for tracing purposes) */
 {
     if (verbose >= DEBUG_ALLOCATE)
     {
@@ -159,10 +123,10 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case WRITE:
-	needspace(0);
+	cupl_reset_write(0);
 	for_cdr(np, tree)
-	    cupl_write(np->car);
-	needspace(-1);
+	    eval_write(np->car);
+	cupl_eol_write();
 	result.rank = FAIL;
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
@@ -333,12 +297,11 @@ void execute(node *tree)
     else if (last)
 	last->cdr = (node *)NULL;
 
-    /* now execute the program */
-
-    /* setjmp so we can use STOP to exit */
+    /* first, setjmp so we can use STOP to exit */
     if (setjmp(jmpbuf) != 0)
 	return;
     else
+	/* now execute the program */
 	for (pc = tree; pc; pc = next)
 	{
 	    next = pc->cdr;
