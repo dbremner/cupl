@@ -46,14 +46,14 @@ toktab.h: tokens.h
 lextest: lexer.c tokens.h tokdump.o
 	$(CC) $(CFLAGS) -DMAIN lexer.c tokdump.o -o lextest 
 
-cupl-$(VERS).tar.gz: $(SOURCES)
-	@ls $(SOURCES) | sed s:^:cupl-$(VERS)/: >MANIFEST
+DOCS = READ.ME corc.doc cupl.doc cupl.xml cupl.lsm
+SOURCES = Makefile cupl.[lyh] $(MODULES:.o=.c)
+
+cupl-$(VERS).tar.gz: $(SOURCES) $(DOCS)
+	@ls $(SOURCES) $(DOCS) | sed s:^:cupl-$(VERS)/: >MANIFEST
 	@(cd ..; ln -s cupl cupl-$(VERS))
 	(cd ..; tar -czvf cupl/cupl-$(VERS).tar.gz `cat cupl/MANIFEST`)
 	@(cd ..; rm cupl-$(VERS))
-
-cupl-$(VERS).shar:
-	shar $(SOURCES) >cupl-$(VERS).shar
 
 dist: cupl-$(VERS).tar.gz
 
