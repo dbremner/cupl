@@ -17,6 +17,9 @@ of a CUPL parse tree.  Actual execution is handed off to execute().
 #include "cupl.h"
 #include "tokens.h"
 
+#define car	u.n.left
+#define cdr	u.n.right
+
 /*
  * Define token classes for consistency checks here.  The theory is
  * that by separating this from the tree-traversal machinery below, we
@@ -75,13 +78,13 @@ static void prettyprint(node *tree, int indent)
 	if (verbose >= DEBUG_ALLOCATE)
 	    (void) printf("                          (%x -> %x, %x)",
 			  tree,
-			  tree->u.n.left,
-			  tree->u.n.right);
+			  tree->car,
+			  tree->cdr);
 	(void) putchar('\n');
-	prettyprint(tree->u.n.left,
+	prettyprint(tree->car,
 		    indent + INDENT);
-	prettyprint(tree->u.n.right,
-		    indent + INDENT * (tree->type != tree->u.n.right->type));
+	prettyprint(tree->cdr,
+		    indent + INDENT * (tree->type != tree->cdr->type));
     }
 }
 #endif /* PARSEDEBUG */
@@ -94,8 +97,6 @@ static void warn(char *msg, ...)
     va_start(args, msg);
     vfprintf(stderr, msg, args);
     va_end(args);
-
-    exit(1);
 }
 
 static void die(char *msg, ...)
@@ -118,7 +119,7 @@ static bool recursive_apply(node *tree, bool (*fun)(node *))
 
     if (ATOMIC(tree->type))
 	return(fun(tree));
-    else if (recursive_apply(tree->u.n.left, fun) && recursive_apply(tree->u.n.right, fun))
+    else if (recursive_apply(tree->car, fun) && recursive_apply(tree->cdr, fun))
 	return(fun(tree));
     else
 	return(FALSE);
@@ -130,46 +131,46 @@ static bool r_mark_labels(node *tp)
 {
     /* count label definitions */
     if (tp->type == LABEL)
-	tp->u.n.left->syminf->labeldef++;
+	tp->car->syminf->labeldef++;
 
     /* count label references */
     if (LABELREF(tp->type))
-	if (tp->u.n.left && tp->u.n.left->type == IDENTIFIER)
-	    tp->u.n.left->syminf->labelref++;
-	else if (tp->u.n.right && tp->u.n.right->type == IDENTIFIER)
-	    tp->u.n.right->syminf->labelref++;
+	if (tp->car && tp->car->type == IDENTIFIER)
+	    tp->car->syminf->labelref++;
+	else if (tp->cdr && tp->cdr->type == IDENTIFIER)
+	    tp->cdr->syminf->labelref++;
 
     /* count identifier assignments */
     if (VARSET(tp->type))
     {
-	if (tp->u.n.left->type == IDENTIFIER)
+	if (tp->car->type == IDENTIFIER)
 	{
 #ifdef ODEBUG
 	    (void) printf("left  operand %8s of %8s assigned\n",
-			  tp->u.n.left->u.string, tokdump(tp->type));
+			  tp->car->u.string, tokdump(tp->type));
 #endif /* ODEBUG */
-	    tp->u.n.left->syminf->assigned++;
+	    tp->car->syminf->assigned++;
 	}
     }
     else if (!ATOMIC(tp->type))
     {
-	if (tp->u.n.left && tp->u.n.left->type == IDENTIFIER && LEFTREF(tp->type))
+	if (tp->car && tp->car->type == IDENTIFIER && LEFTREF(tp->type))
 	{
 #ifdef ODEBUG
 	    (void) printf("left  operand %8s of %8s used\n",
-			  tp->u.n.left->u.string, tokdump(tp->type));
+			  tp->car->u.string, tokdump(tp->type));
 #endif /* ODEBUG */
-	    tp->u.n.left->syminf->used++;
+	    tp->car->syminf->used++;
 	}
 	
 
-	if (tp->u.n.right && tp->u.n.right->type == IDENTIFIER && RIGHTREF(tp->type))
+	if (tp->cdr && tp->cdr->type == IDENTIFIER && RIGHTREF(tp->type))
 	{
 #ifdef ODEBUG
 	    (void) printf("right operand %8s of %8s used\n",
-			  tp->u.n.right->u.string, tokdump(tp->type));
+			  tp->cdr->u.string, tokdump(tp->type));
 #endif /* ODEBUG */
-	    tp->u.n.right->syminf->used++;
+	    tp->cdr->syminf->used++;
 	}
     }
 
@@ -248,22 +249,22 @@ static bool r_label_rewrite(node *tp)
      */
     if (LABELREF(tp->type))
     {
-	node *left = tp->u.n.left;
-	node *right = tp->u.n.right;
+	node *left = tp->car;
+	node *right = tp->cdr;
 
 	if (left && left->type == IDENTIFIER && left->syminf->labelref)
 	{
 #ifdef ODEBUG
 	    (void) printf("patching label left reference to %s\n", left->u.string);
 #endif /* ODEBUG */
-	    tp->u.n.left = left->syminf->target;
+	    tp->car = left->syminf->target;
 	}
 	if (right && right->type == IDENTIFIER && right->syminf->labelref)
 	{
 #ifdef ODEBUG
 	    (void) printf("patching label right reference to %s\n", right->u.string);
 #endif /* ODEBUG */
-	    tp->u.n.right = right->syminf->target;
+	    tp->cdr = right->syminf->target;
 	}
     }
 
@@ -277,44 +278,47 @@ static void rewrite(node *tree)
 
     /* first, make a pointer from each label to its destination statement */
     for_cdr(np, tree)
-	if (np->u.n.left->type == LABEL)
-	    np->u.n.left->u.n.left->syminf->target = np;
-
-    /* now, hack label references to eliminate name references */
-    recursive_apply(tree, r_label_rewrite);
+	if (np->car->type == LABEL)
+	    np->car->car->syminf->target = np;
 
 #ifdef _FOO_
     /* pull blocks out of the main line */
     for_cdr(np, tree)
-	if (np->u.n.left->type==LABEL && np->u.n.left->u.n.right->type==BLOCK)
+    {
+	node *sp = np->car;
+
+	if (sp && sp->type == LABEL && sp->cdr->type == BLOCK)
 	{
 	    node	*endnode;
 	    bool	found = FALSE;
 
-	    for (endnode = np; endnode; endnode++)
-		if (np->u.n.left->type == LABEL
-			&& np->u.n.left->u.n.right->type == BLOCK
-			&& strcmp(np->u.n.left->u.string,
-				  endnode->u.n.left->u.n.left->u.string) == 0)
+printf("statement %d, label '%s'\n", np->number, sp->car->u.string);
+
+	    for (endnode = np->cdr; endnode; endnode = endnode->cdr)
+		if (endnode->car->type == LABEL
+			&& endnode->car->cdr->type == BLOCK
+			&& strcmp(sp->car->u.string,
+				  endnode->car->car->u.string) == 0)
 		{
 		    found = TRUE;
 		    break;
 		}
 	    if (!found)
-		die("no END matching block label %s\n",np->u.n.left->u.string);
-
-	    (void) printf("found END for %s\n", np->u.n.left->u.string);
+		warn("no END matching block label %s\n", sp->car->u.string);
+	    else
+		(void) printf("found END for %s\n", sp->car->u.string);
 	}
+    }
 #endif /* _FOO_ */
+
+    /* now, hack label references to eliminate name references */
+    recursive_apply(tree, r_label_rewrite);
+
 }
 
 void interpret(node *tree)
 /* interpret a program parse tree */
 {
-    if (check_errors(tree))
-	return;
-    rewrite(tree);
-
 #ifdef PARSEDEBUG
     /* statement conses are made in reverse order; deal with this */
     {
@@ -331,7 +335,13 @@ void interpret(node *tree)
 	    if (np->type == STATEMENT)
 		np->number = statement_count - np->number + 1;
     }
+#endif /* PARSEDEBUG */
 
+    if (check_errors(tree))
+	return;
+    rewrite(tree);
+
+#ifdef PARSEDEBUG
     if (verbose >= DEBUG_PARSEDUMP)
 	prettyprint(tree, 0);
 #endif /* PARSEDEBUG */
