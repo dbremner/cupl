@@ -92,7 +92,7 @@ CUPL scalars ranged from 1e76 to 1e-78 with nine decimal digits of
 precision.  As for CORC: the Burroughs 1604 was documented as having a
 much wider range, 1e308 to 1e-308 with 11 digits of precision; the
 Burroughs 220 supported 1e-49 to 1e50 with 8 digits of precision.
-.PP
+.P
 On today's typical 32-bit microprocessor such as an Intel 486, C
 floats are 32 bits and have roughly 1e+38 to 1e-38 range and 9 digits
 precision; doubles are 64 bits, with range roughly 1e308 to 1e-304 and
