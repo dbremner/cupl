@@ -85,7 +85,7 @@ SQRT		{return(SQRT);}
 STOP		{return(STOP);}
 THEN		{return(THEN);}
 TIMES		{return(TIMES);}
-TITLE.*\n	{corc = TRUE; yylval.node = intern_string(yytext + 6); return(TITLE);}
+TITLE.*\n	{corc = TRUE; yylval.node = intern_string(yytext + 5); return(TITLE);}
 TO		{return(TO);}
 TRC		{return(TRC);}
 TRN		{return(TRN);}

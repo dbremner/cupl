@@ -5,7 +5,7 @@
 # Note: When the version changes, you also have to change
 #  * the name of the containing directory
 #  * the RPM spec file
-V=1.1
+V=1.2
 
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
