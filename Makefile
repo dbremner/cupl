@@ -50,12 +50,13 @@ lextest: lexer.c tokens.h tokdump.o
 cupl.1: cupl.xml
 	xmlto man cupl.xml
 
-DOCS = READ.ME corc.doc cupl.doc cupl.xml cupl.lsm
+DOCS = READ.ME COPYING corc.doc cupl.doc cupl.xml cupl.lsm
 SOURCES = Makefile cupl.[lyh] $(MODULES:.o=.c)
+TESTS = test/[abcdefghijklmnopqrstuvwxyz]* test/MAKEREGRESS test/REGRESS test/TESTALL
 
 cupl-$(VERS).tar.gz: $(SOURCES) $(DOCS) cupl.1
-	@ls $(SOURCES) $(DOCS) cupl.1 | sed s:^:cupl-$(VERS)/: >MANIFEST
 	@(cd ..; ln -s cupl cupl-$(VERS))
+	@ls $(SOURCES) $(DOCS) $(TESTS) cupl.1 | sed s:^:cupl-$(VERS)/: >MANIFEST
 	(cd ..; tar -czvf cupl/cupl-$(VERS).tar.gz `cat cupl/MANIFEST`)
 	@(cd ..; rm cupl-$(VERS))
 

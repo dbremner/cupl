@@ -19,6 +19,7 @@ make
 %install
 rm -f /usr/bin/cupl /usr/share/man/man1/cupl.1
 cp cupl /usr/bin
+cp cupl.1 /usr/share/man/man1/cupl.1
 
 %files
 %doc READ.ME COPYING corc.doc cupl.doc test
