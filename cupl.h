@@ -25,6 +25,14 @@ typedef int	bool;
 #endif /* TRUE */
 
 /*
+ * Type used by cupl for representing a CUPL scalar. 
+ * Should be a floating-point type, e.g. float, double, long float, etc.
+ * Also, you must define here the function used to read scalars.
+ */
+typedef double scalar;
+#define atos(s)	atof(s)
+
+/*
  * This is the node structure for parse trees.
  */
 typedef struct edon
@@ -38,7 +46,7 @@ typedef struct edon
 	    struct edon	*right;
 	} n;
 
-	double	numval;		/* for numbers */
+	scalar	numval;		/* for numbers */
 
 	char	*string;	/* for string literals */
 

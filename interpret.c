@@ -13,13 +13,13 @@ typedef struct rav
 	struct 
 	{
 	    int	length;
-	    double	*parts;
+	    scalar	*parts;
 	} vector;		/* a vector */
 
 	struct 
 	{
 	    int	width, depth;
-	    double	*parts;
+	    scalar	*parts;
 	} matrix;		/* a matrix */
 
 	char	*string;

@@ -20,7 +20,7 @@ lvar;
 
 static lvar *idlist;
 
-static node *intern_number(double);
+static node *intern_number(char *);
 static node *intern_identifier(char *);
 static node *intern_string(char *);
 %}
@@ -83,8 +83,8 @@ WRITE		{return(WRITE);}
 "*DATA"		{return(DATA);}
 
 [A-Z][A-Z0-9]*	{yylval.node = intern_identifier(yytext); return(IDENTIFIER);}
--?{N}E-?{D}	{yylval.node = intern_number(atof(yytext)); return(NUMBER);}
--?{N}		{yylval.node = intern_number(atof(yytext)); return(NUMBER);}
+-?{N}E-?{D}	{yylval.node = intern_number(yytext); return(NUMBER);}
+-?{N}		{yylval.node = intern_number(yytext); return(NUMBER);}
 '[^']*'		{yylval.node = intern_string(yytext); return(STRING);}
 
 "**"		{return(POWER);}
@@ -135,9 +135,10 @@ static node *intern_identifier(char *str)
     return(new);
 }
 
-static node *intern_number(double numval)
+static node *intern_number(char *str)
 {
     node	*new;
+    scalar      numval = atos(str);	/* see cupl.h */
 
     /* get a node */
     if ((new = (node *)malloc(sizeof(node))) == (node *)NULL)
