@@ -93,6 +93,7 @@ int yydebug;
 
 /* a program description consists of a sequence of statements */
 program :    prog			{interpret($1);}
+	;
 
 prog	:    command prog
 		{
@@ -161,6 +162,7 @@ iter	:    TO expr BY expr		{$$ = cons(TO, $2, $4);}
 
 triple  :    '(' expr ',' expr ',' expr ')'
 		{$$ = cons(TRIPLE, $2, cons(ITERATE, $4, $6));}
+	;
 
 expl	:    expr ',' expl		{$$ = cons(FORLIST, $1, $3);}
 	|    triple ','	expl		{$$ = cons(FORLIST, $1, $3);}
