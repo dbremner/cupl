@@ -1,0 +1,264 @@
+			THE ORIGINAL CORC DOCUMENTATION
+
+We include here a transcription of appendix F of our reference document,
+"An Instruction Manual For CORC", R.W. Conway, W.L. Maxwell, R.J. Walker.
+
+There are a few typographical changes to fit it into the ASCII character set.
+The differences:
+
+   * ^[-+]nnn is used to render exponent superscripts.
+
+   * The square root radical sign surrounding b is rendered as b^-2
+
+   * metavariable subscripts are simply appended to their metavariables.
+
+   * `x' between digits is used to render the multiplication sign.
+
+   * lines of dashes below headings indicate underscores.
+
+   * page breaks in the original are represented by form feeds here.
+
+Error corrections:
+
+   * Under `Sequence Control Statements', the IF keyword in the three
+     if-statement templates was erroneously typed as `If'.
+
+   * Under `Iteration Control Statements', the first AND keyword in the
+     compound-AND example was incorrectly lowercased.  In item 1 of the BEGIN
+     explanation, the word `statement' was incorrectly uppercased.
+
+Otherwise, the appendix F transcription is exact, even down to hyphen breaks
+and spacing.
+
+This implementation preserves the CORC-62 distinction between LOG and LN, 
+contrary to the transcript below which describes CORC-63 (which identifies
+both with the natural-log function).  CORC-62 also lacked the INT function,
+allowed only non-compound logical expressions in REPEAT...UNTIL, and allowed
+an alternate spelling `TIME' of `TIMES'.
+
+The following .corc files, included with this distribution, are also
+transcribed from the manual.  We include every complete program
+example.  The following list maps programs to original page numbers:
+
+sumsquares.corc		-- 5-4
+power.corc		-- 5-6
+factorial.corc		-- 5-6
+quadratic.corc		-- 5-9
+title.corc		-- 7-3
+
+We have supplied leading comments for these programs; they are otherwise
+unaltered.
+ 
+---------------------------------- CUT HERE ----------------------------------
+
+                                APPENDIX F
+                       Summary of the CORC Language
+
+     Acceptable Characters
+     ---------------------
+          Letters: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+          Digits:  0 1 2 3 4 5 6 7 8 9
+          Special Characters:  + - / ( ) * $ , . =
+
+
+     Numbers
+     -------
+          Normal decimal usage -- + sign may be omitted; decimal point
+                    may be omitted from an integer.
+          Only 11 significant figures will be considered (8 on Burroughs
+                    220)
+          Output: 8 significant figures.
+          Acceptable range: Absolute values from 10^-308 to 10^+308
+                    (10^-49 to 10^+50 on Burroughs 220), and 0.
+          Scientific notation: 1.2345 x 10^6 may be written 1.2345*10$(6).
+
+     Variables and Labels
+     -------------------- 
+          a. 1 to 8 letters or digits; no blanks or special characters.
+          b. First character must be a letter.
+          c. Must not be one of the following "reserved" words:
+
+                    ABS     DECREASE   GO         LET   NOTE      STOP
+                    AND     ELSE       GTR        LN    OR        THEN
+                    ATAN    END        IF         LOG   RAND      TIMES
+                    BEGIN   EQUAL      INC        LSS   READ      TITLE
+                    BY      EXP        INCREASE   MAX   REPEAT    TO
+                    COS     FOR        INT        MIN   SIN       UNTIL
+                    DEC     GEQ        LEQ        NEQ   SQRT      WRITE
+
+          d. Statement labels must be unique -- particular label appears only
+                    once in label field.
+                    Block label used for only one set of BEGIN-END statements.
+          e. Variables must be listed in Dictionary. If no initial value
+             is given zero is assumed.
+          f. One or two subscripts, enclosed in parentheses.  May be
+             any expression (including subscripted variables) whose
+             value at execution is a positive integer not greater than
+             the maximum declared for this variable in Dictionary.
+             In Dictionary and Input Data subscripts given as integers in
+                    subscript field; parentheses are not used.
+
+     Arithmetic Operators
+     --------------------
+          + Additions
+          - Subtraction
+          / Division
+          * Multiplication (must be expressed, no implicit multiplication)
+          $ Exponentiation; a^b written as a $(b)
+
+     Rules of Precedence
+     -------------------
+          a. Expressions in parentheses first, from inner to outer.
+          b. $ before *, /, + or -
+          c. * or / before + or -
+          d. Sequence of + and - from left to right
+
+     Functions
+     ---------
+          Argument any expression, a:
+                    ABS(a)   |a|
+                    EXP(a)       e^a
+                    SIN(a)   sin a, a in radians
+                    COS(a)   cos a, a in radians
+                    ATAN(a)  arctan a, a in radians
+                    INT(a)   [a], greatest integer less than or equal to a
+
+          Arguments two or more expressions, a, b,  ... f:
+                    MAX(a, b, ... , f) value equal to greatest of expressions
+                       listed
+                    MIN(a, b, ... , f) value equal to least of expressions
+                       listed
+          Argument  any positive expression, b:
+                    LN(b) or LOG(b) log b, natural logarithm of b
+                                       e
+          Argument any non-negative expression, b:
+                    SQRT(b)        + b^-2 
+          Argument a variable, v:
+                    RAND(v) next in a sequence of pseudo-random numbers.
+                        See Chapter 7
+
+     Relations (used only in IF and REPEAT ... UNTIL statements)
+     ---------
+          EQL =              NEQ !=
+          LSS <              LEQ <=
+          GTR >              GEQ >=
+
+     Card Numbers
+     ------------
+          Strictly increasing sequence of 4 digit numbers, beginning
+               with 0010.
+          Initially right digit should be zero on all cards to leave
+               room for later additions.
+
+     Program Arrangement
+     -------------------
+          Arrange and number programming forms in the following order:
+                    1. Preliminary Description
+                    2. Dictionary
+                         List all variables to be used
+                         Specify initial values if not zero
+                         Specify maximum value for each subscript.
+                    3. Program Statements
+                         One statement per line; for continuation place
+                              C in column 21 of following line and begin
+                              in column 42.  Do not break in middle of
+                              variable, label, or number.
+                         THEN, ELSE, OR and AND phrases of IF statement
+                              on following lines, beginning in col 42,
+                              but C in col 21 not required.
+                    4. Input Data
+                         Variables, Subscripts and values of data to
+                              be called by READ statements in program.
+
+     CORC Statements
+     ---------------
+     The following symbols are used in the statement descriptions:
+
+          v, w, x   variables
+          r, s, t   relations
+          a, c      statement labels
+          b         block label
+          e, f, g, h, j, k    arithmetic expressions (any meaningful
+                                 combination of numbers, variables,
+                                 functions and arithmetic operators)
+
+     Computation Statements
+     ----------------------
+          LET v = e
+          INCREASE v BY e    or   INC v BY e 
+          DECREASE v BY e    or   DEC v BY e 
+
+     Sequence Control Statements
+     ---------------------------
+          GO TO a             Statement with label a to be executed next.
+          GO TO b             Used only inside block b; causes skip to
+                              END of block b.
+
+          IF e r f            Go to statement a if condition e r f is
+             THEN GO TO a     satisfied; otherwise go to statement c.
+             THEN GO TO c
+
+          IF e r f            Go to statement a if all of the conditions
+             AND g s h        listed are satisfied; otherwise go to
+             ...              statement c.
+             THEN GO TO a
+             THEN GO TO c
+
+          IF e r f            Go to statement a if all of the conditions
+             OR g s h         listed is satisfied; otherwise go to state-
+             ...              ment c.
+             THEN GO TO a          AND and OR phrases cannot be mixed in
+             THEN GO TO c          the same IF statement.
+
+          STOP                Last statement in execution of program; not
+                              necessarily written last on Program State-
+                              ment sheet.
+
+     Iteration Control Statements
+     ----------------------------
+          b BEGIN  Define limits of a block; b in label field, BEGIN-END.
+          b END    statement field.
+               1. Block may be entered (executed) only by REPEAT statement.
+               2. Block may be located anywhere in program.
+               3. Blocks may be nested, but not overlapped.
+               4. Block b may contain any type of CORC statement, in-
+                  cluding REPEAT, but not REPEAT b, ... , a REPEAT
+                  Statement referring to itself.
+          REPEAT b e TIMES     Value of e a non-negative integer.
+          REPEAT b UNTIL e r f Continue repetition of block b until
+                               condition e r f is satisfied.
+          REPEAT b UNTIL e r f AND g s h AND ... Continue repetition
+                               of block b until all conditions listed
+                               are satisfied.  (Not available on Burroughs 
+                               220)
+          REPEAT b UNTIL e r f OR g s h OR ... Continue repetition of
+                               block b until any one of the conditions
+                               listed is satisfied.  (Not available on
+                               Burroughs 220)
+
+          REPEAT b FOR   v = e, f, g, ..., ..., (h, j, k), ... Repeat
+                               block b once for each expression on list,
+                               with value of expression assigned to
+                               variable v.  Three expressions on list
+                               enclosed in parentheses mean from h to k
+                               in steps of k.
+
+     Communication Statements
+     ------------------------
+          READ v, w, x, ...    Read an Input Data card for each variable
+                               on list; variables on cards read must
+                               agree with variables on list.
+
+          WRITE v, w, x, ...   Print variable and current value, three
+                               to a line.  Each WRITE statement starts a
+                               new line.
+
+          TITLE message        Print "message" in computational results
+                               when this statement is encountered in
+                               execution of program.
+
+          NOTE message         "Message" will appear in copy of program
+                               only, not in execution.  Used for program
+                               notes only.
+
+---------------------------------- CUT HERE ----------------------------------
