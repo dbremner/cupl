@@ -13,6 +13,8 @@ handed off to execute().
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>
+#include <setjmp.h>
+#include <math.h>
 #include "cupl.h"
 #include "tokens.h"
 #include "nodetype.h"
@@ -20,9 +22,11 @@ handed off to execute().
 #define car	u.n.left
 #define cdr	u.n.right
 #define EVAL_WRAP
+#define RETURN_WRAP(t, l, r, v)	display_return(t, l, r, v);
 
 static node *pc;	/* the statement node to evaluate next */
 static node *data;	/* pointer to *DATA item to be grabbed next */
+static jmp_buf jmpbuf;	/* termination handling */
 
 static void cupl_read(node *tp)
 /* evaluate a READ item */
@@ -108,10 +112,24 @@ static void cupl_write(node *tp)
 	    (void) printf("%*s = ", fieldwidth -3, tp->u.string);
 	}
 
-	if (0.001 < abs(q) && abs(q) < 100000)
+	if (0.001 < fabs(q) && abs(q) < 100000)
 	    (void) printf("%*f", fieldwidth, q);
 	else
 	    (void) printf("%*E", fieldwidth, q);
+    }
+}
+
+static void display_return(node *tree, node *left, node *right, value v)
+{
+    if (verbose >= DEBUG_ALLOCATE)
+    {
+	(void) printf("eval: %x (%-10s of %9x, %9x) ",
+		      tree, tokdump(tree->type), left, right);
+
+	if (v.rank == FAIL)
+	    (void) printf("does not return a value\n");
+	else
+	    (void) printf("returned %f\n", v.elements[0]);
     }
 }
 
@@ -121,41 +139,47 @@ static value cupl_eval(node *tree)
     value	leftside, rightside, result;
     node	*np;
 
-    if (verbose >= DEBUG_ALLOCATE)
-	(void) printf("Evaluating %9x (%s)\n", tree, tokdump(tree->type));
-
     switch(tree->type)
     {
     case NUMBER:
 	make_scalar(&result, tree->u.numval);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case IDENTIFIER:
 	result = copy_value(tree->syminf->value);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case READ:
 	for_cdr(np, tree)
 	    cupl_read(np->car);
-	return(result);		/* garbage value */
+	result.rank = FAIL;
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
 
     case WRITE:
 	needspace(0);
 	for_cdr(np, tree)
 	    cupl_write(np->car);
 	needspace(-1);
-	return(result);		/* garbage value */
+	result.rank = FAIL;
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
 
     case LET:
 	deallocate_value(&(tree->car->syminf->value));
 	tree->car->syminf->value = EVAL_WRAP(cupl_eval(tree->cdr));
-	return(result);		/* garbage value */
+	result.rank = FAIL;
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
+	return(result);
 
     case PLUS:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_add(leftside, rightside);
 	deallocate_value(&leftside); deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case MULTIPLY:
@@ -163,6 +187,7 @@ static value cupl_eval(node *tree)
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_multiply(leftside, rightside);
 	deallocate_value(&leftside); deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case MINUS:
@@ -170,13 +195,15 @@ static value cupl_eval(node *tree)
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_subtract(leftside, rightside);
 	deallocate_value(&leftside); deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case DIVIDE:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
-	result = cupl_add(leftside, rightside);
+	result = cupl_divide(leftside, rightside);
 	deallocate_value(&leftside); deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case POWER:
@@ -184,54 +211,63 @@ static value cupl_eval(node *tree)
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_power(leftside, rightside);
 	deallocate_value(&leftside); deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case UMINUS:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_uminus(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case ABS:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_abs(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case ATAN:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_atan(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case COS:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_cos(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case EXP:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_exp(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case FLOOR:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_floor(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case LOG:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_log(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case SQRT:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_sqrt(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case MAX:
@@ -239,6 +275,7 @@ static value cupl_eval(node *tree)
 	result = cupl_max(leftside, rightside);
 	deallocate_value(&leftside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case MIN:
@@ -246,13 +283,19 @@ static value cupl_eval(node *tree)
 	result = cupl_min(leftside, rightside);
 	deallocate_value(&leftside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
 
     case RAND:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_rand(rightside);
 	deallocate_value(&rightside);
+	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
+
+    case STOP:
+	longjmp(jmpbuf, 1);
+	/* no fall through */
 
     default:
 	die("unknown node type %d (%s), cannot execute\n",
@@ -291,13 +334,18 @@ void execute(node *tree)
 	last->cdr = (node *)NULL;
 
     /* now execute the program */
-    for (pc = tree; pc; pc = next)
-    {
-	next = pc->cdr;
-	(void) cupl_eval(pc->car);
-    }
+
+    /* setjmp so we can use STOP to exit */
+    if (setjmp(jmpbuf) != 0)
+	return;
+    else
+	for (pc = tree; pc; pc = next)
+	{
+	    next = pc->cdr;
+	    (void) cupl_eval(pc->car);
+	}
+
+    warn("program terminated without explicit STOP\n");
 }
 
 /* execute.c ends here */
-
-

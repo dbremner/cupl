@@ -19,6 +19,9 @@ typedef int	bool;
 #define FALSE	0
 #endif /* TRUE */
 
+#define SUCCEED	0
+#define FAIL	-1
+
 /*
  * Type used by cupl for representing a CUPL scalar. 
  * Should be a floating-point type, e.g. float, double, long float, etc.
@@ -63,7 +66,6 @@ node;
 /* this structure represents a CUPL value */
 typedef struct
 {
-    int		type;			/* type (syntax class) */
     int		rank;			/* 0, 1, or 2 */
     int		width, depth;		/* dimensions */
     scalar	*elements;		/* elements */

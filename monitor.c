@@ -83,6 +83,7 @@ void die(char *msg, ...)
 void make_scalar(value *v, scalar i)
 /* initialize a scalar value element */
 {
+    v->rank = 0;
     v->width = v->depth = 1;
     v->elements = (scalar *)malloc(sizeof(scalar));
     v->elements[0] = i;
