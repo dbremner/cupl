@@ -11,15 +11,6 @@
 
 extern char *strdup(const char *s);
 
-typedef struct lvar_t
-{
-    struct lvar_t	*next;
-    node		*node;
-}
-lvar;
-
-static lvar *idlist;
-
 static node *intern_number(char *);
 static node *intern_identifier(char *);
 static node *intern_string(char *);

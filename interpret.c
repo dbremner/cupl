@@ -2,37 +2,30 @@
 #include "cupl.h"
 #include "tokens.h"
 
+/* this structure represents a CUPL value */
+typedef struct
+{
+    int		type;			/* type (syntax class) */
+    int		rank;			/* 0, 1, or 2 */
+    union
+    {
+	scalar	scalar;
+
+	struct 
+	{
+	    int		width, depth;
+	    scalar	*elements;
+	}
+	array;		/* a vector or matrix */
+    } u;
+}
+value;
+
 /* this structure represents a CUPL variable */
 typedef struct rav
 {
     char	name[MAXNAME + 1];	/* name of variable */
-    int		type;			/* type (syntax class) */
-    int		rank;
-    union
-    {
-	struct 
-	{
-	    int	length;
-	    scalar	*parts;
-	} vector;		/* a vector */
-
-	struct 
-	{
-	    int	width, depth;
-	    scalar	*parts;
-	} matrix;		/* a matrix */
-
-	char	*string;
-
-	struct
-	{
-	    long	lineno;		/* source line number */
-	    long	addr;		/* label seek offset */
-	    int		refcount;	/* count of JUMPS and PERFORM to it */
-	}
-	label;
-#define BAD_LABEL	-1L		/* out-of-band labeladdr value */
-    } v;
+    value	value;
 }
 variable;
 

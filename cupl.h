@@ -59,6 +59,18 @@ typedef struct edon
 }
 node;
 
+/* access to the symbol list */
+typedef struct lvar_t
+{
+    struct lvar_t	*next;
+    int			refcount;
+    int			setcount;
+    bool		islabel;
+    node		*node;
+}
+lvar;
+static lvar *idlist;
+
 #define NOMEM	"out of memory\n"
 
 extern char *tokdump(int value);
