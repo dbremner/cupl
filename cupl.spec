@@ -1,7 +1,7 @@
 Name: cupl
 Version: 1.4
 Release: 1
-Source: http://www.tuxedo.org/~esr/cupl-1.4.tar.gz
+Source: http://www.tuxedo.org/~esr/cupl/cupl-1.4.tar.gz
 Copyright: GPL
 Group: Languages
 Summary: Interpreter for the archaic CUPL and CORC programming languages.
