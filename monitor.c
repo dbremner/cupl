@@ -126,18 +126,15 @@ void cupl_reset_write()
 
 void cupl_eol_write(void)
 {
-    if (used != linewidth)
-	(void) putchar('\n');
+    (void) putchar('\n');
+    used = 0;
 }
 
 static void needspace(int w)
 /* emit a LF if there are not more than w spaces left on the line */
 {
     if (used + w >= linewidth)
-    {
-	(void) putchar('\n');
-	used = 0;
-    }
+	cupl_eol_write();
     else
 	used += w;
 }
