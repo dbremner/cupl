@@ -21,5 +21,5 @@ rm -f /usr/bin/cupl
 cp cupl /usr/bin
 
 %files
-%doc cupl.mm
+%doc READ.ME COPYING cupl.xml
 /usr/bin/cupl
