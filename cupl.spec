@@ -7,6 +7,7 @@ Source0: %{name}-%{version}.tar.gz
 License: GPL
 Group: Languages
 BuildRoot: %{_tmppath}/%{name}-root
+#Keywords: CUPL, CORC, language, interpreter, retrocomputing
 
 %description
 Interpreter for the archaic CUPL and CORC programming languages.
@@ -16,15 +17,14 @@ Includes full documentation and a chrestomathy of programs.
 %setup -q
 
 %build
-make
-make cupl.1
+make %{?_smp_mflags} cupl cupl.1
 
 %install
 [ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
-mkdir -p "$RPM_BUILD_ROOT"/usr/bin
-mkdir -p "$RPM_BUILD_ROOT"/usr/share/man/man1/
-cp cupl "$RPM_BUILD_ROOT"/usr/bin
-cp cupl.1 "$RPM_BUILD_ROOT"/usr/share/man/man1/
+mkdir -p "$RPM_BUILD_ROOT"%{_bindir}
+mkdir -p "$RPM_BUILD_ROOT"%{_mandir}/man1/
+cp cupl "$RPM_BUILD_ROOT"%{_bindir}
+cp cupl.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 
 %clean
 [ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"

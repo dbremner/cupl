@@ -62,3 +62,5 @@ dist: cupl-$(VERS).tar.gz
 clean:
 	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output cupl.tar cupl.tar.gz *.rpm cupl-*.tar.gz
 
+release: cupl-$(VERS).tar.gz cupl.html
+	shipper -f; rm -f CHANGES ANNOUNCE* *.1 *.html *.rpm *.lsm
