@@ -1,0 +1,89 @@
+.SA 1
+.TL "CUPL: the UNIX implementation"
+.AF "Thyrsus Enterprises"
+.AU "Eric S. Raymond" ESR "\&\&22 South Warren Ave, Malvern PA 19355"
+.MT 4
+.nr Pt 1
+.P
+.H 1 "Introduction"
+.P
+CUPL was an early (1966) teaching language implemented as a batch compiler on
+the IBM/360 at Cornell University.  It was descended from an earlier (1962)
+experimental language called CORC (CORnell Compiler), which was in turn derived
+from PL/1.
+.P
+CUPL is documented in "CUPL: The Cornell University Programming Language", by
+R.J. Walker, a manual first printed in November 1966.  This implementation, and
+the discussion in this paper, are based on the July 1967 second printing.
+.P
+The purpose of this implementation, and this paper, is to preserve a CUPL
+implementation for the edification of historians and students of
+programming-language design.  CUPL was representative of a significant class of
+teaching languages in its period, and study of the design casts a clear light
+on the preoccupations of its time.
+.P
+.H 1 "The CUPL Language" 
+.P
+This distribution includes, in the file cupl.doc, a transcription of all
+the relevant parts of the CUPL manual (the bulk of the text is a
+general tutorial on scientific programming).
+.P
+CUPL has only one scalar type, a long floating-point real corresponding to C
+double (round-off rules coerce scalars to integer in contexts like
+subscripting).  It supports vector and matrix aggregates, and has operations
+specialized for linear-algebra calculations.  There is no function abstraction
+and all variables are global; program chunking is achieved through PERFORM
+blocks which resemble parameterless subroutines.
+.P
+CUPL rather resembles early BASICs, minus BASIC's string facility.  It is
+oriented towards scientific calculation and linear algebra, and would be nearly
+impossible (or, at any rate, extremely painful) to use for anything else.
+.P
+The programming-support features resembled those of the better-known WATFOR
+and WATFIV compilers, incorporating elaborate error-correction and trace
+output features using a runtime monitor.
+.P
+.H 1 "Differences from the original CUPL"
+.P
+The most obvious differences are also the most trivial.  CUPL, first
+implemented on an IBM/360 Model 30, used a small capital-letters-only subset of
+EBCDIC similar to SIXBIT, and followed the archaic IBM practice of using a
+slashed-O for alphabetic O and plain 0 for zero.  Original CUPL listings thus
+look rather odd to the modern eye.
+.P
+The original CUPL was a batch system with a fixed-field card format; labels in
+columns 1-8, statements in 10-72, statement continuations beginning in column
+15.  Data for the program was supplied following a special *DATA label in the
+same deck as the program.
+.P
+On modern output devices, slashed-0 tends to be used, if at all, for zero.  We
+have not tried to preserve IBM's reversal.  Nor have we tried to enforce the
+columnation requirements, and we don't implement the continuation convention
+(new CUPL is free-format, with newlines ignored).  We do preserve much of the
+visual appearance of CUPL listings by insisting on all caps and tab-indenting
+statements.  We also preserve the *DATA mechanism for supplying
+initializations.
+.P
+More significant differences arise from differences between the word size and
+floating-point format in CUPL's original host and those of typical modern C
+implementation.  The 360 had a 36-bit word; original CUPL scalars ranged from
+1e76 to 1e-78 with nine decimal digits of precision.  On today's typical 32-bit
+microprocessor such as an Intel 486, C floats are 32 bits and have roughly
+1e+38 to 1e-38 range and 9 digits precision; doubles are 64 bits, with range
+roughly 1e308 to 1e-304 and 19 digits of precision.  This implementation use
+doubles to emulate CUPL scalars.
+.P
+We know from the documentation that the original CUPL compiler ran
+in 64K of core.  The present implementation is easily twice that size.
+However, given the cycle speeds of the 1960s, it certainly runs a
+good deal faster that original CUPL, even with interpretation overhead.
+.P
+We don't implement original CUPL's error-correction facilities.  Though clever,
+they would make the parser forbiddingly complex, and much less important in an
+interactive environment.
+.P
+There are many limits in original CUPL that we do not enforce.  There is
+no limit on the length of variable names short of the lexer's very long
+token buffer length.  There is no hard limit on the number of statements in a
+program.  There is no hard limit on the size of arrays.
+
