@@ -30,9 +30,9 @@ differently if we get a compiler back end.
 /* does the node represent an atom? */
 #define ATOMIC(n)	((n) == IDENTIFIER || (n) == NUMBER || (n) == STRING)
 /* does the node reference a statement label? */
-#define SLABELREF(n)	((n) == GO || (n) == OG)
+#define SLABELREF(n)	((n) == GO)
 /* does the node reference a block label? */
-#define BLABELREF(n)	((n) == PERFORM)
+#define BLABELREF(n)	((n) == PERFORM || (n) == END || (n) == OG)
 /* does the node set a variable? */
 #define VARSET(n)	((n) == LET || (n) == READ || (n) == ITERATE)
 /* does the (non-VARSET) node refer to its left operand as a variable? */ 
@@ -206,23 +206,6 @@ static bool check_errors(node *tree)
     /* mark labels */
     recursive_apply(tree, r_mark_labels);
 
-    /* check for label/variable consistency */
-    for_symbols(lp)
-	if ((lp->blabelref || lp->blabeldef) + (lp->slabelref || lp->slabeldef) + (lp->assigned || lp->used) > 1)
-	    die("%s has conflicting uses\n", lp->node->u.string);
-	else if (lp->blabelref && !lp->blabeldef)
-	    die("block label %s used but not defined\n", lp->node->u.string);
-	else if (!lp->blabelref && lp->blabeldef)
-	    warn("block label %s defined but never used\n",lp->node->u.string);
-	else if (lp->slabelref && !lp->slabeldef)
-	    die("statement label %s used but not defined\n",lp->node->u.string);
-	else if (!lp->slabelref && lp->slabeldef)
-	    warn("statement label %s defined but never used\n", lp->node->u.string);
-        else if (lp->used && !lp->assigned)
-	    warn("variable %s used but not set\n", lp->node->u.string);
-        else if (!lp->used && lp->assigned)
-	    warn("variable %s set but not used\n", lp->node->u.string);
-
     /* describe all labels and variables */
     if (verbose >= DEBUG_CHECKDUMP)
     {
@@ -269,6 +252,23 @@ static bool check_errors(node *tree)
 		(void) printf("    %8s: %d assignments, %d reference(s)\n",
 			      lp->node->u.string, lp->assigned, lp->used);
     }
+
+    /* check for label/variable consistency */
+    for_symbols(lp)
+	if ((lp->blabelref || lp->blabeldef) + (lp->slabelref || lp->slabeldef) + (lp->assigned || lp->used) > 1)
+	    die("%s has conflicting uses\n", lp->node->u.string);
+	else if (lp->blabelref && !lp->blabeldef)
+	    die("block label %s used but not defined\n", lp->node->u.string);
+	else if (!lp->blabelref && lp->blabeldef)
+	    warn("block label %s defined but never used\n",lp->node->u.string);
+	else if (lp->slabelref && !lp->slabeldef)
+	    die("statement label %s used but not defined\n",lp->node->u.string);
+	else if (!lp->slabelref && lp->slabeldef)
+	    warn("statement label %s defined but never used\n", lp->node->u.string);
+        else if (lp->used && !lp->assigned)
+	    warn("variable %s used but not set\n", lp->node->u.string);
+        else if (!lp->used && lp->assigned)
+	    warn("variable %s set but not used\n", lp->node->u.string);
 
     return(FALSE);
 }
