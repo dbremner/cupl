@@ -142,11 +142,25 @@ static void display_return(node *tree, node *left, node *right, value v)
     }
 }
 
+static void cupl_assign(node *to, value from)
+/* assign result of the expression at the cdr to the identifier at the cdr */
+{
+    static value cupl_eval(node *);
+
+    deallocate_value(&(to->syminf->value));
+    to->syminf->value = from;
+    if (to->syminf->watchcount && to->syminf->watchcount--)
+    {
+	eval_write(to);
+	cupl_eol_write();
+    }
+}
+
 static value cupl_eval(node *tree)
 /* recursively evaluate a CUPL parse tree */
 {
     value	leftside, rightside, result, cond;
-    node	*np;
+    node	*np, *iterator;
     int		n;
     jmp_buf	jmpperf;
 
@@ -183,13 +197,7 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case LET:
-	deallocate_value(&(tree->car->syminf->value));
-	tree->car->syminf->value = EVAL_WRAP(cupl_eval(tree->cdr));
-	if (tree->car->syminf->watchcount && tree->car->syminf->watchcount--)
-	{
-	    eval_write(tree->car);
-	    cupl_eol_write();
-	}
+	cupl_assign(tree->car, EVAL_WRAP(cupl_eval(tree->cdr)));
 	result.rank = FAIL;
 	RETURN_WRAP(tree, tree->car, tree->cdr, result)
 	return(result);
@@ -494,8 +502,38 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case FOR:
-	/* FIXME: implement FOR */
-	die("FOR is not implemented\n");
+	/* FIXME: this code is not tested yet */
+	iterator = tree->car;
+	if (iterator->type == '=')
+	{
+	    for_cdr(np, tree)
+	    {
+		result = EVAL_WRAP(cupl_eval(np->car));
+		cupl_assign(iterator->car, result);
+		cupl_eval(tree->cdr);
+	    }
+	}
+	else if (iterator->type == ITERATE)
+	{
+	    value	v;
+	    scalar ds, initial, final, increment;
+
+	    initial = EVAL_WRAP(cupl_eval(iterator->cdr->car)).elements[0];
+	    iterator = iterator->cdr->cdr;
+	    final = EVAL_WRAP(cupl_eval(iterator->car)).elements[0];
+	    increment = iterator->cdr ? EVAL_WRAP(cupl_eval(iterator->car)).elements[0] : 1;
+	    make_scalar(&v, ds);
+
+	    for (ds = initial; ds <= final; ds += increment)
+	    {
+		v.elements[0] = ds;
+		cupl_assign(tree->car->car, v);
+		cupl_eval(tree->cdr);
+	    }
+	    deallocate_value(&v);
+	}
+	else
+	    die("unknown iterator in FOR statement\n");
 	result.rank = FAIL;
 	return(result);
 
