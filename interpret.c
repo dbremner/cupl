@@ -240,16 +240,25 @@ static bool r_label_rewrite(node *tp)
      * KISS -- this code may do extra work, but it needs no special
      * knowledge about node types.
      */
-    if (!ATOMIC(tp->type))
+    if (LABELREF(tp->type))
     {
 	node *left = tp->u.n.left;
 	node *right = tp->u.n.right;
 
 	if (left && left->type == IDENTIFIER && left->syminf->labelref)
+	{
+#ifdef ODEBUG
+	    (void) printf("patching label reference to %s\n", left->u.string);
+#endif /* ODEBUG */
 	    left = left->syminf->target;
-
+	}
 	if (right && right->type == IDENTIFIER && right->syminf->labelref)
+	{
+#ifdef ODEBUG
+	    (void) printf("patching label reference to %s\n", right->u.string);
+#endif /* ODEBUG */
 	    right = right->syminf->target;
+	}
     }
 
     return(TRUE);
@@ -265,10 +274,10 @@ static void rewrite(node *tree)
 	if (np->u.n.left->type == LABEL)
 	    np->u.n.left->u.n.left->syminf->target = np;
 
-#ifdef _FOO_
     /* now, hack label references to eliminate name references */
     recursive_apply(tree, r_label_rewrite);
 
+#ifdef _FOO_
     /* pull blocks out of the main line */
     for_cdr(np, tree)
 	if (np->u.n.left->type==LABEL && np->u.n.left->u.n.right->type==BLOCK)
