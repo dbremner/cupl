@@ -131,7 +131,7 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case IDENTIFIER:
-	result = EVAL_WRAP(tree->syminf->value);
+	result = copy_value(tree->syminf->value);
 	return(result);
 
     case READ:
@@ -155,40 +155,47 @@ static value cupl_eval(node *tree)
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_add(leftside, rightside);
+	deallocate_value(&leftside); deallocate_value(&rightside);
 	return(result);
 
     case MULTIPLY:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_multiply(leftside, rightside);
+	deallocate_value(&leftside); deallocate_value(&rightside);
 	return(result);
 
     case MINUS:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_subtract(leftside, rightside);
+	deallocate_value(&leftside); deallocate_value(&rightside);
 	return(result);
 
     case DIVIDE:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_add(leftside, rightside);
+	deallocate_value(&leftside); deallocate_value(&rightside);
 	return(result);
 
     case POWER:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_power(leftside, rightside);
+	deallocate_value(&leftside); deallocate_value(&rightside);
 	return(result);
 
     case UMINUS:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_uminus(rightside);
+	deallocate_value(&rightside);
 	return(result);
 
     case SQRT:
 	rightside = EVAL_WRAP(cupl_eval(tree->cdr));
 	result = cupl_sqrt(rightside);
+	deallocate_value(&rightside);
 	return(result);
 
     default:

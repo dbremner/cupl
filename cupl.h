@@ -67,7 +67,6 @@ typedef struct
     int		rank;			/* 0, 1, or 2 */
     int		width, depth;		/* dimensions */
     scalar	*elements;		/* elements */
-    int		refcount;		/* how many copies are there? */
 }
 value;
 
