@@ -353,10 +353,11 @@ static void rewrite(node *tree)
 				  endnode->car->car->u.string) == 0)
 		{
 		    found = TRUE;
+		    np->syminf->endnode = endnode;
 		    break;
 		}
 	    if (!found)
-		die("no END matching block label %s\n", sp->car->u.string);
+		die("no END matching %s BLOCK\n", sp->car->u.string);
 	}
 
 	/* rewrite code coes here */

@@ -77,6 +77,7 @@ typedef struct lvar_t
     node		*node;		/* variable's symbol info */
     value		value;		/* variable's value */
     node		*target;	/* target node, if label */
+    node		*endnode;	/* end node address, if block label */
 
     /* information used for consistency checks */
     int		blabeldef;
