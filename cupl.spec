@@ -21,6 +21,6 @@ rm -f /usr/bin/cupl /usr/share/man/man1/cupl.1
 cp cupl /usr/bin
 
 %files
-%doc READ.ME COPYING corc.doc cupl.doc
+%doc READ.ME COPYING corc.doc cupl.doc test
 /usr/bin/cupl
 /usr/share/man/man1/cupl.1

@@ -64,7 +64,7 @@ preoccupations of their time.</para>
 
 <refsect1><title>The CUPL and CORC Languages</title>
 
-<para>This distribution includes, in the file
+<para>The source distribution includes, in the file
 <filename>cupl.doc</filename>, a transcription of all the relevant
 parts of the CUPL manual (the bulk of the text is a general tutorial
 on scientific programming).  Another file,
