@@ -1,8 +1,42 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-<article>
-<sect1 id='introduction'><title>Introduction</title>
+<refentry>
+<refmeta>
+<refentrytitle>cupl</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='date'>Nov 31 1994</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>cupl</refname>
+<refpurpose>interpreter for the CORC and CUPL languages</refpurpose>
+</refnamediv>
+<refsynopsisdiv id='synopsis'>
+
+<cmdsynopsis>
+  <command>cupl</command>
+    <arg choice="opt">-f <replaceable>fieldwidth</replaceable></arg>
+    <arg choice="opt">-v <replaceable>nnn[y]</replaceable></arg>
+    <arg choice="opt">-w <replaceable>linewidth</replaceable></arg>
+</cmdsynopsis>
+
+</refsynopsisdiv>
+
+<refsect1><title>Options</title>
+
+<para>The -w options sets the line width (default 80).</para>
+
+<para>The -f option sets the field width (default 20).</para>
+
+<para>The -v option enables debugging output.  At level 1, the parse tree is
+prettyprinted.  At level 2, definition/reference counts for each
+variable and label are printed after each run.  At level 3, an
+execution trace is displayed as the parse tree is printed.  At level
+4, each token intern and cons-cell allocation during parsing is also
+dumped. A suffix of y enables parser debugging messages.</para>
+
+</refsect1>
+<refsect1 id='description'><title>Description</title>
 
 <para>CUPL was an early (1966) teaching language implemented as a
 batch compiler on the IBM/360 at Cornell University.  It was descended
@@ -10,14 +44,14 @@ from an earlier (1962) experimental language called CORC (CORnell
 Compiler), which was in turn derived from PL/1.  Statements made
 without qualification about CUPL below also apply to CORC.</para>
 
-<para>CUPL is documented in "CUPL: The Cornell University Programming
-Language", by R.J. Walker, a manual first printed in November 1966.
-This implementation, and the discussion in this paper, are based on
-the July 1967 second printing.</para>
+<para>CUPL is documented in <citetitle>CUPL: The Cornell University
+Programming Language</citetitle>, by R.J. Walker, a manual first
+printed in November 1966.  This implementation is based on the July
+1967 second printing.</para>
 
-<para>CORC is documented in "An Instruction Manual For CORC", by
-R.W. Conway, W.L. Maxwell, R.J. Walker.  This implementation tracks
-the 2nd edition of September 1963.</para>
+<para>CORC is documented in <citetitle>An Instruction Manual For
+CORC</citetitle>, by R.W. Conway, W.L. Maxwell, R.J. Walker.  This
+implementation tracks the 2nd edition of September 1963.</para>
 
 <para>The purpose of this implementation, and this paper, is to
 preserve a CUPL/CORC implementation for the edification of historians
@@ -26,9 +60,9 @@ representative of a significant class of teaching languages in its
 period, and study of their design casts a clear light on the
 preoccupations of their time.</para>
 
-</sect1>
+</refsect1>
 
-<sect1 id='the_cupl_and_corc_languages'><title>The CUPL and CORC Languages</title>
+<refsect1><title>The CUPL and CORC Languages</title>
 
 <para>This distribution includes, in the file
 <filename>cupl.doc</filename>, a transcription of all the relevant
@@ -45,9 +79,10 @@ calculations.  There is no function abstraction and all variables are
 global; program chunking is achieved through BLOCK or BEGIN blocks
 which resemble parameterless subroutines.</para>
 
-<para>CUPL rather resembles early BASICs, minus BASIC's string facility.  It is
-oriented towards scientific calculation and linear algebra, and would be nearly
-impossible (or, at any rate, extremely painful) to use for anything else.</para>
+<para>CUPL rather resembles early BASICs, minus BASIC's string
+facility.  It is oriented towards scientific calculation and linear
+algebra, and would be nearly impossible (or, at any rate, extremely
+painful) to use for anything else.</para>
 
 <para>The programming-support features of CUPL and CORC resembled those of the
 better-known WATFOR and WATFIV compilers, incorporating elaborate
@@ -63,9 +98,9 @@ CORC-specific word (such as NOTE) during lexing.</para>
 <para>The CORC statement TITLE and the triple iteration construct have no
 counterparts in CUPL.</para>
 
-</sect1>
+</refsect1>
 
-<sect1 id='differences_from_the_original_cupl'><title>Differences from the original CUPL</title>
+<refsect1><title>Differences from the original CUPL</title>
 
 <para>The most obvious differences are also the most trivial.  CUPL was
 first implemented on an IBM/360 Model 30; CORC on Burroughs 1604 and
@@ -130,27 +165,12 @@ printf(3)'s %f and %e at field-width precision.</para>
 as to fit on an 80-column line.  Command-line options to change the
 line and field widths are available.</para>
 
-</sect1>
+</refsect1>
 
-<sect1 id='commandline_options'><title>Command-line options</title>
-
-<para>The -w options sets the line width (default 80).</para>
-
-<para>The -f option sets the field width (default 20).</para>
-
-<para>The -v option enables debugging output.  At level 1, the parse tree is
-prettyprinted.  At level 2, definition/reference counts for each
-variable and label are printed after each run.  At level 3, an
-execution trace is displayed as the parse tree is printed.  At level
-4, each token intern and cons-cell allocation during parsing is also
-dumped.</para>
-
-</sect1>
-
-<sect1 id='unix_implementation_notes'><title>Unix Implementation Notes.</title>
+<refsect1><title>Unix Implementation Notes.</title>
 
 <para>The CUPL/CORC implementation is built around YACC and LEX.  The rest is
-ANSI and POSIX-conformant C.</para>
+ANSI C.</para>
 
 <para>The YACC grammar just builds a parse tree, which is passed to
 interpret() for interpretation.  This method requires that all
@@ -194,6 +214,6 @@ The interpreter sets a flag when it sees any of the appropriate
 CORC-specific keywords (NOTE, BEGIN, DEC, DECREASE, EQL, GEQ, GTR,
 INC, INCREASE, INT, LEQ, LSS, NEQ, REPEAT, TITLE, UNTIL, $) during
 lexing, and execute() modifies its behavior appropriately.</para>
-</sect1>
-</article>
+</refsect1>
+</refentry>
 
