@@ -183,9 +183,9 @@ void cupl_scalar_write(char *name, scalar quant)
 	needspace(fieldwidth);
 
     if (0.001 < fabs(quant) && fabs(quant) < 100000)
-	(void) printf("%*f", fieldwidth, quant);
+	(void) printf("%*.9f", fieldwidth, quant);
     else
-	(void) printf("%*E", fieldwidth, quant);
+	(void) printf("%*.9E", fieldwidth, quant);
 }
 
 void cupl_string_write(char *s)
