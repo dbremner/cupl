@@ -1,4 +1,17 @@
-/* tokdump.c -- a token dumper for debugging */
+/*****************************************************************************
+
+NAME
+   tokdump.c -- a token dumper for debugging
+
+
+SYNOPSIS
+   char *tokdump(int value)	-- return token name corresponding to value
+
+DESCRIPTION
+   Used for dumping the parse tree and error messages.
+
+*****************************************************************************/
+/*LINTLIBRARY*/
 
 #include <string.h>
 #include "tokens.h"

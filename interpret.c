@@ -1,3 +1,17 @@
+/*****************************************************************************
+
+NAME
+   interpret.c -- parse-tree interpretation
+
+SYNOPSIS
+   void interpret(node *tree)	-- prepare and execute a parse tree
+
+DESCRIPTION
+   This code does interpretation, static checking, and label resolution
+of a CUPL parse tree.  Actual execution is handed off to execute(). 
+
+*****************************************************************************/
+/*LINTLIBRARY*/
 #include <stdio.h>
 #include <stdarg.h>
 #include "cupl.h"
@@ -23,25 +37,6 @@
 				&& (n) != WHILE)
 /* does the (non-VARSET) node refer to its right operand? */
 #define RIGHTREF(n)	((n) != PERFORM)
-
-/* this structure represents a CUPL value */
-typedef struct
-{
-    int		type;			/* type (syntax class) */
-    int		rank;			/* 0, 1, or 2 */
-    union
-    {
-	scalar	scalar;
-
-	struct 
-	{
-	    int		width, depth;
-	    scalar	*elements;
-	}
-	array;		/* a vector or matrix */
-    } u;
-}
-value;
 
 #ifdef PARSEDEBUG
 /*
@@ -160,7 +155,7 @@ static bool r_mark_labels(node *tp)
     return(TRUE);
 }
 
-bool recursive_apply(node *tree, bool (*fun)(node *))
+static bool recursive_apply(node *tree, bool (*fun)(node *))
 /* apply fun recursively to tree, short-circuiting on FALSE return */
 {
     if (tree == (node *)NULL)
@@ -180,8 +175,6 @@ static bool check_errors(node *tree)
 {
     node	*n;
     lvar	*lp;
-
-#define for_symbols(s)    for (s = idlist; s; s = s->next)
 
     /* simple sanity check */
     for (n = tree; n; n = n->u.n.right)
@@ -249,7 +242,7 @@ void interpret(node *tree)
     if (check_errors(tree))
 	return;
 
-    /* actual interpretation or compilation goes here */
+    execute(tree);
 }
 
 /* interpret.c ends here */

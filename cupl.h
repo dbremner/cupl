@@ -54,11 +54,22 @@ typedef struct edon
 }
 node;
 
+/* this structure represents a CUPL value */
+typedef struct
+{
+    int		type;			/* type (syntax class) */
+    int		rank;			/* 0, 1, or 2 */
+    int		width, depth;		/* dimensions */
+    scalar	*elements;		/* elements */
+}
+value;
+
 /* access to the symbol list */
 typedef struct lvar_t
 {
-    struct lvar_t	*next;
-    node		*node;
+    struct lvar_t	*next;		/* link to next variable */
+    node		*node;		/* variable's symbol info */
+    value		value;		/* variable's value */
 
     /* information used for consistency checks */
     int		labeldef;
@@ -69,11 +80,14 @@ typedef struct lvar_t
 lvar;
 extern lvar *idlist;
 
+#define for_symbols(s)    for (s = idlist; s; s = s->next)
+
 #define NOMEM	"out of memory\n"
 
 extern char *tokdump(int value);
 extern void yyerror(const char *errmsg);
 extern void interpret(node *tree);
+extern void execute(node *tree);
 extern int verbose;
 
 #define DEBUG_PARSEDUMP	1
