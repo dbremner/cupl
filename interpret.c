@@ -8,7 +8,11 @@ SYNOPSIS
 
 DESCRIPTION
    This code does interpretation, static checking, and label resolution
-of a CUPL parse tree.  Actual execution is handed off to execute(). 
+of a CUPL parse tree.  Actual execution is handed off to execute().
+
+NOTE
+   The NOTE: comments describe a few things that will need to be done 
+differently if we get a compiler back end.
 
 *****************************************************************************/
 /*LINTLIBRARY*/
@@ -291,6 +295,17 @@ static bool r_label_rewrite(node *tp)
 	}
     }
 
+    /*
+     * Remove all label nodes, now that we've resolved them.
+     * NOTE: we must suppress this if we ever do a compiler back end!
+     */
+    if (tp->car && tp->car->type == LABEL)
+    {
+	node *oldnode = tp->car;
+	tp->car = tp->car->cdr;
+	free(oldnode);
+    }
+
     return(TRUE);
 }
 
@@ -308,6 +323,10 @@ static void rewrite(node *tree)
 		break;
 
 	    case BLOCK:
+		/*
+		 * NOTE: if we do a compiler back end, we probably want
+		 * to suppress the cdr operation.
+		 */
 		np->car->car->syminf->target = np->cdr;
 		break;
 
