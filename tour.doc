@@ -1,19 +1,14 @@
-.SA 1
-.TL "A Brief Tour of the CUPL Internals"
-.AF "Thyrsus Enterprises"
-.AU "Eric S. Raymond" ESR "\&\&22 South Warren Ave, Malvern PA 19355"
-.MT 4
-.nr Pt 1
-.P
+			CUPL Implementation Notes
+
 The CUPL implementation is built around YACC and LEX.  The rest is
 ANSI and POSIX-conformant C.
-.P
+
 The YACC grammar just builds a parse tree, which is passed to
 interpret() for interpretation.  This method requires that all
 programs are always small enough that the entire tree can be held
 in memory, but it has the advantage that front and back end are very
 well separated.  It is a winning strategy on virtual-memory systems.
-.P
+
 One hack that greatly simplifies the grammar productions is that the
 lexer actually returns parse tree nodes, even for atoms like
 identifiers, strings, and numbers.  In fact, the lexical analyzer even
@@ -21,11 +16,24 @@ does label and variable name resolution with the same simple piece of
 code; each IDENTIFIER token is looked up in the identifier list when
 it's recognized, so the parse tree early becomes a DAG.  (The -v1 option
 causes the compiler to dump its parse tree for inspection.)
-.P
+
 Most of the smarts are in interpret() and its sub-functions.  Because
 array variables can be re-allocated, the internals have to use a
-dynamic vector/array type with its own indexing machinery.
-.P
+dynamic vector/array type with its own indexing machinery.  The code
+to manipulate this type lives in monitor.c.
+
 Note that much of this machinery is quite generic and could be re-used
 for other languages with little change.
+
+The implementation trades away some possible efficiencies for
+simplicity.  Most importantly, each value has an attached malloc
+object to hold its elements, even when there is only one such element
+(as for scalars) which could reasonably be represented by a static
+field.
+
+There are some comments in the code which discuss the possibility of
+a back end that would emit C.   This would be easy to do if there were
+any serious corpus of CUPL code demanding to be translated.  The
+compiler back end would emit code shaped like the parse tree, which
+would then link monitor.c as runtime support.
 
