@@ -2,16 +2,22 @@
 #
 # Make regression-test loads for the CUPL compiler front end
 #
-TESTLOADS="cubic fancyquad poly11 power prime quadratic random rise simplequad squares sum"
+TESTCUPL="cubic fancyquad poly11 power prime quadratic random rise simplequad squares sum"
+TESTCORC="factorial powercorc quadcorc sumsquares"
 
 trap "rm -f testcupl$$; exit 0"
 
 rm -f *.test
 
-for x in $TESTLOADS
+for x in $TESTCUPL
 do
 	echo "Making ${x}.test from ${x}.cupl..."
 	../cupl -v1 ${x}.cupl >${x}.test 2>&1
+done
+for x in $TESTCORC
+do
+	echo "Making ${x}.test from ${x}.corc..."
+	../cupl -v1 ${x}.corc >${x}.test 2>&1
 done
 
 chmod -w *.test

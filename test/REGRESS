@@ -2,14 +2,21 @@
 #
 # Regression-test the CUPL compiler front end
 #
-TESTLOADS="cubic fancyquad poly11 power prime quadratic random rise simplequad squares sum"
+TESTCUPL="cubic fancyquad poly11 power prime quadratic random rise simplequad squares sum"
+TESTCORC="factorial powercorc quadcorc sumsquares"
 
 trap "rm -f testcupl$$; exit 0"
 
-for x in $TESTLOADS
+for x in $TESTCUPL
 do
 	echo "Testing against ${x}.cupl..."
 	../cupl -v1 ${x}.cupl >testcupl$$
+	diff -c ${x}.test testcupl$$
+done
+for x in $TESTCORC
+do
+	echo "Testing against ${x}.corc..."
+	../cupl -v1 ${x}.corc >testcupl$$
 	diff -c ${x}.test testcupl$$
 done
 echo "Done"
