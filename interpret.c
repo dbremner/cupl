@@ -93,6 +93,9 @@ static bool recursive_apply(node *tree, bool (*fun)(node *))
 static bool r_mark_labels(node *tp)
 /* record label references */
 {
+    if (ATOMIC(tp->type))
+	return(TRUE);
+
     /* count label definitions */
     if (tp->type == LABEL)
 	if (tp->cdr->type == BLOCK)
@@ -249,6 +252,9 @@ static bool check_errors(node *tree)
 static bool r_label_rewrite(node *tp)
 /* resolve label references */
 {
+    if (ATOMIC(tp->type))
+	return(TRUE);
+
     /*
      * KISS -- this code may do extra work, but it needs no special
      * knowledge about node types.
