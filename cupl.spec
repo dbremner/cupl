@@ -1,41 +1,50 @@
 Name: cupl
-Version: %{myversion}
+Summary: Interpreter for the archaic CUPL and CORC programming languages.
+Version: 1.6
 Release: 1
-URL: http://www.tuxedo.org/~esr/cupl/
+URL: http://www.catb.org/~esr/cupl/
 Source0: %{name}-%{version}.tar.gz
 License: GPL
 Group: Languages
-Summary: Interpreter for the archaic CUPL and CORC programming languages.
-%undefine __check_files
+BuildRoot: %{_tmppath}/%{name}-root
 
 %description
 Interpreter for the archaic CUPL and CORC programming languages.
 Includes full documentation and a chrestomathy of programs.
 
 %prep
-%setup
+%setup -q
 
 %build
 make
+make cupl.1
 
 %install
-rm -f /usr/bin/cupl /usr/share/man/man1/cupl.1
-cp cupl /usr/bin
-cp cupl.1 /usr/share/man/man1/cupl.1
+[ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
+mkdir -p "$RPM_BUILD_ROOT"/usr/bin
+mkdir -p "$RPM_BUILD_ROOT"/usr/share/man/man1/
+cp cupl "$RPM_BUILD_ROOT"/usr/bin
+cp cupl.1 "$RPM_BUILD_ROOT"/usr/share/man/man1/
+
+%clean
+[ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
 
 %files
 %doc READ.ME COPYING corc.doc cupl.doc test
-/usr/bin/cupl
-/usr/share/man/man1/cupl.1
+%{_bindir}/cupl
+%{_mandir}/man1/cupl.1*
 
 %changelog
-* Fri Dec 26 2003 Eric S. Raymond <esr@thyrsus.com> 1.5 
+* Mon Dec 29 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.6-1
+- Source RPMSs no longer depend on --define myversion.
+
+* Fri Dec 26 2003 Eric S. Raymond <esr@thyrsus.com> 1.5-1
 - Updated RPM packaging machinery.
 
-* Tue Jul 30 2000 Eric S. Raymond <esr@thyrsus.com> 1.4
+* Tue Jul 30 2000 Eric S. Raymond <esr@thyrsus.com> 1.4-1
 - Move documentation to XML.
 
-* Thu Jul 27 2000 Eric S. Raymond <esr@thyrsus.com> 1.3
+* Thu Jul 27 2000 Eric S. Raymond <esr@thyrsus.com> 1.3-1
 - Cleanup release.  Use modern packaging and RPMs.
 
 RPM chokes on the older dates below.

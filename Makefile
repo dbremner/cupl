@@ -1,7 +1,7 @@
 #
 # Makefile for the CUPL/CORC project
 #
-VERS=1.5
+VERS=$(shell sed <cupl.spec -n -e '/Version: \(.*\)/s//\1/p')
 
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
@@ -58,12 +58,6 @@ cupl-$(VERS).tar.gz: $(SOURCES) $(DOCS) cupl.1
 	@(cd ..; rm cupl-$(VERS))
 
 dist: cupl-$(VERS).tar.gz
-
-RPMROOT=/usr/src/redhat
-rpm: dist
-	rpmbuild --define 'myversion $(VERS)' -ta cupl-$(VERS).tar.gz
-	cp $(RPMROOT)/RPMS/*/cupl-$(VERS)*.rpm .
-	cp $(RPMROOT)/SRPMS/cupl-$(VERS)*.src.rpm .
 
 clean:
 	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output cupl.tar cupl.tar.gz *.rpm cupl-*.tar.gz
