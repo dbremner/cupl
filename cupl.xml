@@ -96,3 +96,19 @@ at field-width precision.
 Also, by default, we wrap after three 20-char fields rather than 6, so
 as to fit on an 80-column line.  Command-line options to change the
 line and field widths are available.
+.P
+.H 1 "Command-line options"
+.P
+The -w options sets the line width (default 80).
+.P
+The -f option sets the field width (default 20).
+.P
+The -v option enables debugging output.  At level 1, the parse tree is
+prettyprinted.  At level 2, definition/reference counts for each
+variable and label are printed after each run.  At level 3, an
+execution trace is displayed as the parse tree is printed.  At level
+4, each token intern and cons-cell allocation during parsing is also
+dumped.
+
+
+

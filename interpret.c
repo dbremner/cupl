@@ -297,7 +297,19 @@ static void rewrite(node *tree)
     /* first, make a pointer from each label to its destination statement */
     for_cdr(np, tree)
 	if (np->car->type == LABEL)
-	    np->car->car->syminf->target = np;
+	    switch (np->car->cdr->type)
+	    {
+	    case END:
+		break;
+
+	    case BLOCK:
+		np->car->car->syminf->target = np;
+		break;
+
+	    default:
+		np->car->car->syminf->target = np;
+		break;
+	    }
 
     /* figure end addresses */
     for_cdr(np, tree)

@@ -162,6 +162,7 @@ extern bool cupl_ge(value, value);
 
 #define DEBUG_PARSEDUMP	1
 #define DEBUG_CHECKDUMP	2
-#define DEBUG_ALLOCATE	3
+#define DEBUG_EXECUTE	3
+#define DEBUG_ALLOCATE	4
 
 /* cupl.h ends here */

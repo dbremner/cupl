@@ -128,7 +128,7 @@ static void eval_write(node *tp)
 static void display_return(node *tree, node *left, node *right, value v)
 /* display the returned value of a node (for tracing purposes) */
 {
-    if (verbose >= DEBUG_ALLOCATE)
+    if (verbose >= DEBUG_EXECUTE)
     {
 	(void) printf("eval returns: %x (%-10s of %9x, %9x) ",
 		      tree, tokdump(tree->type), left, right);
@@ -164,7 +164,7 @@ static value cupl_eval(node *tree)
     int		n;
     jmp_buf	jmpperf;
 
-    if (verbose >= DEBUG_ALLOCATE)
+    if (verbose >= DEBUG_EXECUTE)
 	(void) printf("eval begins:  %x (%-10s of %9x, %9x)\n",
 		      tree, tokdump(tree->type), tree->car, tree->cdr);
 
