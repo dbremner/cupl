@@ -115,13 +115,13 @@ static node *intern_identifier(char *str)
 	n->next = idlist;
 	n->node = new;
 	idlist = n;
+    }
 
 #ifdef PARSEDEBUG
 	if (verbose >= 2)
 	    (void) printf("intern: %9x                        (IDENTIFIER: %s)\n",
-			  new, str);
+		  new, str);
 #endif /* PARSEDEBUG */
-    }
 
     return(new);
 }
@@ -143,7 +143,7 @@ static node *intern_number(char *str)
 
 #ifdef PARSEDEBUG
     if (verbose >= 2)
-	(void) printf("intern: %x (NUMBER: %d)\n", new, numval);
+	(void) printf("intern: %x                             (NUMBER: %d)\n", new, numval);
 #endif /* PARSEDEBUG */
     return(new);
 }
