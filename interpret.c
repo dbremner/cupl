@@ -57,7 +57,7 @@ static void prettyprint(node *tree, int indent)
 	else
 	    (void) printf("%-20s", tokdump(tree->type));
 
-	if (verbose >= DEBUG_ALLOCATE)
+	if (verbose >= DEBUG_EXECUTE)
 	    (void) printf("                          (%x -> %x, %x)",
 			  tree,
 			  tree->car,
