@@ -67,6 +67,7 @@ static void cupl_read(node *tp)
 	die("internal error -- garbled READ list\n");
     else
     {
+	/* FIXME: read into subscripted variables and slices won't work */
 	value *v = &(tp->syminf->value);
 	int	n;
 
@@ -141,6 +142,8 @@ static value cupl_eval(node *tree)
 {
     value	leftside, rightside, result, cond;
     node	*np;
+    int		n;
+    jmp_buf	jmpperf;
 
     switch(tree->type)
     {
@@ -472,8 +475,12 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case WHILE:
-	/* FIXME: implement WHILE */
-	die("WHILE is not implemented\n");
+	do {
+	    cupl_eval(tree->cdr);
+
+	    cond = cupl_eval(tree->car);
+	} while
+	    (cond.rank);
 	result.rank = FAIL;
 	return(result);
 
@@ -484,15 +491,17 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case TIMES:
-	/* FIXME: implement TIMES */
-	die("TIMES is not implemented\n");
+	result = cupl_eval(tree->car);
+	for (n = floor(result.elements[0]); n; n--)
+	     (void) cupl_eval(tree->cdr);
 	result.rank = FAIL;
 	return(result);
 
     case PERFORM:
-	next = tree->car;
-	pushstack(pc->cdr);
-	longjmp(nextbuf, 1);
+	if (setjmp(jmpperf) == 0)
+	    cupl_eval(tree->car);
+	result.rank = FAIL;
+	return(result);
 
     case BLOCK:
 	next = pc->endnode->cdr;
@@ -502,10 +511,9 @@ static value cupl_eval(node *tree)
 	next = tree->car;
 	longjmp(nextbuf, 1);
 
-    case END:
     case OG:
-	next = popstack();
-	longjmp(nextbuf, 1);
+    case END:
+	longjmp(jmpperf, 1);
 
     case IF:
 	leftside = EVAL_WRAP(cupl_eval(tree->car));

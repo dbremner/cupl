@@ -504,29 +504,11 @@ value cupl_rand(value right)
  *
  ****************************************************************************/
 
-static bool normalize(scalar *ep1, scalar *ep2)
-/* normalize a pair of scalars for conversion purposes */
-{
-    int	mult;
-
-    if (*ep1 == 0 && *ep2 == 0)
-	return;
-
-    /*
-     * Note: this is not precisely the roundoff method used by original
-     * CUPL, though it should (famous last words) be equivalent.
-     */
-    if (fabs(*ep1) > fabs(*ep2))
-	mult = pow(10, log10(*ep2) + 14);
-    else
-	mult = pow(10, log10(*ep1) + 14);
-
-    *ep1 *= mult;
-    *ep2 *= mult;
-
-    *ep1 = floor(*ep1);
-    *ep2 = floor(*ep2);
-}
+/*
+ * Original CUPL's roundoff rule for relations seems to have been designed
+ * to throw away all digits of precision more than 14,
+ */
+#define FUZZY_EQUAL(m, n)	(fabs((m) - (n)) < 10e-15)
 
 bool cupl_eq(value v1, value v2)
 /* test any two CUPL values for pairwise equality */
@@ -539,11 +521,9 @@ bool cupl_eq(value v1, value v2)
 
 	for (n = 0; n < v2.width * v2.depth; n++)
 	{
-	    scalar e1 = v1.elements[n], e2 = v1.elements[n];
+	    scalar e1 = v1.elements[n], e2 = v2.elements[n];
 
-	    normalize(&e1, &e2);
-
-	    if (e1 != e2)
+	    if (!FUZZY_EQUAL(e1, e2))
 		return(FALSE);
 	}
 
@@ -564,11 +544,9 @@ bool cupl_le(value v1, value v2)
 
 	for (n = 0; n < v2.width * v2.depth; n++)
 	{
-	    scalar e1 = v1.elements[n], e2 = v1.elements[n];
+	    scalar e1 = v1.elements[n], e2 = v2.elements[n];
 
-	    normalize(&e1, &e2);
-
-	    if (e1 > e2)
+	    if (!FUZZY_EQUAL(e1, e2) && e1 > e2)
 		return(FALSE);
 	}
 
@@ -587,11 +565,9 @@ bool cupl_ge(value v1, value v2)
 
 	for (n = 0; n < v2.width * v2.depth; n++)
 	{
-	    scalar e1 = v1.elements[n], e2 = v1.elements[n];
+	    scalar e1 = v1.elements[n], e2 = v2.elements[n];
 
-	    normalize(&e1, &e2);
-
-	    if (e1 < e2)
+	    if (!FUZZY_EQUAL(e1, e2) && e1 < e2)
 		return(FALSE);
 	}
 
