@@ -4,7 +4,7 @@
 
 # Note: When the version changes, you also have to change
 # the RPM spec file and the lsm.
-VERS=1.3
+VERS=1.4
 
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
