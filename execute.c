@@ -17,7 +17,6 @@ support in monitor.c.
 #include <math.h>
 #include "cupl.h"
 #include "tokens.h"
-#include "nodetype.h"
 
 /* debugging macros */
 #define EVAL_WRAP	/* empty */
@@ -502,7 +501,6 @@ static value cupl_eval(node *tree)
 	return(result);
 
     case FOR:
-	/* FIXME: the FOR code is not tested yet */
 	iterator = tree->car;
 	if (iterator->type == '=')
 	{
