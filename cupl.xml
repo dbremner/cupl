@@ -41,8 +41,9 @@ dumped. A suffix of y enables parser debugging messages.</para>
 <para>CUPL was an early (1966) teaching language implemented as a
 batch compiler on the IBM/360 at Cornell University.  It was descended
 from an earlier (1962) experimental language called CORC (CORnell
-Compiler), which was in turn derived from PL/1.  Statements made
-without qualification about CUPL below also apply to CORC.</para>
+Compiler), which was in turn derived loosely from Algol-58.
+Statements made without qualification about CUPL below also apply to
+CORC.</para>
 
 <para>CUPL is documented in <citetitle>CUPL: The Cornell University
 Programming Language</citetitle>, by R.J. Walker, a manual first

@@ -8,7 +8,7 @@ Cornell Computing Language, the immediate ancestor of CUPL.
 CUPL was an early (1966) teaching language implemented as a batch compiler on
 the IBM/360 at Cornell University.  It was descended from an earlier (1962)
 experimental language called CORC (CORnell Compiler), which was in turn derived
-from PL/1.
+loosely from Algol-58 (not, as previously asseeted here, PL/1).
 
 CUPL has only one scalar type, a long floating-point real corresponding to C
 double.  It supports vector and matrix aggregates, and has operations
