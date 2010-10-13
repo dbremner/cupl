@@ -126,7 +126,7 @@ static void display_return(node *tree, node *left, node *right, value v)
 {
     if (verbose >= DEBUG_EXECUTE)
     {
-	(void) printf("eval returns: %x (%-10s of %9x, %9x) ",
+	(void) printf("eval returns: %p (%-10s of %p, %p) ",
 		      tree, tokdump(tree->type), left, right);
 
 	if (RELATION(tree->type))
@@ -141,7 +141,7 @@ static void display_return(node *tree, node *left, node *right, value v)
 static void cupl_assign(node *to, value from)
 /* assign result of the expression at the cdr to the identifier at the cdr */
 {
-    static value cupl_eval(node *);
+    value cupl_eval(node *tree);
 
     deallocate_value(&(to->syminf->value));
     to->syminf->value = from;
@@ -152,7 +152,7 @@ static void cupl_assign(node *to, value from)
     }
 }
 
-static value cupl_eval(node *tree)
+value cupl_eval(node *tree)
 /* recursively evaluate a CUPL parse tree */
 {
     node *pc;	/* pointer to statement being evaluated */
@@ -164,7 +164,7 @@ static value cupl_eval(node *tree)
     int		n;
 
     if (verbose >= DEBUG_EXECUTE)
-	(void) printf("eval begins:  %x (%-10s of %9x, %9x)\n",
+	(void) printf("eval begins:  %p (%-10s of %p, %p)\n",
 		      tree, tokdump(tree->type), tree->car, tree->cdr);
 
     switch(tree->type)
@@ -569,7 +569,7 @@ static value cupl_eval(node *tree)
 	for (pc = tree->car; pc; pc = next)
 	{
 	    if (verbose >= DEBUG_EXECUTE)
-		(void) printf("statement %2d: %x (%-10s of %9x, %9x)\n",
+		(void) printf("statement %2d: %p (%-10s of %p, %p)\n",
 		      pc->number, pc, tokdump(pc->type), pc->car, pc->cdr);
 
 	    switch (pc->car->type)

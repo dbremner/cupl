@@ -23,6 +23,7 @@ author first.
 #include <stdio.h>
 #include <string.h>
 #include <setjmp.h>
+#include <stdlib.h>
 
 #ifdef PARSEDEBUG
 static int statement_count;
@@ -45,7 +46,7 @@ int yydebug;
 /* keywords */
 %token ABS ALL ALLOCATE AND ATAN BLOCK BY COMMENT COS DEC DET DOT ELSE END EXP
 %token FLOOR FOR GE GO GT IDN IF INC INV LE LET LN LOG LT MAX MIN NE OR PERFORM
-%token POSMAX POSMIN RAND READ SGM SIN SQRT STOP THEN TIMES TITLE TO TRC TRN
+%token POSMAX POSMIN RAND READ SGM SIN SQRT STOP THEN TIMES TO TRC TRN
 %token UNTIL WATCH WHILE WRITE DATA
 
 %token <node> POWER
@@ -309,7 +310,7 @@ node	*left, *right;	/* child nodes */
 
 #ifdef PARSEDEBUG
     if (verbose >= DEBUG_ALLOCATE)
-	(void) printf("cons:   %9x -> %9x %9x (%s)\n",
+	(void) printf("cons:   %p -> %p %p (%s)\n",
 		      new, left, right, tokdump(op));
 #endif /* PARSEDEBUG */
 

@@ -148,7 +148,7 @@ static node *intern_identifier(char *str)
 
 #ifdef PARSEDEBUG
 	if (verbose >= DEBUG_ALLOCATE)
-	    (void) printf("intern: %9x                        (IDENTIFIER: %s)\n",
+	    (void) printf("intern: %p                        (IDENTIFIER: %s)\n",
 		  new, str);
 #endif /* PARSEDEBUG */
 
@@ -172,7 +172,7 @@ static node *intern_number(char *str)
 
 #ifdef PARSEDEBUG
     if (verbose >= DEBUG_ALLOCATE)
-	(void) printf("intern: %9x                        (NUMBER: %f)\n", new, numval);
+	(void) printf("intern: %p                        (NUMBER: %f)\n", new, numval);
 #endif /* PARSEDEBUG */
     return(new);
 }
@@ -195,7 +195,7 @@ static node *intern_string(char *str)
 
 #ifdef PARSEDEBUG
     if (verbose >= DEBUG_ALLOCATE)
-	(void) printf("intern: %9x                        (STRING: '%s')\n",
+	(void) printf("intern: %p                        (STRING: '%s')\n",
 		      new, new->u.string);
 #endif /* PARSEDEBUG */
 

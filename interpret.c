@@ -17,6 +17,7 @@ differently if we get a compiler back end.
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>
+#include <stdlib.h>
 #include "cupl.h"
 #include "tokens.h"
 
@@ -86,7 +87,7 @@ static void prettyprint(node *tree, int indent)
 	    (void) printf("%-20s", tokdump(tree->type));
 
 	if (verbose >= DEBUG_EXECUTE)
-	    (void) printf("                          (%x -> %x, %x)",
+	    (void) printf("                          (%p -> %p, %p)",
 			  tree,
 			  tree->car,
 			  tree->cdr);
