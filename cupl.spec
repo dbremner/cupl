@@ -1,6 +1,6 @@
 Name: cupl
 Summary: Interpreter for the archaic CUPL and CORC programming languages.
-Version: 1.6
+Version: 1.7
 Release: 1
 URL: http://www.catb.org/~esr/cupl/
 Source0: %{name}-%{version}.tar.gz
@@ -35,6 +35,9 @@ cp cupl.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 %{_mandir}/man1/cupl.1*
 
 %changelog
+* Wed Oct 12 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.7-1
+- Port to modern C, ANSIfying where needed.
+
 * Mon Dec 29 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.6-1
 - Source RPMSs no longer depend on --define myversion.
 
