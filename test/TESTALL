@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Test all programs
+#
+TESTLOADS="cubic fancyquad poly11 power prime quadratic random rise simplequad squares sum"
+
+trap "rm -f testcupl$$; exit 0"
+
+for x in $TESTLOADS
+do
+	echo "Testing ${x}.cupl..."
+	../cupl ${x}.cupl
+done
+
+echo "Done"
+
+# regress ends here
+
