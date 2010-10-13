@@ -4,7 +4,7 @@
 #
 TESTLOADS="cubic fancyquad poly11 power prime quadratic random rise simplequad squares sum"
 
-trap "rm -f testcupl$$; exit 0"
+trap "rm -f testcupl$$; exit 0" EXIT
 
 for x in $TESTLOADS
 do

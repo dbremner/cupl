@@ -1,1 +1,183 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+STATEMENT  1       
+  (null)              
+    IDENTIFIER: N
+STATEMENT  2       
+  (null)              
+    IDENTIFIER: N
+    (null)              
+      -> STATEMENT 5
+STATEMENT  3       
+  (null)              
+STATEMENT  4       
+  (null)              
+STATEMENT  5       
+  (null)              
+    IDENTIFIER: A
+  (null)              
+    IDENTIFIER: B
+  (null)              
+    IDENTIFIER: C
+STATEMENT  6       
+  (null)              
+    IDENTIFIER: A
+  (null)              
+    IDENTIFIER: B
+  (null)              
+    IDENTIFIER: C
+STATEMENT  7       
+  (null)              
+    IDENTIFIER: D
+    (null)              
+      (null)              
+        IDENTIFIER: B
+        IDENTIFIER: B
+      (null)              
+        (null)              
+          NUMBER: 4.000000
+          IDENTIFIER: A
+        IDENTIFIER: C
+STATEMENT  8       
+  (null)              
+    (null)              
+      IDENTIFIER: D
+      NUMBER: 0.000000
+    (null)              
+      -> STATEMENT 14
+STATEMENT  9       
+  (null)              
+    IDENTIFIER: E
+    (null)              
+      IDENTIFIER: D
+STATEMENT 10       
+  (null)              
+    IDENTIFIER: X1
+    (null)              
+      (null)              
+        (null)              
+          IDENTIFIER: B
+        IDENTIFIER: E
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT 11       
+  (null)              
+    IDENTIFIER: X2
+    (null)              
+      (null)              
+        (null)              
+          IDENTIFIER: B
+        IDENTIFIER: E
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT 12       
+  (null)              
+    IDENTIFIER: X1
+  (null)              
+    IDENTIFIER: X2
+STATEMENT 13       
+  (null)              
+    -> STATEMENT 5
+STATEMENT 14       
+  (null)              
+    IDENTIFIER: E
+    (null)              
+      (null)              
+        IDENTIFIER: D
+STATEMENT 15       
+  (null)              
+    IDENTIFIER: XREAL
+    (null)              
+      (null)              
+        IDENTIFIER: B
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT 16       
+  (null)              
+    IDENTIFIER: XIMAG
+    (null)              
+      IDENTIFIER: E
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT 17       
+  (null)              
+    IDENTIFIER: XREAL
+  (null)              
+    IDENTIFIER: XIMAG
+STATEMENT 18       
+  (null)              
+STATEMENT 19       
+  (null)              
+    (null)              
+      IDENTIFIER: N
+      NUMBER: 4.000000
+  (null)              
+    (null)              
+      IDENTIFIER: A
+      NUMBER: 1.000000
+  (null)              
+    (null)              
+      IDENTIFIER: B
+      NUMBER: 1.000000
+  (null)              
+    (null)              
+      IDENTIFIER: C
+      NUMBER: -6.000000
+  (null)              
+    (null)              
+      IDENTIFIER: A
+      NUMBER: 1.000000
+  (null)              
+    (null)              
+      IDENTIFIER: B
+      NUMBER: 2.000000
+  (null)              
+    (null)              
+      IDENTIFIER: C
+      NUMBER: 5.000000
+  (null)              
+    (null)              
+      IDENTIFIER: A
+      NUMBER: -3.000000
+  (null)              
+    (null)              
+      IDENTIFIER: B
+      NUMBER: 0.250000
+  (null)              
+    (null)              
+      IDENTIFIER: C
+      NUMBER: 5.000000
+  (null)              
+    (null)              
+      IDENTIFIER: A
+      NUMBER: 3.141590
+  (null)              
+    (null)              
+      IDENTIFIER: B
+      NUMBER: 2.718280
+  (null)              
+    (null)              
+      IDENTIFIER: C
+      NUMBER: 1.414200
+                A =          1.000000000
+                B =          1.000000000
+                C =         -6.000000000
+               X1 =          2.000000000
+               X2 =         -3.000000000
+                A =          1.000000000
+                B =          2.000000000
+                C =          5.000000000
+            XREAL =         -1.000000000
+            XIMAG =          2.000000000
+                A =         -3.000000000
+                B =          0.250000000
+                C =          5.000000000
+               X1 =         -1.250000000
+               X2 =          1.333333333
+                A =          3.141590000
+                B =          2.718280000
+                C =          1.414200000
+            XREAL =         -0.432628064
+            XIMAG =          0.512822756

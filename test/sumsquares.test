@@ -1,1 +1,58 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+STATEMENT  1       
+  (null)              
+    IDENTIFIER: N
+STATEMENT  2       
+  (null)              
+    IDENTIFIER: SUM
+    NUMBER: 0.000000
+STATEMENT  3       
+  (null)              
+    IDENTIFIER: SUMSQUAR
+    NUMBER: 0.000000
+STATEMENT  4       
+  (null)              
+    IDENTIFIER: N
+    (null)              
+      -> STATEMENT 6
+STATEMENT  5       
+  (null)              
+STATEMENT  6       
+  (null)              
+    IDENTIFIER: NEWVALUE
+STATEMENT  7       
+  (null)              
+    IDENTIFIER: SUM
+    (null)              
+      IDENTIFIER: SUM
+      IDENTIFIER: NEWVALUE
+STATEMENT  8       
+  (null)              
+    IDENTIFIER: SUMSQUAR
+    (null)              
+      IDENTIFIER: SUMSQUAR
+      (null)              
+        IDENTIFIER: NEWVALUE
+        IDENTIFIER: NEWVALUE
+STATEMENT  9       
+  (null)              
+STATEMENT 10       
+  (null)              
+    IDENTIFIER: N
+  (null)              
+    IDENTIFIER: SUM
+  (null)              
+    IDENTIFIER: SUMSQUAR
+STATEMENT 11       
+  (null)              
+STATEMENT 12       
+  (null)              
+    (null)              
+      IDENTIFIER: N
+      NUMBER: 1.000000
+  (null)              
+    (null)              
+      IDENTIFIER: NEWVALUE
+      NUMBER: 6.000000
+                N =          1.000000000
+              SUM =          6.000000000
+         SUMSQUAR =         36.000000000

@@ -1,1 +1,89 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+STATEMENT  1       
+  (null)              
+    IDENTIFIER: A
+  (null)              
+    IDENTIFIER: B
+  (null)              
+    IDENTIFIER: C
+STATEMENT  2       
+  (null)              
+    IDENTIFIER: DISC
+    (null)              
+      (null)              
+        IDENTIFIER: B
+        IDENTIFIER: B
+      (null)              
+        (null)              
+          NUMBER: 4.000000
+          IDENTIFIER: A
+        IDENTIFIER: C
+STATEMENT  3       
+  (null)              
+    IDENTIFIER: REALPART
+    (null)              
+      (null)              
+        IDENTIFIER: B
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT  4       
+  (null)              
+    IDENTIFIER: IMAGPART
+    (null)              
+      (null)              
+        (null)              
+          IDENTIFIER: DISC
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT  5       
+  (null)              
+    (null)              
+      IDENTIFIER: DISC
+      NUMBER: 0.000000
+    (null)              
+      (null)              
+        -> STATEMENT 6
+      (null)              
+        -> STATEMENT 8
+STATEMENT  6       
+  (null)              
+    IDENTIFIER: REALPART
+  (null)              
+    IDENTIFIER: IMAGPART
+STATEMENT  7       
+  (null)              
+STATEMENT  8       
+  (null)              
+    IDENTIFIER: ROOT1
+    (null)              
+      IDENTIFIER: REALPART
+      IDENTIFIER: IMAGPART
+STATEMENT  9       
+  (null)              
+    IDENTIFIER: ROOT2
+    (null)              
+      IDENTIFIER: REALPART
+      IDENTIFIER: IMAGPART
+STATEMENT 10       
+  (null)              
+    IDENTIFIER: ROOT1
+  (null)              
+    IDENTIFIER: ROOT2
+STATEMENT 11       
+  (null)              
+STATEMENT 12       
+  (null)              
+    (null)              
+      IDENTIFIER: A
+      NUMBER: 1.000000
+  (null)              
+    (null)              
+      IDENTIFIER: B
+      NUMBER: -5.000000
+  (null)              
+    (null)              
+      IDENTIFIER: C
+      NUMBER: 2.250000
+            ROOT1 =          4.500000000
+            ROOT2 =          0.500000000

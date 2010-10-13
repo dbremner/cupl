@@ -1,1 +1,61 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+STATEMENT  1       
+  (null)              
+    IDENTIFIER: M
+STATEMENT  2       
+  (null)              
+    =                   
+      IDENTIFIER: N
+      (null)              
+        NUMBER: 2.000000
+    (null)              
+      -> STATEMENT 5
+STATEMENT  3       
+  (null)              
+    (null)              
+      IDENTIFIER: N
+      (null)              
+        NUMBER: 3.000000
+        (null)              
+          (null)              
+            IDENTIFIER: M
+          NUMBER: 2.000000
+    (null)              
+      -> STATEMENT 5
+STATEMENT  4       
+  (null)              
+STATEMENT  5       
+  (null)              
+    =                   
+      (null)              
+        IDENTIFIER: N
+        (null)              
+          (null)              
+            IDENTIFIER: M
+            IDENTIFIER: N
+      IDENTIFIER: M
+    (null)              
+      -> STATEMENT 9
+STATEMENT  6       
+  (null)              
+STATEMENT  7       
+  (null)              
+    (null)              
+      IDENTIFIER: M
+  (null)              
+    STRING: 'IS A PRIME'
+STATEMENT  8       
+  (null)              
+STATEMENT  9       
+  (null)              
+    (null)              
+      IDENTIFIER: M
+  (null)              
+    STRING: 'IS NOT A PRIME'
+STATEMENT 10       
+  (null)              
+STATEMENT 11       
+  (null)              
+    (null)              
+      IDENTIFIER: M
+      NUMBER: 23.000000
+        23.000000000IS A PRIME          

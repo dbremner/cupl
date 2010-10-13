@@ -1,1 +1,53 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+STATEMENT  1       
+  (null)              
+    IDENTIFIER: X
+STATEMENT  2       
+  (null)              
+    IDENTIFIER: FOFX
+    NUMBER: 0.000000
+STATEMENT  3       
+  (null)              
+    IDENTIFIER: TERM
+    NUMBER: 1.000000
+STATEMENT  4       
+  (null)              
+    (null)              
+      IDENTIFIER: N
+      (null)              
+        NUMBER: 1.000000
+        (null)              
+          NUMBER: 11.000000
+    (null)              
+      -> STATEMENT 6
+STATEMENT  5       
+  (null)              
+STATEMENT  6       
+  (null)              
+    IDENTIFIER: FOFX
+    (null)              
+      IDENTIFIER: FOFX
+      IDENTIFIER: TERM
+STATEMENT  7       
+  (null)              
+    IDENTIFIER: TERM
+    (null)              
+      (null)              
+        IDENTIFIER: TERM
+        IDENTIFIER: N
+      IDENTIFIER: X
+STATEMENT  8       
+  (null)              
+STATEMENT  9       
+  (null)              
+    IDENTIFIER: X
+  (null)              
+    IDENTIFIER: FOFX
+STATEMENT 10       
+  (null)              
+STATEMENT 11       
+  (null)              
+    (null)              
+      IDENTIFIER: X
+      NUMBER: 6.000000
+                X =          6.000000000
+             FOFX =      2.231458213E+14

@@ -1,1 +1,67 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+variable P2HEARTS set but not used
+variable P1HEARTS set but not used
+STATEMENT  1       
+  (null)              
+    IDENTIFIER: P1HEARTS
+  (null)              
+    IDENTIFIER: P2HEARTS
+STATEMENT  2       
+  (null)              
+    =                   
+      IDENTIFIER: P1HEARTS
+      NUMBER: 13.000000
+    (null)              
+      (null)              
+        -> STATEMENT 4
+      (null)              
+        -> STATEMENT 3
+STATEMENT  3       
+  (null)              
+    =                   
+      IDENTIFIER: P2HEARTS
+      NUMBER: 13.000000
+    (null)              
+      (null)              
+        -> STATEMENT 6
+      (null)              
+        -> STATEMENT 8
+STATEMENT  4       
+  (null)              
+    IDENTIFIER: P2SCORE
+    NUMBER: 13.000000
+STATEMENT  5       
+  (null)              
+    -> STATEMENT 10
+STATEMENT  6       
+  (null)              
+    IDENTIFIER: P1SCORE
+    NUMBER: 13.000000
+STATEMENT  7       
+  (null)              
+    -> STATEMENT 10
+STATEMENT  8       
+  (null)              
+    IDENTIFIER: P1SCORE
+    IDENTIFIER: P1HEARTS
+STATEMENT  9       
+  (null)              
+    IDENTIFIER: P2SCORE
+    IDENTIFIER: P2HEARTS
+STATEMENT 10       
+  (null)              
+    IDENTIFIER: P1SCORE
+  (null)              
+    IDENTIFIER: P2SCORE
+STATEMENT 11       
+  (null)              
+STATEMENT 12       
+  (null)              
+    (null)              
+      IDENTIFIER: P1HEARTS
+      NUMBER: 5.000000
+  (null)              
+    (null)              
+      IDENTIFIER: P2HEARTS
+      NUMBER: 8.000000
+          P1SCORE =          5.000000000
+          P2SCORE =          8.000000000

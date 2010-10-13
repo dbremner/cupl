@@ -1,1 +1,45 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+STATEMENT  1       
+  (null)              
+    STRING: 'SAMPLE PSEUDO-RANDOM NUMBERS'
+STATEMENT  2       
+  (null)              
+    IDENTIFIER: SEED
+    NUMBER: 0.123457
+STATEMENT  3       
+  (null)              
+    IDENTIFIER: SEED
+STATEMENT  4       
+  (null)              
+    IDENTIFIER: RN
+    IDENTIFIER: SEED
+STATEMENT  5       
+  (null)              
+    NUMBER: 10.000000
+    (null)              
+      -> STATEMENT 7
+STATEMENT  6       
+  (null)              
+STATEMENT  7       
+  (null)              
+    IDENTIFIER: RN
+    (null)              
+      IDENTIFIER: RN
+STATEMENT  8       
+  (null)              
+    IDENTIFIER: RN
+STATEMENT  9       
+  (null)              
+STATEMENT 10       
+  (null)              
+SAMPLE PSEUDO-RANDOM NUMBERS
+             SEED =          0.123456789
+               RN =      1.804289383E+09
+               RN =      1.362961854E+09
+               RN =      1.869134870E+08
+               RN =      8.400598600E+07
+               RN =      3.238335000E+07
+               RN =      2.405089790E+08
+               RN =      1.078683977E+09
+               RN =      5.048210700E+07
+               RN =      9.084769410E+08
+               RN =      1.165204060E+08

@@ -1,1 +1,68 @@
-./MAKEREGRESS: ../cupl: No such file or directory
+STATEMENT  1       
+  (null)              
+    IDENTIFIER: A
+  (null)              
+    IDENTIFIER: B
+  (null)              
+    IDENTIFIER: C
+STATEMENT  2       
+  (null)              
+    IDENTIFIER: D
+    (null)              
+      (null)              
+        IDENTIFIER: B
+        IDENTIFIER: B
+      (null)              
+        (null)              
+          NUMBER: 4.000000
+          IDENTIFIER: A
+        IDENTIFIER: C
+STATEMENT  3       
+  (null)              
+    IDENTIFIER: E
+    (null)              
+      IDENTIFIER: D
+STATEMENT  4       
+  (null)              
+    IDENTIFIER: X1
+    (null)              
+      (null)              
+        (null)              
+          IDENTIFIER: B
+        IDENTIFIER: E
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT  5       
+  (null)              
+    IDENTIFIER: X2
+    (null)              
+      (null)              
+        (null)              
+          IDENTIFIER: B
+        IDENTIFIER: E
+      (null)              
+        NUMBER: 2.000000
+        IDENTIFIER: A
+STATEMENT  6       
+  (null)              
+    IDENTIFIER: X1
+  (null)              
+    IDENTIFIER: X2
+STATEMENT  7       
+  (null)              
+STATEMENT  8       
+  (null)              
+    (null)              
+      IDENTIFIER: A
+      NUMBER: 1.000000
+  (null)              
+    (null)              
+      IDENTIFIER: B
+      NUMBER: -5.000000
+  (null)              
+    (null)              
+      IDENTIFIER: C
+      NUMBER: 2.250000
+               X1 =          4.500000000
+               X2 =          0.500000000
