@@ -4,7 +4,7 @@ Version: 1.7
 Release: 1
 URL: http://www.catb.org/~esr/cupl/
 Source0: %{name}-%{version}.tar.gz
-License: GPL
+License: BSD
 Group: Languages
 BuildRoot: %{_tmppath}/%{name}-root
 #Project-Tag-List: CUPL, CORC, language, interpreter, retrocomputing
