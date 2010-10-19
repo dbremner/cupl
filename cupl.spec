@@ -7,7 +7,7 @@ Source0: %{name}-%{version}.tar.gz
 License: GPL
 Group: Languages
 BuildRoot: %{_tmppath}/%{name}-root
-#Keywords: CUPL, CORC, language, interpreter, retrocomputing
+#Project-Tag-List: CUPL, CORC, language, interpreter, retrocomputing
 
 %description
 Interpreter for the archaic CUPL and CORC programming languages.
