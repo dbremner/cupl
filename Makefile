@@ -48,7 +48,7 @@ cupl.1: cupl.xml
 	xmlto man cupl.xml
 
 cupl.html: cupl.xml
-	xmlto html cupl.xml
+	xmlto html-nochunks cupl.xml
 
 DOCS = README COPYING corc.doc cupl.doc cupl.xml cupl.spec
 SOURCES = Makefile cupl.[lyh] $(MODULES:.o=.c)
@@ -63,7 +63,8 @@ cupl-$(VERS).tar.gz: $(SOURCES) $(DOCS) cupl.1
 dist: cupl-$(VERS).tar.gz
 
 clean:
-	rm -f cupl *~ *.o toktab.h tokens.h grammar.c lexer.c lextest y.output cupl.tar cupl.tar.gz *.rpm cupl-*.tar.gz
+	rm -f cupl toktab.h tokens.h grammar.c lexer.c lextest y.output 
+	rm -f *.o *~ *.1 *.rpm cupl-*.tar.gz SHIPPER.* *.html MANIFEST
 
 release: cupl-$(VERS).tar.gz cupl.html
-	shipper -f; rm -f CHANGES ANNOUNCE* *.1 *.html *.rpm *.lsm
+	shipper -u -m -t; make clean
