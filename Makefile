@@ -57,7 +57,7 @@ TESTS = test/[abcdefghijklmnopqrstuvwxyz]* test/MAKEREGRESS test/REGRESS test/TE
 cupl-$(VERS).tar.gz: $(SOURCES) $(DOCS) cupl.1
 	@(cd ..; ln -s cupl cupl-$(VERS))
 	@ls $(SOURCES) $(DOCS) $(TESTS) cupl.1 | sed s:^:cupl-$(VERS)/: >MANIFEST
-	(cd ..; tar -czvf cupl/cupl-$(VERS).tar.gz `cat cupl/MANIFEST`)
+	(cd ..; tar -czf cupl/cupl-$(VERS).tar.gz `cat cupl/MANIFEST`)
 	@(cd ..; rm cupl-$(VERS))
 
 dist: cupl-$(VERS).tar.gz
