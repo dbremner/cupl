@@ -5,3 +5,6 @@ tokens.h
 toktab.h
 y.output
 *.o
+*.1
+*.html
+MANIFEST
