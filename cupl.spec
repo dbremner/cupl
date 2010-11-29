@@ -7,6 +7,7 @@ Source0: %{name}-%{version}.tar.gz
 License: BSD
 Group: Languages
 BuildRoot: %{_tmppath}/%{name}-root
+#Destinations: freshmeat
 #Project-Tag-List: CUPL, CORC, language, interpreter, retrocomputing
 
 %description
