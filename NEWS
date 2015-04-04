@@ -1,0 +1,31 @@
+			CUPL project news
+
+1.9: 2015-04-04
+  Administrivial release with modern packaging.
+
+1.8: 2003-10-19
+  Switch to BSD license.
+
+1.7: 2003-10-12
+  Port to modern C, ANSIfying where needed.
+
+1.6: 2003-12-29
+  Source RPMSs no longer depend on --define myversion.
+
+1.5: 2003-12-26
+  Updated RPM packaging machinery.
+
+1.4: 2000-07-30
+  Move documentation to XML.
+
+1.3: 2000-07-27
+  Cleanup release.  Use modern packaging and RPMs.
+
+1.2: 1996-06-28
+  Fixed off-by-one bug in TITLE processing.
+  Merged tour.doc into cupl.mm.
+  Added "Hello World" program.
+
+1.1: 1994-11-08
+  Added CORC support.
+  Fixed a core-dump bug in the prettyprinter.

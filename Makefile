@@ -1,7 +1,7 @@
 #
 # Makefile for the CUPL/CORC project
 #
-VERS=$(shell sed <cupl.spec -n -e '/Version: \(.*\)/s//\1/p')
+VERS=1.9
 
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
@@ -50,7 +50,7 @@ cupl.1: cupl.xml
 cupl.html: cupl.xml
 	xmlto html-nochunks cupl.xml
 
-DOCS = README COPYING corc.doc cupl.doc cupl.xml cupl.spec
+DOCS = README COPYING NEWS control corc.doc cupl.doc cupl.xml
 SOURCES = Makefile cupl.[lyh] $(MODULES:.o=.c)
 TESTS = test/[abcdefghijklmnopqrstuvwxyz]* test/MAKEREGRESS test/REGRESS test/TESTALL
 
@@ -64,7 +64,10 @@ dist: cupl-$(VERS).tar.gz
 
 clean:
 	rm -f cupl toktab.h tokens.h grammar.c lexer.c lextest y.output 
-	rm -f *.o *~ *.1 *.rpm cupl-*.tar.gz SHIPPER.* *.html MANIFEST
+	rm -f *.o *~ *.1 *.rpm cupl-*.tar.gz *.html MANIFEST
 
 release: cupl-$(VERS).tar.gz cupl.html
-	shipper -u -m -t; make clean
+	shipper version=$(VERS) | sh -e -x
+
+refresh: cupl.html
+	shipper -N -w version=$(VERS) | sh -e -x
