@@ -17,6 +17,10 @@ XBS-HTML-Target: index.html
 
 XBS-Repository-URL: http://thyrsus.com/gitweb/?p=cupl.git
 
+XBS-Developer-Clone: git@thyrsus.com:cupl
+
+XBS-Anonymous-Clone: git://thyrsus.com/repositories/cupl.git
+
 #XBS-Project-Tags: retrocomputing
 
 XBS-VC-Tag-Template: %(version)s
