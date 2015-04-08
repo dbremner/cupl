@@ -9,17 +9,13 @@ Description: A faithful implementation of the ancient CUPL and CORC languages.
  experimental language called CORC (CORnell Compiler), which was in turn derived
  loosely from Algol-58. This project implements both.
 
-#XBS-Destinations: freecode
+#XBS-Destinations: freshcode
 
 Homepage: http://www.catb.org/~esr/cupl
 
 XBS-HTML-Target: index.html
 
 XBS-Repository-URL: http://thyrsus.com/gitweb/?p=cupl.git
-
-XBS-Developer-Clone: git@thyrsus.com:cupl
-
-XBS-Anonymous-Clone: git://thyrsus.com/repositories/cupl.git
 
 #XBS-Project-Tags: retrocomputing
 
