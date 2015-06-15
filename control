@@ -21,6 +21,8 @@ XBS-Developer-Clone: git@thyrsus.com:cupl
 
 XBS-Anonymous-Clone: git://thyrsus.com/repositories/cupl.git
 
+XBS-Logo: cupl-logo.png
+
 #XBS-Project-Tags: retrocomputing
 
 XBS-VC-Tag-Template: %(version)s
