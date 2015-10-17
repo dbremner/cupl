@@ -10,6 +10,8 @@ DESCRIPTION
    This code does execution of a CUPL parse tree.  It uses the runtime
 support in monitor.c.
 
+LICENSE
+   SPDX-License-Identifier: BSD-2-clause
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>

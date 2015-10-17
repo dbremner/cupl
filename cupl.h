@@ -1,5 +1,7 @@
 /* cupl.h -- basic types for the CUPL interpreter/compiler */
 
+/* SPDX-License-Identifier: BSD-2-clause */
+
 /* maximum file size */
 #ifdef USG
 #include <limits.h>

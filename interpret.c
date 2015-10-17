@@ -14,6 +14,9 @@ NOTE
    The NOTE: comments describe a few things that will need to be done 
 differently if we get a compiler back end.
 
+LICENSE
+  SPDX-License-Identifier: BSD-2-clause
+
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>

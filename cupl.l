@@ -1,5 +1,6 @@
 %{
 /* cupl.l -- lexical analyzer for the CUPL language */
+/* SPDX-License-Identifier: BSD-2-clause */
 
 #include <stdio.h>
 #include <ctype.h>

@@ -10,6 +10,9 @@ DESCRIPTION
    Main sequence of the Cornell University Programming Language interpreter.
 All the real work is done by yyparse. May set globals verbose and yydebug.
 
+LICENSE
+   SPDX-License-Identifier: BSD-2-clause
+
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>

@@ -1,4 +1,5 @@
 /* nodetype.h -- macros that describe the semantics of nodes */
+/* SPDX-License-Identifier: BSD-2-clause */
 
 #define car	u.n.left
 #define cdr	u.n.right

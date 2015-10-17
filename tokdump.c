@@ -10,6 +10,9 @@ SYNOPSIS
 DESCRIPTION
    Used for dumping the parse tree and error messages.
 
+LICENSE
+   SPDX-License-Identifier: BSD-2-clause
+
 *****************************************************************************/
 /*LINTLIBRARY*/
 

@@ -57,6 +57,9 @@ we do an allocate each time an intrinsic returns a value.  This is
 relatively inefficient but means these functions could be used as a runtime
 library.
 
+LICENSE
+   SPDX-License-Identifier: BSD-2-clause
+
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>

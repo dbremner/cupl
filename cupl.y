@@ -18,6 +18,9 @@ nonprofit and educational use is granted to all; if you're planning to
 make money with this or any code derived from it, check with the
 author first.
 
+LICENSE
+ SPDX-License-Identifier: BSD-2-clause
+
 ****************************************************************************/
 %{
 #include <stdio.h>
