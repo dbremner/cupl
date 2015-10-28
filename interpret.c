@@ -104,17 +104,17 @@ static void prettyprint(node *tree, int indent)
 #endif /* PARSEDEBUG */
 
 static bool recursive_apply(node *tree, bool (*fun)(node *))
-/* apply fun recursively to tree, short-circuiting on FALSE return */
+/* apply fun recursively to tree, short-circuiting on false return */
 {
     if (tree == (node *)NULL)
-	return(TRUE);
+	return(true);
 
     if (ATOMIC(tree->type))
 	return(fun(tree));
     else if (recursive_apply(tree->car, fun) && recursive_apply(tree->cdr, fun))
 	return(fun(tree));
     else
-	return(FALSE);
+	return(false);
 
 }
 
@@ -122,7 +122,7 @@ static bool r_mark_labels(node *tp)
 /* record label references */
 {
     if (ATOMIC(tp->type))
-	return(TRUE);
+	return(true);
 
     /* count label definitions */
     if (tp->type == LABEL)
@@ -189,7 +189,7 @@ static bool r_mark_labels(node *tp)
 		lp->used++;
     }
 
-    return(TRUE);
+    return(true);
 }
 
 static bool mung_corc_labels(node *tp)
@@ -201,7 +201,7 @@ static bool mung_corc_labels(node *tp)
 	tp->car->syminf->blabelref++;
     }
 
-    return(TRUE);
+    return(true);
 }
 
 static bool check_errors(node *tree)
@@ -290,14 +290,14 @@ static bool check_errors(node *tree)
         else if (!lp->used && lp->assigned)
 	    warn("variable %s set but not used\n", lp->node->u.string);
 
-    return(FALSE);
+    return(false);
 }
 
 static bool r_label_rewrite(node *tp)
 /* resolve label references */
 {
     if (ATOMIC(tp->type))
-	return(TRUE);
+	return(true);
 
     /*
      * KISS -- this code may do extra work, but it needs no special
@@ -356,7 +356,7 @@ static bool r_label_rewrite(node *tp)
 	free(oldnode);
     }
 
-    return(TRUE);
+    return(true);
 }
 
 static void rewrite(node *tree)
@@ -393,7 +393,7 @@ static void rewrite(node *tree)
 	if (sp && sp->type == LABEL && sp->cdr->type == BLOCK)
 	{
 	    node	*ep;
-	    bool	found = FALSE;
+	    bool	found = false;
 
 	    for (ep = np->cdr; ep; ep = ep->cdr)
 		if (ep->car->type == LABEL
@@ -409,7 +409,7 @@ static void rewrite(node *tree)
 		     * current statement.
 		     */
 		    np->endnode = ep;
-		    found = TRUE;
+		    found = true;
 		    break;
 		}
 	    if (!found)

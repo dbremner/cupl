@@ -15,11 +15,7 @@
 
 #define EXT	".cupl"		/* CUPL source file extension */
 
-#ifndef TRUE
-typedef int	bool;
-#define TRUE	1
-#define FALSE	0
-#endif /* TRUE */
+#include <stdbool.h>
 
 #define SUCCEED	0
 #define FAIL	-1

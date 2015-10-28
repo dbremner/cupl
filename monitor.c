@@ -530,10 +530,10 @@ bool cupl_eq(value v1, value v2)
 	    scalar e1 = v1.elements[n], e2 = v2.elements[n];
 
 	    if (!FUZZY_EQUAL(e1, e2))
-		return(FALSE);
+		return(false);
 	}
 
-	return(TRUE);
+	return(true);
     }
 }
 
@@ -544,7 +544,7 @@ bool cupl_le(value v1, value v2)
 	die("LE failed, operands of different sizes or ranks\n");
     else
     {
-	bool equal = TRUE;
+	bool equal = true;
 	int	n;
 
 
@@ -553,10 +553,10 @@ bool cupl_le(value v1, value v2)
 	    scalar e1 = v1.elements[n], e2 = v2.elements[n];
 
 	    if (!FUZZY_EQUAL(e1, e2) && e1 > e2)
-		return(FALSE);
+		return(false);
 	}
 
-	return(TRUE);
+	return(true);
     }
 }
 
@@ -574,10 +574,10 @@ bool cupl_ge(value v1, value v2)
 	    scalar e1 = v1.elements[n], e2 = v2.elements[n];
 
 	    if (!FUZZY_EQUAL(e1, e2) && e1 < e2)
-		return(FALSE);
+		return(false);
 	}
 
-	return(TRUE);
+	return(true);
     }
 }
 
