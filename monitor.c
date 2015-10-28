@@ -154,7 +154,7 @@ void deallocate_value(value *v)
 
 static int used;
 
-void cupl_reset_write()
+void cupl_reset_write(void)
 {
     used = 0;
 }

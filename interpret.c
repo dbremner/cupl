@@ -21,6 +21,7 @@ LICENSE
 /*LINTLIBRARY*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "cupl.h"
 #include "tokens.h"
 

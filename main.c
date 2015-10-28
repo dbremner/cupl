@@ -16,7 +16,9 @@ LICENSE
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
+#include <unistd.h>
 #include <string.h>
 #include "cupl.h"
 
@@ -53,13 +55,9 @@ static int execfile(const char *file)
     return(0);
 }
 
-main(argc, argv)
-int	argc;
-char	*argv[];
+int
+main(int argc, char *argv[])
 {
-    extern int	    optind;		/* getopt() sets this */
-    extern char	    *optarg;		/* and this */
-    extern char	    *getenv();
     int	c;
 
     while ((c = getopt(argc, argv, "f:v:w:")) != EOF)

@@ -208,7 +208,7 @@ void yyerror(const char *str)
     (void) fprintf(stderr, "cupl: line %d, %s\n", yylineno, str);
 }
 
-int yywrap()
+int yywrap(void)
 {
     return(EOF);
 }

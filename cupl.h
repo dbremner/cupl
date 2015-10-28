@@ -127,8 +127,8 @@ extern value copy_value(value);
 extern value allocate_value(int rank, int i, int j);
 extern void deallocate_value(value *);
 
-void cupl_reset_write();
-void cupl_eol_write();
+void cupl_reset_write(void);
+void cupl_eol_write(void);
 void cupl_scalar_write(char *name, scalar quant);
 void cupl_string_write(char *s);
 

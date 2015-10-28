@@ -293,10 +293,10 @@ subscr	:    IDENTIFIER '(' expr ')'
 	;
 %%
 
-node *cons(op, left, right)
+node *cons(int op, node *left, node *right)
 /* make a cons for a binary operation */
-int	op;		/* opcode */
-node	*left, *right;	/* child nodes */
+/*int	op;		opcode */
+/*node	*left, *right;	child nodes */
 {
     node	*new;
 

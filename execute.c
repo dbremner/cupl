@@ -15,6 +15,7 @@ LICENSE
 *****************************************************************************/
 /*LINTLIBRARY*/
 #include <stdio.h>
+#include <string.h>
 #include <setjmp.h>
 #include <math.h>
 #include "cupl.h"
@@ -189,7 +190,7 @@ value cupl_eval(node *tree)
 	return(result);
 
     case WRITE:
-	cupl_reset_write(0);
+	cupl_reset_write();
 	for_cdr(np, tree)
 	    eval_write(np->car);
 	cupl_eol_write();
