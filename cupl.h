@@ -16,6 +16,7 @@
 #define EXT	".cupl"		/* CUPL source file extension */
 
 #include <stdbool.h>
+#include <stdnoreturn.h>
 
 #define SUCCEED	0
 #define FAIL	-1
@@ -119,7 +120,7 @@ extern int verbose, linewidth, fieldwidth;
 extern void execute(node *tree);
 
 /* monitor.c */
-extern void die(char *msg, ...);
+extern noreturn void die(char *msg, ...);
 extern void warn(char *msg, ...);
 
 extern void make_scalar(value *v, scalar n);

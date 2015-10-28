@@ -88,7 +88,7 @@ void warn(char *msg, ...)
     va_end(args);
 }
 
-void die(char *msg, ...)
+noreturn void die(char *msg, ...)
 /* complain of a fatal error and die */
 {
     va_list	args;
