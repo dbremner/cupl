@@ -5,7 +5,7 @@ VERS=1.9
 
 CDEBUG = -g	# use -O for production, -g for debugging
 YFLAGS = -vt	# use -l for production, -vt for debugging
-CFLAGS = $(CDEBUG) -D_POSIX_SOURCE -DPARSEDEBUG	-DYYDEBUG=1
+CFLAGS = $(CDEBUG) -Wall -Wextra -std=c11 -Wstrict-prototypes -Wold-style-definition -D_POSIX_SOURCE -DPARSEDEBUG	-DYYDEBUG=1
 
 MODULES = main.o grammar.o lexer.o interpret.o tokdump.o execute.o monitor.o
 cupl: $(MODULES)
